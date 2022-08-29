@@ -1,12 +1,13 @@
 import { LoggerService } from "@app/logger/logger.service";
 import { Soap1cProvider } from "@app/soap1c/sopa1c.provider";
-import { Soap1cActionTypes } from "@app/soap1c/types/types";
+import { ReturnNumberResponseData } from "@app/soap1c/types/interface";
+import { Soap1cActionTypes, Soap1cEnvelopeTypes } from "@app/soap1c/types/types";
 import { UtilsService } from "@app/utils/utils.service";
 import { Inject, Injectable, OnApplicationBootstrap } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Ari, { Channel, Client, StasisStart } from 'ari-client';
-import * as moment from 'moment';
-import { ContextDialplanNumberMap } from "../config";
+import { ContextDialplanNumberMap, DEFAULT_ROUTING, LOCAL_ROUTING } from "../config";
+import { RouteInfo } from "../types/interface";
 
 @Injectable()
 export class DialplanApplicationService implements OnApplicationBootstrap {
@@ -25,12 +26,15 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
         this.client.ariClient.on('StasisStart', async (event: StasisStart, dialed: Channel) => {
             try {
                 this.logger.info(`Событие входящего вызова ${JSON.stringify(event)}`);
-                const routeInfo = this.getRouteInfo(event);
-                // const routeResult = await this.continueDialplan()
+                const routeInfo = await this.getRouteInfo(event);
+                if(routeInfo.returnDialExtension != "000"){
+                    await this.continueDialplan(routeInfo.channelId, LOCAL_ROUTING, routeInfo.returnDialExtension);
+                } else {
+                    await this.continueDialplan(routeInfo.channelId, DEFAULT_ROUTING, routeInfo.returnDialExtension);
+                }
             }catch(e){
                 this.logger.info(` Error ARI continueDialplan ${e}`)
             }
-
         });
         this.client.ariClient.start(this.configService.get('asterisk.ari.application.amocrm') );
 
@@ -44,7 +48,7 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
             return await new Promise((resolve, reject) =>{
                 this.client.ariClient.channels.continueInDialplan({ channelId: returnChannelId, context: dialplanContext, extension: returnDialExtension },  (err: Error) => {
                     (!!err) ? resolve(`ARI DialplanApplicationService continueDialplan ${returnChannelId} ${dialplanContext} ${returnDialExtension}`):  reject(err);
-                })
+                });
             })
         } catch(e){
             throw e;
@@ -52,13 +56,14 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
 
     }
 
-    private async getRouteInfo(event: StasisStart){
+    private async getRouteInfo(event: StasisStart): Promise<RouteInfo>{
         try {
             const incomingNumber = UtilsService.formatNumber(event.channel.caller.number)
             const dialExtension = this.getDialExtension(event);
             this.logger.info(`${incomingNumber} ${dialExtension} ${event.channel.id}`);
             const requestInfo = {
                 action: Soap1cActionTypes.getRouteNumber,
+                envelop: Soap1cEnvelopeTypes.ReturnNumber,
                 data: {
                     incomingNumber,
                     dialExtension,
@@ -66,9 +71,18 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
                 }
             }
     
-            return await this.soap1c.request(requestInfo);
+            const routeInfo =  await this.soap1c.request<ReturnNumberResponseData>(requestInfo);
+            const parseRouteInfo = routeInfo.Envelope.Body.ReturnNumberResponse.return.name.split(';');
+            return {
+                dialExtension,
+                returnDialExtension: parseRouteInfo[0],
+                channelId: parseRouteInfo[1]
+
+            }
         }catch(e){
-            throw e;
+            this.logger.error(`На запрос внутреннего номера вернулась ошибка ${e}`);
+            this.logger.error(`Ошибка, вызов идет по ${DEFAULT_ROUTING}`);
+            await this.continueDialplan(event.channel.id, DEFAULT_ROUTING, this.getDialExtension(event));
         }
 
     }
