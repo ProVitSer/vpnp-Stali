@@ -6,7 +6,7 @@ import { ReturnNumber } from "./providers/return-number";
 import { SetId } from "./providers/set-id";
 import { NAMESPACE } from "./types/constaints";
 import { PlainObject, Soap1cApiRequestInterface, Soap1cProviderInterface } from "./types/interface";
-import { Soap1cActionTypes } from "./types/types";
+import { Soap1cActionTypes, Soap1cEnvelopeTypes } from "./types/types";
 
 
 
@@ -28,15 +28,14 @@ export class Soap1cProvider {
         };
     }
 
-    public async request(request: Soap1cApiRequestInterface) {  
+    public async request<T>(request: Soap1cApiRequestInterface): Promise<T> {  
         const provider = this.getProvider(request.action);
 
         try {
             const data = await provider.getRequestData(request.data);
-            const xmlRequest = await this.makeXmlRequest(data, request.action);
-            console.log(xmlRequest)
-            // const response = await this.httpService.post(this.configService.get('server1C.url'), xmlRequest).toPromise();
-            // return this.xml.createObjectFromXmlAsync(response.data);
+            const xmlRequest = await this.makeXmlRequest(data, request.envelop, request.action);
+            const response = await this.httpService.post(this.configService.get('server1C.url'), xmlRequest).toPromise();
+            return await this.xml.createObjectFromXmlAsync(response.data) as T;
         }catch(e){
             throw e;
         }
@@ -46,11 +45,12 @@ export class Soap1cProvider {
         return this.providers[action];
     }
 
-    private makeFullData(data: PlainObject, action: Soap1cActionTypes): PlainObject {    
+    private makeFullData(data: PlainObject, envelope: Soap1cEnvelopeTypes ,action: Soap1cActionTypes): PlainObject {    
         
         return {
             'soap:Envelope': {
-                '@xmlns:soap=': 'http://www.w3.org/2003/05/soap-envelope',
+                '@xmlns:soap': 'http://www.w3.org/2003/05/soap-envelope',
+                [`@xmlns:${NAMESPACE}`]: `${envelope}`,
                 'soap:Header': {},
                 'soap:Body': {
                     [`${NAMESPACE}:${action}`]: this.xml.addNameSpace(data, NAMESPACE)
@@ -59,8 +59,9 @@ export class Soap1cProvider {
         }
     }
 
-    private async makeXmlRequest(data: PlainObject, action: Soap1cActionTypes): Promise<string> {
-        return await this.createXml(this.makeFullData(data, action));
+
+    private async makeXmlRequest(data: PlainObject, envelope: Soap1cEnvelopeTypes, action: Soap1cActionTypes): Promise<string> {
+        return await this.createXml(this.makeFullData(data, envelope, action));
     }
 
     private async createXml(data: PlainObject): Promise<string> {
