@@ -25,7 +25,8 @@ export class CallInfoService {
 
     public async getAllMeetings(){
         try {
-            return await this.meetings.createQueryBuilder('meetingsession').select('*').getMany();
+          console.log('getAllMeetings')
+            return await this.meetings.createQueryBuilder('meetingsession').select().getMany();
         } catch(e){
             throw e;
         }
@@ -51,7 +52,7 @@ export class CallInfoService {
         try {
           return await this.callPartyInfo
           .createQueryBuilder("cl_party_info")
-          .select("*")
+          .select()
           .where("cl_party_info.id = :id", { id: id })
           .getOne();
         } catch(e){
@@ -65,7 +66,7 @@ export class CallInfoService {
         try {
           return await this.callParticipants
           .createQueryBuilder("cl_participants")
-          .select('*')
+          .select()
           .where("cl_participants.info_id = :id", { id: infoId })
           .getOne();
         } catch(e){
@@ -73,7 +74,7 @@ export class CallInfoService {
         }
     }
 
-    public async searchAnswerByCallID(callId: number): Promise<Array<number>>{
+    public async searchAnswerByCallID(callId: number): Promise<Array<{ cl_participants_info_id: number}>>{
         try {
           return await this.callParticipants
           .createQueryBuilder("cl_participants")
@@ -88,11 +89,13 @@ export class CallInfoService {
 
     public async searcInfoId(callId: number): Promise<ClParticipants>{
         try {
+          console.log(callId)
+
           return await this.callParticipants
           .createQueryBuilder("cl_participants")
           .select("cl_participants.infoId")
           .where("cl_participants.call_id = :id", { id: callId })
-          .orderBy("cl_party_info.id", "DESC")
+          .orderBy("cl_participants.id", "DESC")
           .getOne();
         } catch(e){
             throw e;
@@ -102,24 +105,28 @@ export class CallInfoService {
     //Последнийответивший согласно 3сх
     public async searchLastUserRing(ids: Array<number>, extension: string): Promise<ClPartyInfo> {
         try {
+          console.log(ids, extension)
           return await this.callPartyInfo
           .createQueryBuilder("cl_party_info")
-          .select("cl_party_info.dn")
+          .select()
           .where("cl_party_info.id IN (:...ids)", { ids: ids })
           .andWhere("cl_party_info.dn like :extension", {
             extension: extension,
           })
           .getOne();
         } catch(e){
+          console.log('asdasdasd')
+
           throw e;
         }
     }
 
     public async getCallcenterInfo(incomingNumber: string): Promise<CallcentQueuecalls> {
         try{
+          console.log(incomingNumber)
             return await this.queue
             .createQueryBuilder("callcent_queuecalls")
-            .select("*")
+            .select()
             .where("callcent_queuecalls.from_userpart like :incomingNumber", { incomingNumber: incomingNumber })
             .orderBy("callcent_queuecalls.idcallcent_queuecalls", "DESC")
             .getOne();

@@ -5,12 +5,14 @@ import {
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
+    
   } from 'typeorm';
   import { ClParticipants } from './ClParticipants';
   import { ClCalls } from './ClCalls';
   
   @Entity('cl_segments', { schema: 'public' })
   export class ClSegments {
+    
     @PrimaryGeneratedColumn({ type: 'integer', name: 'id' })
     id: number;
   

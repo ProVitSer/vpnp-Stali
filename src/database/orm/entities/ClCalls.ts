@@ -11,7 +11,7 @@ import {
   @Entity('cl_calls', { schema: 'public' })
   export class ClCalls {
     @PrimaryGeneratedColumn({ type: 'integer', name: 'id' })
-    id: number;
+    id: number | null;
   
     @Column('timestamp with time zone', { name: 'start_time' })
     startTime: Date;

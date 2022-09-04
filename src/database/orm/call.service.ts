@@ -16,9 +16,15 @@ export class CallService {
             const { unicueid, incomingNumber, extension } = data;
             this.logger.info(`${unicueid} ${incomingNumber} ${extension}`);
             const callInfo =  await this.getCallInfo(incomingNumber);
+            console.log(callInfo)
             const answerCalls = await this.callInfoService.searchAnswerByCallID(callInfo.callId);
-            const callUserInfo = await this.callInfoService.searchLastUserRing(answerCalls, extension.trim());
-            if(!!callUserInfo.id){
+            const mapAnswerCalls = answerCalls.map((answerCalls: any) => { return answerCalls.cl_participants_info_id});
+            console.log('answerCalls',answerCalls)
+
+            const callUserInfo = await this.callInfoService.searchLastUserRing(mapAnswerCalls, extension.trim());
+            console.log('callUserInfo', callUserInfo)
+            if(!!callUserInfo){
+
                 return {
                     kind: KindCall.local,
                     moduleUnicueId: data.unicueid,
@@ -28,6 +34,8 @@ export class CallService {
                     endCallTime: callInfo.endTime
                 }
             }else {
+                console.log(unicueid, callInfo)
+
                 return await this.search3cxInfoMobileRedirection(unicueid, callInfo.callId);
             }
         } catch(e){
@@ -40,9 +48,16 @@ export class CallService {
         try {
             const { unicueid, incomingNumber, extension } = data;
             this.logger.info(`${unicueid} ${incomingNumber} ${extension}`);
-            const modIncomingNumber = (incomingNumber.length == 11) ?  incomingNumber.substring(1): incomingNumber;
-            const callInfo =  await this.getCallInfo(incomingNumber);
+            console.log(incomingNumber)
+
+            const modIncomingNumber = (incomingNumber.length == 12) ?  incomingNumber.substring(1): incomingNumber;
+            console.log(modIncomingNumber)
+
+            const callInfo =  await this.getCallInfo(modIncomingNumber);
+            console.log('callInfo',callInfo)
             const callCenterCallInfo = await this.callInfoService.getCallcenterInfo(modIncomingNumber);
+            console.log('callCenterCallInfo',callCenterCallInfo)
+
             if(!callCenterCallInfo.callHistoryId || callCenterCallInfo.toDialednum == ''){
                 return await this.search3cxInfoMobileRedirection(unicueid, callInfo.callId); 
             } else {
@@ -60,16 +75,32 @@ export class CallService {
         }
     }
 
+    public async getAllMeetings(){
+        try {
+            return await this.callInfoService.getAllMeetings()
+        } catch (e) {
+            this.logger.error(e);
+        }
+    }
+
     private async search3cxInfoMobileRedirection(unicueid: string, callId: number): Promise<CallInfoData>{
         try {
+            console.log('callId',callId)
+
             const infoId = await this.callInfoService.searcInfoId(callId);
+            console.log('infoId',infoId)
+
             const callPartyInfo = await this.callInfoService.searchCallPartyInfo(infoId.infoId);
+            console.log(callPartyInfo)
+
             const callParticipants = await this.callInfoService.searchCallInfo(infoId.infoId);
+            console.log(callParticipants)
+
             return {
                 kind: KindCall.mobile,
                 moduleUnicueId: unicueid,
-                pbx3cxUnicueId: infoId.callId,
-                destinationNumber: callPartyInfo.displayName,
+                pbx3cxUnicueId: callParticipants.callId,//infoId.callId,
+                destinationNumber: callPartyInfo.dn,//callPartyInfo.displayName,
                 startCallTime: callParticipants.startTime,
                 endCallTime: callParticipants.endTime
             }
@@ -80,8 +111,11 @@ export class CallService {
 
 
     private async getCallInfo(incomingNumber: string){
-        try {
+        try {  
+            console.log(incomingNumber)
             const callPartyInfo = await this.callInfoService.searchFirstIncomingIdByNumber(incomingNumber.trim());
+            console.log(callPartyInfo)
+
             return await this.callInfoService.searchCallInfo(callPartyInfo.id);
         }catch(e){
             this.logger.error(e);
