@@ -38,30 +38,20 @@ export class XmlService {
 
     public addNameSpace(data: PlainObject, namespace: string): PlainObject {
         const result = {};    
-        
         const renameKeys = (o: PlainObject, r: PlainObject, ns: string) => {
-            
             for (const k in o) {
                 if (Object.prototype.hasOwnProperty.call(o, k)) {
-                    
                     const nKey = (Array.isArray(o) || SPECIALSYMBOLS.includes(k?.charAt(0))) ? k : `${ns}:${k}`;
-                    
                     if (typeof o[k] === 'object') {                
-                        
                         r[nKey] = Array.isArray(o[k]) ? [] : {};
-                        
                         renameKeys(o[k], r[nKey], ns);
                     } else {
-                        
                         r[nKey] = o[k];
                     }
-                    
                 }
             }
         }
-
         renameKeys(data, result, namespace);
-
         return result;
     }
 }
