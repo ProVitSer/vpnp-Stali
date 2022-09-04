@@ -14,19 +14,15 @@ export class LoggerService  {
 
     ) {}
 
-    setContext(context: string) {
-        this.context = context;
-      }
-
-    info(message: any): void {
-        this.logger.info(message, { context: `${this.context}`  });
+    info(message: any, serviceContext?: string): void {
+        this.logger.info(message, { context: `${this.context}-${serviceContext}`});
     }
 
-    debug(message: string): void {
-        this.logger.debug(message, { context: `${this.context}` });
+    debug(message: any, serviceContext?: string): void {
+        this.logger.debug(message, { context: `${this.context}-${serviceContext}`});
     }
 
-    error(message: string): void {
-        this.logger.error(message, { context: `${this.context}`  });
+    error(message: any, serviceContext?: string): void {
+        this.logger.error(message, { context: `${this.context}-${serviceContext}`});
     }
 }
