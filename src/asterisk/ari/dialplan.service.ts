@@ -12,20 +12,22 @@ import { RouteInfo } from "../types/interface";
 @Injectable()
 export class DialplanApplicationService implements OnApplicationBootstrap {
     private client: { ariClient: Ari.Client};
-    private dialTrunk = {}
+    private dialTrunk = {};
+    private serviceContext: string;
     constructor(
         @Inject('ARI') private readonly ari: { ariClient: Ari.Client}, 
         private readonly configService: ConfigService,
         private readonly logger: LoggerService,
         private readonly soap1c: Soap1cProvider
     ) {
+        this.serviceContext = DialplanApplicationService.name;
     }
 
     public async onApplicationBootstrap() {
         this.client = this.ari;
         this.client.ariClient.on('StasisStart', async (event: StasisStart, dialed: Channel) => {
             try {
-                this.logger.info(`Событие входящего вызова ${JSON.stringify(event)}`);
+                this.logger.info(`Событие входящего вызова ${JSON.stringify(event)}`, this.serviceContext);
                 const routeInfo = await this.getRouteInfo(event);
                 if(routeInfo.returnDialExtension != "000"){
                     await this.continueDialplan(routeInfo.channelId, LOCAL_ROUTING, routeInfo.returnDialExtension);
@@ -33,7 +35,7 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
                     await this.continueDialplan(routeInfo.channelId, DEFAULT_ROUTING, routeInfo.returnDialExtension);
                 }
             }catch(e){
-                this.logger.info(` Error ARI continueDialplan ${e}`)
+                this.logger.info(` Error ARI continueDialplan ${e}`, this.serviceContext)
             }
         });
         this.client.ariClient.start(this.configService.get('asterisk.ari.application.amocrm') );
@@ -42,8 +44,8 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
 
     private async continueDialplan(returnChannelId: string, dialplanContext: string, returnDialExtension: string): Promise<string> {
         try {
-            this.logger.info(`Перенаправляем вызов в по нужному маршруту ${returnChannelId}  ${dialplanContext}  ${returnDialExtension}`);
-            this.logger.info(JSON.stringify(this.dialTrunk));
+            this.logger.info(`Перенаправляем вызов в по нужному маршруту ${returnChannelId}  ${dialplanContext}  ${returnDialExtension}`, this.serviceContext);
+            this.logger.info(JSON.stringify(this.dialTrunk), this.serviceContext);
             delete this.dialTrunk[returnChannelId];
             return await new Promise((resolve, reject) =>{
                 this.client.ariClient.channels.continueInDialplan({ channelId: returnChannelId, context: dialplanContext, extension: returnDialExtension },  (err: Error) => {
@@ -80,8 +82,8 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
 
             }
         }catch(e){
-            this.logger.error(`На запрос внутреннего номера вернулась ошибка ${e}`);
-            this.logger.error(`Ошибка, вызов идет по ${DEFAULT_ROUTING}`);
+            this.logger.error(`На запрос внутреннего номера вернулась ошибка ${e}`, this.serviceContext);
+            this.logger.error(`Ошибка, вызов идет по ${DEFAULT_ROUTING}`, this.serviceContext);
             await this.continueDialplan(event.channel.id, DEFAULT_ROUTING, this.getDialExtension(event));
         }
 
