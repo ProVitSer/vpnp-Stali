@@ -5,6 +5,7 @@ import { ConfigService } from "@nestjs/config";
 import { By, WebDriver } from "selenium-webdriver";
 import { SelenoidWebdriver } from "../selenoid.webdriver";
 import { MailForwardData, SelenoidProviderInterface } from "../types/interfaces";
+import * as moment from 'moment';
 
 @Injectable()
 export class MailForward implements SelenoidProviderInterface {
@@ -25,17 +26,34 @@ export class MailForward implements SelenoidProviderInterface {
 
     async selenoidChange(data: MailForwardData): Promise<any> {
         try {
-            await this.setEmailForward(data);
-            return await this.mail.setMailForward(data);
+            console.log(data)
+            this.enableForward = (data.status === 'true') ? true : false;
+            if(this.chechUpdateNow(data.dateFrom)){
+                await this.setEmailForward(data);
+            }
+            return await this.setInfo(data);
         }catch(e){
             throw e;
         }
     } 
 
+    private async setInfo(data: MailForwardData){
+        try {
+            if(this.enableForward && data?.change == undefined){
+                return await this.mail.setMailForward(data);
+            };
+        }catch(e){
+            throw e;
+        }
+    }
+
+    private chechUpdateNow(dateFrom: string){
+        return dateFrom == moment().format("DD.MM.YYYY").toString();
+    }
+
     private async setEmailForward(data: MailForwardData){
         this.userName = data.from.match(/(.+)@(.+)/)[1];
         this.email = data.from.match(/(.+)@(.+)/)[0];
-        this.enableForward = (data.status === 'true') ? true : false;
         try{
             await this.getWebDriver();
             await this.authorization();
@@ -64,7 +82,8 @@ export class MailForward implements SelenoidProviderInterface {
                 await this.webDriver.findElement(By.xpath("//input[@name='Address']")).clear();
                 await this.webDriver.findElement(By.xpath("//label[@for='EnableForwarding']")).click();
                 await this.webDriver.sleep(5000);
-                return await this.webDriver.findElement(By.id('SaveAndCloseButton')).click();
+                await this.webDriver.findElement(By.id('SaveAndCloseButton')).click();
+                return await this.exit()
             }
         }catch(e){
             if (this.enableForward) {
@@ -72,7 +91,8 @@ export class MailForward implements SelenoidProviderInterface {
                 await this.webDriver.findElement(By.xpath("//input[@name='Address']")).clear();
                 await this.webDriver.findElement(By.xpath("//input[@name='Address']")).sendKeys(`${data.to}`);
                 await this.webDriver.sleep(5000);
-                return await this.webDriver.findElement(By.id('SaveAndCloseButton')).click();
+                await this.webDriver.findElement(By.id('SaveAndCloseButton')).click();
+                return await this.exit()
             }else {
                 this.logger.info(`Переадресация уже включена для пользователя ${this.email}`, this.serviceContext);
                 await this.webDriver.findElement(By.id('CancelButton')).click();

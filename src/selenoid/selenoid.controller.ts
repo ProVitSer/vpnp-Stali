@@ -2,7 +2,7 @@ import { Controller, Post, UseFilters, HttpStatus, Req, Body, Res, Query, Valida
 import { Request, Response } from 'express'
 import { HttpException } from '@nestjs/common/exceptions/http.exception';
 import { HttpExceptionFilter } from '@app/http-exception.filter';
-import { SeleniumProvider } from './selenoid.provider';
+import { SelenoidProvider } from './selenoid.provider';
 import { ActionType } from './types/types';
 import { Queue } from './dto/queue.dto';
 import { Forward } from './dto/forward.dto';
@@ -13,7 +13,7 @@ import { MailForward } from './dto/mailForward.dto';
 @Controller()
 export class SelenoidController {
     constructor(
-        private readonly selenium: SeleniumProvider 
+        private readonly selenoid: SelenoidProvider 
      ) {}
  
     @Post('mail')
@@ -22,7 +22,7 @@ export class SelenoidController {
         @Query() params: MailForward,
         @Res() res: Response) {
         try {
-            const result = await this.selenium.change(ActionType.mailForward, params)
+            const result = await this.selenoid.change(ActionType.mailForward, params)
             return res.status(HttpStatus.OK).json({ result: true });
         }catch(e){
             throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR)
@@ -35,7 +35,7 @@ export class SelenoidController {
         @Query() params: Queue,
         @Res() res: Response) {
         try {
-            const result = await this.selenium.change(ActionType.queueStatus, params)
+            const result = await this.selenoid.change(ActionType.queueStatus, params)
             return res.status(HttpStatus.OK).json({ result: true });
         }catch(e){
             throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR)
@@ -48,7 +48,7 @@ export class SelenoidController {
         @Query() params: Forward, 
         @Res() res: Response) {
         try {
-            const result = await this.selenium.change(ActionType.extensionForward, params)
+            const result = await this.selenoid.change(ActionType.extensionForward, params)
             return res.status(HttpStatus.OK).json({ result: true });
         }catch(e){
             throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR)

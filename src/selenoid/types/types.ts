@@ -15,7 +15,7 @@ export enum ChangeExtensionForward {
     false = "false"
 }
 
-export enum ChangeMailForwardForward {
+export enum ChangeMailForward {
     true = "true",
     false = "false"
 }

@@ -4,6 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import schemas from './mongo.provider';
 import { MailService } from './services/mail.service';
 import { MongoService } from './mongo.service';
+import { ForwardService } from './services/forward.service';
+import { Change } from './services/change';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import { MongoService } from './mongo.service';
     }),
     MongooseModule.forFeature([...schemas()]),
   ],
-  exports: [MailService],
-  providers: [MongoService, MailService],
+  exports: [MailService, ForwardService, Change],
+  providers: [MongoService, MailService, ForwardService, Change],
 })
 export class MongoModule {}

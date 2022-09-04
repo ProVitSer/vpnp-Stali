@@ -1,4 +1,4 @@
-import { ChangeExtensionForward, ChangeMailForwardForward, ExtensionForwardRuleType } from "./types";
+import { ChangeExtensionForward, ChangeMailForward, ExtensionForwardRuleType } from "./types";
 
 export interface Capabilities {
     browserName: string;
@@ -19,6 +19,7 @@ export interface ExtensionStatusData {
     dateFrom: string;
     dateTo: string;
     status: ChangeExtensionForward;
+    change?: boolean;
 }
 
 export interface MailForwardData {
@@ -26,7 +27,8 @@ export interface MailForwardData {
     to: string;
     dateFrom: string;
     dateTo: string;
-    status: ChangeMailForwardForward;
+    status: ChangeMailForward;
+    change?: boolean;
 }
 
 export type SelenoidDataTypes = QueueStatusData | ExtensionStatusData | MailForwardData

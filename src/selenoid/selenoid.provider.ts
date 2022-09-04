@@ -8,7 +8,7 @@ import { ActionType } from './types/types';
 
 
 @Injectable()
-export class SeleniumProvider {
+export class SelenoidProvider {
     private serviceContext: string;
     constructor(
         private readonly logger: LoggerService,
@@ -16,7 +16,7 @@ export class SeleniumProvider {
         private readonly extensionForward: ExtensionForward,
         private readonly mailForward: MailForward
     ) {
-        this.serviceContext = SeleniumProvider.name;
+        this.serviceContext = SelenoidProvider.name;
     }
 
 

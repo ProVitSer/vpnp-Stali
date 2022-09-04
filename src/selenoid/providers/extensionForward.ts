@@ -1,8 +1,8 @@
+import { ForwardService } from "@app/database/mongo/services/forward.service";
 import { LoggerService } from "@app/logger/logger.service";
 import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import moment from "moment";
 import { By, WebDriver, WebElement } from 'selenium-webdriver'
-import { UsingJoinColumnOnlyOnOneSideAllowedError } from "typeorm";
 import { ExtensionStatusData, SelenoidProviderInterface } from "../types/interfaces";
 import { ExtensionForwardRuleType, ForwardingType, PbxExtensionStatus } from "../types/types";
 import { GetExtension } from "./getExtension";
@@ -13,28 +13,48 @@ import { Logout } from "./logout";
 export class ExtensionForward implements SelenoidProviderInterface {
     private webDriver: WebDriver;
     private serviceContext: string;
+    private enableForward: boolean;
     constructor(
         private readonly logger: LoggerService,
         private readonly login: Login,
         private readonly logout: Logout,
-        private readonly getPbxExtension: GetExtension
+        private readonly getPbxExtension: GetExtension,
+        private readonly forward: ForwardService
     ) {
         this.serviceContext = ExtensionForward.name;
     }
 
     async selenoidChange(data: ExtensionStatusData): Promise<any> {
         try {
-            return this.updateExtensionForward(data);
+            this.enableForward = (data.status === 'true') ? true : false;
+            if(this.chechUpdateNow(data.dateFrom)){
+                await this.updateExtensionForward(data);
+            }
+            return await this.setInfo(data);
         }catch(e){
             throw e;
         }
     } 
 
+    private async setInfo(data: ExtensionStatusData){
+        try {
+            if(this.enableForward && data?.change == undefined){
+                return await this.forward.setExtensionForward(data)
+            };
+        }catch(e){
+            throw e;
+        }
+    }
+
+    private chechUpdateNow(dateFrom: string){
+        return dateFrom == moment().format("DD.MM.YYYY").toString();
+    }
+
     private async updateExtensionForward(data: ExtensionStatusData){
         try {
             this.webDriver = await this.login.loginOnPbx();
             await this.getPbxExtension.getExtension(this.webDriver, data.exten);
-            if(data.status === 'true'){
+            if(this.enableForward){
                 await this.webDriver.findElement(By.xpath(`//*[contains(text(), ' ${data.exten} ')]//parent::tr[@tabindex='0']`)).click();
                 await this.webDriver.sleep(1000);
                 await this.chooseForwardingStatus(PbxExtensionStatus.CustomTwo);

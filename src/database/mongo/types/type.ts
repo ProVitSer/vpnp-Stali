@@ -40,4 +40,4 @@ export type SchemaType = {
   };
 };
 
-type SchemaClassType = typeof Mail| typeof Forward;
+type SchemaClassType = typeof Mail | typeof Forward;

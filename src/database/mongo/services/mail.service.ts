@@ -35,7 +35,19 @@ export class MailService {
         try{
             const criteria = {
                 dateTo: day || moment().format("DD.MM.YYYY").toString(),
-                changeBack: { $exists: true, $ne: true}
+                change: { $exists: true, $ne: true}
+            };
+            return await this.mongo.mongoRequest<Mail[]>({criteria, entity: CollectionType.mail, requestType: DbRequestType.findAll})
+        }catch(e){
+            throw e;
+        }
+    }
+
+    public async getSetMailForward(day?: string){
+        try{
+            const criteria = {
+                dateFrom: day || moment().format("DD.MM.YYYY").toString(),
+                change: { $exists: true, $ne: true}
             };
             return await this.mongo.mongoRequest<Mail[]>({criteria, entity: CollectionType.mail, requestType: DbRequestType.findAll})
         }catch(e){

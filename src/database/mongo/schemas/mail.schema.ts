@@ -5,8 +5,7 @@ import * as mongoose from 'mongoose';
 
 @Schema({ collection: CollectionType.mail, versionKey: false })
 export class Mail {
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'any' })
-    objectID: any;
+    _id: string
 
     @Prop({ type: String })
     from: string;
@@ -20,11 +19,11 @@ export class Mail {
     @Prop()
     dateTo: string;
 
-    @Prop({ default: true })
-    status: boolean;
+    @Prop()
+    status: string;
 
     @Prop({ default: false })
-    changeBack: string;
+    change: boolean;
 
     @Prop()
     changed: Date;

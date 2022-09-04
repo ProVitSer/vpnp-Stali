@@ -6,29 +6,28 @@ import { ExtensionForwardRuleType } from '@app/selenoid/types/types';
 
 @Schema({ collection: CollectionType.forward, versionKey: false })
 export class Forward {
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'any' })
-    objectID: any;
+    _id: string
 
-    @Prop({ type: Number, required: true })
-    exten: number;
+    @Prop({ type: String, required: true })
+    exten: string;
 
     @Prop({ type: String, required: true, enum: ExtensionForwardRuleType })
-    type: string;
+    type: ExtensionForwardRuleType;
 
-    @Prop({ type: Number, required: true })
-    number: number;
-
-    @Prop()
-    dateFrom: Date;
+    @Prop({ type: String, required: true })
+    number: string;
 
     @Prop()
-    dateTo: Date;
+    dateFrom: string;
+
+    @Prop()
+    dateTo: string;
 
     @Prop({ default: false })
-    changeBack: string;
+    change: string;
 
-    @Prop({ default: true })
-    status: boolean;
+    @Prop({ default: "true" })
+    status: string;
 
     @Prop()
     changed: Date;

@@ -1,5 +1,5 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from "class-validator";
-import { ChangeExtensionForward, ChangeMailForwardForward, ExtensionForwardRuleType, QueueStatus } from "../types/types";
+import { IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { ChangeMailForward } from "../types/types";
 
 export class MailForward  {
     @IsString()
@@ -20,7 +20,7 @@ export class MailForward  {
 
     @IsString()
     @IsNotEmpty({message: "Поле status не может быть пустым"})
-    @IsEnum(ChangeMailForwardForward, {message: "Поле status должно быть одним из значений true/false "} )
-    status: ChangeMailForwardForward;
+    @IsEnum(ChangeMailForward, {message: "Поле status должно быть одним из значений true/false "} )
+    status: ChangeMailForward;
 }
 
