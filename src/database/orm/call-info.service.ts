@@ -7,6 +7,7 @@ import {  Repository } from "typeorm";
 
 @Injectable()
 export class CallInfoService {
+    private serviceContext: string;
     constructor(
         private readonly logger: LoggerService,
         @InjectRepository(ClParticipants)
@@ -21,14 +22,16 @@ export class CallInfoService {
         private queue: Repository<CallcentQueuecalls>,
         @InjectRepository(Meetingsession)
         private meetings: Repository<Meetingsession>
-      ) {}
+      ) {
+        this.serviceContext = CallInfoService.name;
+      }
 
     public async getAllMeetings(){
         try {
-          console.log('getAllMeetings')
-            return await this.meetings.createQueryBuilder('meetingsession').select().getMany();
+          return await this.meetings.createQueryBuilder('meetingsession').select().getMany();
         } catch(e){
-            throw e;
+          this.logger.error(e, this.serviceContext);
+          throw e;
         }
     }
     
@@ -44,7 +47,8 @@ export class CallInfoService {
           .orderBy("cl_party_info.id", "DESC")
           .getOne();
         } catch(e){
-            throw e;
+          this.logger.error(e, this.serviceContext);
+          throw e;
         }
     }  
     
@@ -56,7 +60,8 @@ export class CallInfoService {
           .where("cl_party_info.id = :id", { id: id })
           .getOne();
         } catch(e){
-            throw e;
+          this.logger.error(e, this.serviceContext);
+          throw e;
         }
     }    
 
@@ -70,7 +75,8 @@ export class CallInfoService {
           .where("cl_participants.info_id = :id", { id: infoId })
           .getOne();
         } catch(e){
-            throw e;
+          this.logger.error(e, this.serviceContext);
+          throw e;
         }
     }
 
@@ -83,7 +89,8 @@ export class CallInfoService {
           .andWhere('cl_participants.answer_time is not null')
           .getRawMany()
         } catch(e){
-            throw e;
+          this.logger.error(e, this.serviceContext);
+          throw e;
         }
     }
 
@@ -98,7 +105,8 @@ export class CallInfoService {
           .orderBy("cl_participants.id", "DESC")
           .getOne();
         } catch(e){
-            throw e;
+          this.logger.error(e, this.serviceContext);
+          throw e;
         }
     }
     
@@ -115,15 +123,13 @@ export class CallInfoService {
           })
           .getOne();
         } catch(e){
-          console.log('asdasdasd')
-
-          throw e;
+            this.logger.error(e, this.serviceContext);
+            throw e;
         }
     }
 
     public async getCallcenterInfo(incomingNumber: string): Promise<CallcentQueuecalls> {
         try{
-          console.log(incomingNumber)
             return await this.queue
             .createQueryBuilder("callcent_queuecalls")
             .select()
@@ -131,7 +137,8 @@ export class CallInfoService {
             .orderBy("callcent_queuecalls.idcallcent_queuecalls", "DESC")
             .getOne();
         }catch(e){
-            throw e;
+          this.logger.error(e, this.serviceContext);
+          throw e;
         }
     }
 }

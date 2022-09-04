@@ -6,25 +6,23 @@ import { CallInfoData, CallInfoEventData, KindCall } from "./types/interface";
 
 @Injectable()
 export class CallService {
+    private serviceContext: string;
     constructor(
         private readonly callInfoService: CallInfoService,
         private readonly logger: LoggerService
-    ){}
+    ){
+        this.serviceContext = CallService.name;
+    }
 
     public async search3cxExtensionCall(data: CallInfoEventData): Promise<CallInfoData>{
         try {
             const { unicueid, incomingNumber, extension } = data;
-            this.logger.info(`${unicueid} ${incomingNumber} ${extension}`);
+            this.logger.info(`${unicueid} ${incomingNumber} ${extension}`, this.serviceContext);
             const callInfo =  await this.getCallInfo(incomingNumber);
-            console.log(callInfo)
             const answerCalls = await this.callInfoService.searchAnswerByCallID(callInfo.callId);
             const mapAnswerCalls = answerCalls.map((answerCalls: any) => { return answerCalls.cl_participants_info_id});
-            console.log('answerCalls',answerCalls)
-
             const callUserInfo = await this.callInfoService.searchLastUserRing(mapAnswerCalls, extension.trim());
-            console.log('callUserInfo', callUserInfo)
             if(!!callUserInfo){
-
                 return {
                     kind: KindCall.local,
                     moduleUnicueId: data.unicueid,
@@ -34,12 +32,10 @@ export class CallService {
                     endCallTime: callInfo.endTime
                 }
             }else {
-                console.log(unicueid, callInfo)
-
                 return await this.search3cxInfoMobileRedirection(unicueid, callInfo.callId);
             }
         } catch(e){
-            this.logger.error(e);
+            this.logger.error(e, this.serviceContext);
         }
     }
 
@@ -48,16 +44,9 @@ export class CallService {
         try {
             const { unicueid, incomingNumber, extension } = data;
             this.logger.info(`${unicueid} ${incomingNumber} ${extension}`);
-            console.log(incomingNumber)
-
             const modIncomingNumber = (incomingNumber.length == 12) ?  incomingNumber.substring(1): incomingNumber;
-            console.log(modIncomingNumber)
-
             const callInfo =  await this.getCallInfo(modIncomingNumber);
-            console.log('callInfo',callInfo)
             const callCenterCallInfo = await this.callInfoService.getCallcenterInfo(modIncomingNumber);
-            console.log('callCenterCallInfo',callCenterCallInfo)
-
             if(!callCenterCallInfo.callHistoryId || callCenterCallInfo.toDialednum == ''){
                 return await this.search3cxInfoMobileRedirection(unicueid, callInfo.callId); 
             } else {
@@ -71,7 +60,7 @@ export class CallService {
                 }
             }
         }catch(e){
-            this.logger.error(e);
+            this.logger.error(e, this.serviceContext);
         }
     }
 
@@ -79,23 +68,15 @@ export class CallService {
         try {
             return await this.callInfoService.getAllMeetings()
         } catch (e) {
-            this.logger.error(e);
+            this.logger.error(e, this.serviceContext);
         }
     }
 
     private async search3cxInfoMobileRedirection(unicueid: string, callId: number): Promise<CallInfoData>{
         try {
-            console.log('callId',callId)
-
             const infoId = await this.callInfoService.searcInfoId(callId);
-            console.log('infoId',infoId)
-
             const callPartyInfo = await this.callInfoService.searchCallPartyInfo(infoId.infoId);
-            console.log(callPartyInfo)
-
             const callParticipants = await this.callInfoService.searchCallInfo(infoId.infoId);
-            console.log(callParticipants)
-
             return {
                 kind: KindCall.mobile,
                 moduleUnicueId: unicueid,
@@ -105,20 +86,17 @@ export class CallService {
                 endCallTime: callParticipants.endTime
             }
         }catch(e){
-            this.logger.error(e);
+            this.logger.error(e, this.serviceContext);
         }
     }  
 
 
     private async getCallInfo(incomingNumber: string){
         try {  
-            console.log(incomingNumber)
             const callPartyInfo = await this.callInfoService.searchFirstIncomingIdByNumber(incomingNumber.trim());
-            console.log(callPartyInfo)
-
             return await this.callInfoService.searchCallInfo(callPartyInfo.id);
         }catch(e){
-            this.logger.error(e);
+            this.logger.error(e, this.serviceContext);
         }
     }
 }
