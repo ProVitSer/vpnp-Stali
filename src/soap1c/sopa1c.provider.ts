@@ -12,14 +12,16 @@ import { Soap1cActionTypes, Soap1cEnvelopeTypes } from "./types/types";
 
 @Injectable()
 export class Soap1cProvider {
-
+    private serviceContext: string;
     constructor(
         private readonly configService: ConfigService,
         private readonly xml: XmlService,
         private readonly returnNumber: ReturnNumber,
         private readonly setId: SetId,
         private httpService: HttpService,
-    ){}
+    ){
+        this.serviceContext = Soap1cProvider.name;
+    }
 
     get providers(): any {
         return {
