@@ -3,6 +3,7 @@ import { Soap1cModule } from '@app/soap1c/soap1c.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as ARI from 'ari-client';
+import { AsteriskApi } from './ari/asterisk.api';
 import { DialplanApplicationService } from './ari/dialplan.service';
 
 @Module({
@@ -24,9 +25,10 @@ import { DialplanApplicationService } from './ari/dialplan.service';
             },
             inject: [ConfigService]
         },
-        DialplanApplicationService
+        DialplanApplicationService,
+        AsteriskApi
   
     ],
-    exports: ['ARI', DialplanApplicationService]
+    exports: ['ARI', DialplanApplicationService, AsteriskApi]
 })
 export class AsteriskModule {}
