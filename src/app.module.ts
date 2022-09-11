@@ -8,11 +8,16 @@ import { OrmModule } from './database/orm/orm.module';
 import { AsteriskModule } from './asterisk/asterisk.module';
 import { Soap1cModule } from './soap1c/soap1c.module';
 import { XmlModule } from './xml/xml.module';
+import { SelenoidModule } from './selenoid/selenoid.module';
+import { DockerModule } from './docker/docker.module';
+import { ScheduleModule } from './schedule/schedule.module';
+import { ActiveDirectoryModule } from './active-directory/active-directory.module';
+import { HealthModule } from './health/health.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   controllers: [AppController],
   providers: [AppService],
-  imports: [ConfigModule.forRoot({ load: [configuration] }),  LoggerModule, Soap1cModule, XmlModule],
-  // exports: []
+  imports: [ConfigModule.forRoot({ load: [configuration] }),  LoggerModule, AsteriskModule, Soap1cModule, XmlModule, OrmModule, SelenoidModule,  DockerModule, ScheduleModule, ActiveDirectoryModule, HealthModule, MailModule],
 })
 export class AppModule {}
