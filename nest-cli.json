@@ -4,6 +4,7 @@
     "compilerOptions": {
         "assets": [
             { "include": "../src/config/*.json", "outDir": "./dist/" },
+            { "include": "../src/mail/templates/*.hbs", "outDir": "./dist/" },
             { "include": "public/*", "outDir": "./dist/" }
         ]
     }
