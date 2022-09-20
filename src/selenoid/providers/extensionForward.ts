@@ -1,7 +1,7 @@
 import { ForwardService } from "@app/database/mongo/services/forward.service";
 import { LoggerService } from "@app/logger/logger.service";
 import { Injectable } from "@nestjs/common";
-import moment from "moment";
+import * as moment from 'moment';
 import { By, WebDriver, WebElement } from 'selenium-webdriver'
 import { ExtensionStatusData, SelenoidProviderInterface } from "../types/interfaces";
 import { ExtensionForwardRuleType, ForwardingType, PbxExtensionStatus } from "../types/types";
@@ -53,6 +53,7 @@ export class ExtensionForward implements SelenoidProviderInterface {
     private async updateExtensionForward(data: ExtensionStatusData){
         try {
             this.webDriver = await this.login.loginOnPbx();
+            console.log(this.webDriver)
             await this.getPbxExtension.getExtension(this.webDriver, data.exten);
             if(this.enableForward){
                 await this.webDriver.findElement(By.xpath(`//*[contains(text(), ' ${data.exten} ')]//parent::tr[@tabindex='0']`)).click();
