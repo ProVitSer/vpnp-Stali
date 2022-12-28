@@ -13,7 +13,6 @@ import { LoggerModule } from '@app/logger/logger.module';
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        
         transport: {
           debug: true,
           host: configService.get('mail.host'),
@@ -31,13 +30,11 @@ import { LoggerModule } from '@app/logger/logger.module';
             strict: true,
           },
         },
-
-
       }),
       inject: [ConfigService],
-    })
+    }),
   ],
   providers: [MailService],
-  exports: [MailService], 
+  exports: [MailService],
 })
 export class MailModule {}

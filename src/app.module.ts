@@ -18,6 +18,19 @@ import { MailModule } from './mail/mail.module';
 @Module({
   controllers: [AppController],
   providers: [AppService],
-  imports: [ConfigModule.forRoot({ load: [configuration] }),  LoggerModule, AsteriskModule, Soap1cModule, XmlModule, OrmModule, SelenoidModule,  DockerModule, ScheduleModule, ActiveDirectoryModule, HealthModule, MailModule],
+  imports: [
+    ConfigModule.forRoot({ load: [configuration] }),
+    LoggerModule,
+    AsteriskModule,
+    Soap1cModule,
+    XmlModule,
+    OrmModule,
+    SelenoidModule,
+    DockerModule,
+    ScheduleModule,
+    ActiveDirectoryModule,
+    HealthModule,
+    MailModule,
+  ],
 })
 export class AppModule {}

@@ -1,61 +1,57 @@
-import * as Docker from "dockerode";
-import { Inject, Injectable } from "@nestjs/common";
-import { LoggerService } from "@app/logger/logger.service";
+import * as Docker from 'dockerode';
+import { Inject, Injectable } from '@nestjs/common';
+import { LoggerService } from '@app/logger/logger.service';
 
 @Injectable()
 export class DockerService {
   private serviceContext: string;
-  constructor(
-    @Inject("DOCKER_SERVICE") private docker: Docker,
-    private readonly logger: LoggerService
-  ) {
+  constructor(@Inject('DOCKER_SERVICE') private docker: Docker, private readonly logger: LoggerService) {
     this.serviceContext = DockerService.name;
   }
 
-
-  public async checkImgUp(img: string): Promise<any>{
+  public async checkImgUp(img: string): Promise<any> {
     try {
       await this.checkDocker();
       const isImgUp = await this.checkImgRunning(img);
-      if(!isImgUp){
+      if (!isImgUp) {
         return await this.startImg(img);
-      };
-    }catch(e){
+      }
+    } catch (e) {
       throw e;
     }
   }
 
-  public async checkImgRunning(img: string): Promise<boolean>{
+  public async checkImgRunning(img: string): Promise<boolean> {
     try {
       const runningImages = await this.getRunningContainers();
-      return runningImages.some((image:Docker.ContainerInfo) => image.Image == img);
-    }catch(e){
+      return runningImages.some((image: Docker.ContainerInfo) => image.Image == img);
+    } catch (e) {
       throw e;
     }
   }
 
-  public async checkDocker(): Promise<boolean>{
+  public async checkDocker(): Promise<boolean> {
     try {
       const dockerRun = await this.isDockerUp();
-      if(!dockerRun) throw 'Сервис docker не запущен';
+      if (!dockerRun) throw 'Сервис docker не запущен';
       return dockerRun;
-    }catch(e){
+    } catch (e) {
       throw e;
     }
   }
 
-  private async startImg(img: string){
+  private async startImg(img: string) {
     try {
       const containers = await this.getAllContainers();
-      const needContImg = containers.filter((container:Docker.ContainerInfo) => {
-        if(container.Image == img){
-            return container;
+      const needContImg = containers.filter((container: Docker.ContainerInfo) => {
+        if (container.Image == img) {
+          return container;
         }
       });
-      if(!needContImg.length) throw `Нужный образ ${img} отсутствует`;
+      if (!needContImg.length) throw `Нужный образ ${img} отсутствует`;
       const container = this.docker.getContainer(needContImg[0].Id);
       return await container.start();
-    }catch(e){
+    } catch (e) {
       throw e;
     }
   }

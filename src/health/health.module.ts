@@ -11,24 +11,26 @@ import { LoggerMiddleware } from '@app/middlewares/logger.middleware';
 import { LoggerModule } from '@app/logger/logger.module';
 
 @Module({
-  imports: [TerminusModule, ConfigModule, LoggerModule, DockerModule, AsteriskModule,
+  imports: [
+    TerminusModule,
+    ConfigModule,
+    LoggerModule,
+    DockerModule,
+    AsteriskModule,
     HttpModule.registerAsync({
       useFactory: () => ({
         timeout: 5000,
         maxRedirects: 5,
-        validateStatus: () => true
+        validateStatus: () => true,
       }),
-    })
+    }),
   ],
   controllers: [HealthController],
   providers: [HealthService, DockerImgServiceHealthIndicator, DockerServiceHealthIndicator],
-  exports: [HealthService]
-
+  exports: [HealthService],
 })
 export class HealthModule {
   configure(consumer: MiddlewareConsumer): void {
-    consumer
-        .apply(LoggerMiddleware)
-        .forRoutes(HealthController);
+    consumer.apply(LoggerMiddleware).forRoutes(HealthController);
   }
 }

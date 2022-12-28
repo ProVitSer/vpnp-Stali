@@ -29,6 +29,6 @@ import { ClParticipants, ClPartyInfo, ClSegments, ClCalls, CallcentQueuecalls, M
     TypeOrmModule.forFeature([ClParticipants, ClPartyInfo, ClSegments, ClCalls, CallcentQueuecalls, Meetingsession]),
   ],
   providers: [CallInfoService, CallService],
-  exports:[CallInfoService, CallService]
+  exports: [CallInfoService, CallService],
 })
 export class OrmModule {}

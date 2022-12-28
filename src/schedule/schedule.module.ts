@@ -10,7 +10,7 @@ import { HealthModule } from '@app/health/health.module';
 import { MailModule } from '@app/mail/mail.module';
 
 @Module({
-    imports:[Schedule.forRoot(), LoggerModule, ConfigModule, SelenoidModule, MongoModule, HealthModule, MailModule],
-    providers: [ChangeForwardScheduleService, HealthScheduledService]
+  imports: [Schedule.forRoot(), LoggerModule, ConfigModule, SelenoidModule, MongoModule, HealthModule, MailModule],
+  providers: [ChangeForwardScheduleService, HealthScheduledService],
 })
 export class ScheduleModule {}

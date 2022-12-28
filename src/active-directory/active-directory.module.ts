@@ -6,23 +6,23 @@ import { ActiveDirectoryController } from './active-directory.controller';
 import { ActiveDirectoryService } from './active-directory.service';
 import { HttpModule } from '@nestjs/axios';
 
-
 @Module({
-  imports:[ConfigModule, LoggerModule, 
+  imports: [
+    ConfigModule,
+    LoggerModule,
     HttpModule.registerAsync({
       useFactory: () => ({
         timeout: 5000,
         maxRedirects: 5,
-        validateStatus: () => true
+        validateStatus: () => true,
       }),
-    })],
+    }),
+  ],
   controllers: [ActiveDirectoryController],
-  providers: [ActiveDirectoryService]
+  providers: [ActiveDirectoryService],
 })
 export class ActiveDirectoryModule {
   configure(consumer: MiddlewareConsumer): void {
-    consumer
-        .apply(LoggerMiddleware)
-        .forRoutes(ActiveDirectoryController);
+    consumer.apply(LoggerMiddleware).forRoutes(ActiveDirectoryController);
   }
 }

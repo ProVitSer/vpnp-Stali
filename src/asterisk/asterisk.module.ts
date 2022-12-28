@@ -7,28 +7,24 @@ import { AsteriskApi } from './ari/asterisk.api';
 import { DialplanApplicationService } from './ari/dialplan.service';
 
 @Module({
-    imports: [
-        ConfigModule,
-        LoggerModule,
-        Soap1cModule
-    ],
-    providers: [
-        {
-            provide: 'ARI',
-            useFactory: async (configService: ConfigService) => {
-                return {
-                    ariClient: await ARI.connect(
-                        configService.get('asterisk.ari.url'), 
-                        configService.get('asterisk.ari.user'), 
-                        configService.get('asterisk.ari.password')),
-                };
-            },
-            inject: [ConfigService]
-        },
-        DialplanApplicationService,
-        AsteriskApi
-  
-    ],
-    exports: ['ARI', DialplanApplicationService, AsteriskApi]
+  imports: [ConfigModule, LoggerModule, Soap1cModule],
+  providers: [
+    {
+      provide: 'ARI',
+      useFactory: async (configService: ConfigService) => {
+        return {
+          ariClient: await ARI.connect(
+            configService.get('asterisk.ari.url'),
+            configService.get('asterisk.ari.user'),
+            configService.get('asterisk.ari.password'),
+          ),
+        };
+      },
+      inject: [ConfigService],
+    },
+    DialplanApplicationService,
+    AsteriskApi,
+  ],
+  exports: ['ARI', DialplanApplicationService, AsteriskApi],
 })
 export class AsteriskModule {}

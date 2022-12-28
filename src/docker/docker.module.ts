@@ -9,18 +9,15 @@ const providers = [
   {
     provide: 'DOCKER_SERVICE',
     useFactory: (configService: ConfigService) => {
-        return new Docker();
+      return new Docker();
     },
-    inject: [ConfigService]
+    inject: [ConfigService],
   },
-  
 ];
 
 @Module({
   providers,
-  imports:[ConfigModule, LoggerModule],
+  imports: [ConfigModule, LoggerModule],
   exports: [...providers],
 })
-
 export class DockerModule {}
-

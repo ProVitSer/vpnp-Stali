@@ -400,3 +400,5 @@ dist
 #Custom
 api-log
 config.json
+config.ts
+.idie

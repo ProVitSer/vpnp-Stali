@@ -1,1 +1,1 @@
-export const SPECIALSYMBOLS: string[] = ['#', '@']
+export const SPECIALSYMBOLS: string[] = ['#', '@'];
