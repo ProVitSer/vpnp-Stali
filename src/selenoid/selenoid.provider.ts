@@ -1,10 +1,8 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
-import { ExtensionForward } from './providers/extensionForward';
-import { MailForward } from './providers/mailForward';
-import { QueueStatus } from './providers/queueStatus';
-import { SelenoidDataTypes, SelenoidProviderInterface } from './types/interfaces';
-import { ActionType } from './types/types';
+import { Eset, ExtensionForward, MailForward, QueueStatus } from './providers/index';
+import { SelenoidDataTypes, SelenoidProviderInterface } from './interfaces/interface';
+import { ActionType } from './interfaces/types';
 
 @Injectable()
 export class SelenoidProvider {
@@ -14,6 +12,7 @@ export class SelenoidProvider {
     private readonly queueStatus: QueueStatus,
     private readonly extensionForward: ExtensionForward,
     private readonly mailForward: MailForward,
+    private readonly eset: Eset,
   ) {
     this.serviceContext = SelenoidProvider.name;
   }
@@ -23,6 +22,7 @@ export class SelenoidProvider {
       [ActionType.mailForward]: this.mailForward,
       [ActionType.extensionForward]: this.extensionForward,
       [ActionType.queueStatus]: this.queueStatus,
+      [ActionType.eset]: this.eset,
     };
   }
 

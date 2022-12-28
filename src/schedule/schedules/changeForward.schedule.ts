@@ -4,8 +4,8 @@ import { ChangeBackData } from '@app/database/mongo/types/interfaces';
 import { CollectionType } from '@app/database/mongo/types/type';
 import { LoggerService } from '@app/logger/logger.service';
 import { SelenoidProvider } from '@app/selenoid/selenoid.provider';
-import { SelenoidDataTypes } from '@app/selenoid/types/interfaces';
-import { ActionType } from '@app/selenoid/types/types';
+import { SelenoidDataTypes } from '@app/selenoid/interfaces/interfaces';
+import { ActionType } from '@app/selenoid/interfaces/types';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 

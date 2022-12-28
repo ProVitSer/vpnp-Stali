@@ -14,6 +14,9 @@ import { ScheduleModule } from './schedule/schedule.module';
 import { ActiveDirectoryModule } from './active-directory/active-directory.module';
 import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
+import { Pbx3cxModule } from './pbx3cx/pbx3cx.module';
+import { ServiceModule } from './service/service.module';
+import { AdvancedModule } from './advanced/advanced.module';
 
 @Module({
   controllers: [AppController],
@@ -31,6 +34,9 @@ import { MailModule } from './mail/mail.module';
     ActiveDirectoryModule,
     HealthModule,
     MailModule,
+    Pbx3cxModule,
+    ServiceModule,
+    AdvancedModule,
   ],
 })
 export class AppModule {}

@@ -43,11 +43,7 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
     this.client.ariClient.start(this.configService.get('asterisk.ari.application.amocrm'));
   }
 
-  private async continueDialplan(
-    returnChannelId: string,
-    dialplanContext: string,
-    returnDialExtension: string,
-  ): Promise<string> {
+  private async continueDialplan(returnChannelId: string, dialplanContext: string, returnDialExtension: string): Promise<string> {
     try {
       this.logger.info(
         `Перенаправляем вызов в по нужному маршруту ${returnChannelId}  ${dialplanContext}  ${returnDialExtension}`,
@@ -64,9 +60,7 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
           },
           (err: Error) => {
             !!err
-              ? resolve(
-                  `ARI DialplanApplicationService continueDialplan ${returnChannelId} ${dialplanContext} ${returnDialExtension}`,
-                )
+              ? resolve(`ARI DialplanApplicationService continueDialplan ${returnChannelId} ${dialplanContext} ${returnDialExtension}`)
               : reject(err);
           },
         );
