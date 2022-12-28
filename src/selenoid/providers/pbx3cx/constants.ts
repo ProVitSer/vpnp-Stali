@@ -1,0 +1,10 @@
+export const ERROR_CHANGE_QUEUE_STATUS = 'Проблемы изменения статуса добавочного в очереди';
+export const ERROR_LOGOUT_PBX = 'Проблемы заверщение сеанса на веб интерфейсе АТС';
+export const AUTH_PBX_ERROR = 'Проблемы с авторизацией на веб интерфейсе АТС';
+export const ERROR_EXTENSION_NOT_FOUND = 'Запрашиваемый добавочный не найден на АТС';
+export const ERROR_FORWARD = 'Проблемы перехода в раздел переадресации';
+export const ERROR_FORWARD_TO_LOCAL_EXTENSION = 'Проблемы переадресации на внутренний номер';
+export const ERROR_FORWARD_TO_EXTERNAL = 'Проблемы внешней переадресации';
+export const ERROR_FORWARD_TO_MOBILEL = 'Проблемы мобильной переадресации';
+export const SAVE_ERROR = 'Проблемы сохранения переадресации';
+export const ERROR_SET_FORWARD = 'Проблемы установки статуса переадресации';
