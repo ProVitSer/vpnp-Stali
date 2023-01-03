@@ -1,8 +1,6 @@
 import { LoggerModule } from '@app/logger/logger.module';
-import { LoggerMiddleware } from '@app/middlewares/logger.middleware';
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ActiveDirectoryController } from './active-directory.controller';
 import { ActiveDirectoryService } from './active-directory.service';
 import { HttpModule } from '@nestjs/axios';
 
@@ -18,11 +16,8 @@ import { HttpModule } from '@nestjs/axios';
       }),
     }),
   ],
-  controllers: [ActiveDirectoryController],
+  controllers: [],
   providers: [ActiveDirectoryService],
+  exports: [ActiveDirectoryService],
 })
-export class ActiveDirectoryModule {
-  configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(LoggerMiddleware).forRoutes(ActiveDirectoryController);
-  }
-}
+export class ActiveDirectoryModule {}
