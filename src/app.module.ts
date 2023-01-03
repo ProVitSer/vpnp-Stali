@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '@app/config/config.provides';
 import { LoggerModule } from './logger/logger.module';
 import { AppController } from './app.controller';
@@ -15,28 +15,34 @@ import { ActiveDirectoryModule } from './active-directory/active-directory.modul
 import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
 import { Pbx3cxModule } from './pbx3cx/pbx3cx.module';
-import { ServiceModule } from './service/service.module';
 import { AdvancedModule } from './advanced/advanced.module';
+import { RemoteModule } from './remote/remote.module';
+import { TypegooseModule } from 'nestjs-typegoose';
+import { getMongoConfig } from './config/mongo.config';
 
 @Module({
   controllers: [AppController],
   providers: [AppService],
   imports: [
     ConfigModule.forRoot({ load: [configuration] }),
+    TypegooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: getMongoConfig,
+    }),
     LoggerModule,
     AsteriskModule,
     Soap1cModule,
+    SelenoidModule,
     XmlModule,
     OrmModule,
-    SelenoidModule,
     DockerModule,
-    ScheduleModule,
     ActiveDirectoryModule,
     HealthModule,
     MailModule,
     Pbx3cxModule,
-    ServiceModule,
     AdvancedModule,
+    RemoteModule,
   ],
 })
 export class AppModule {}

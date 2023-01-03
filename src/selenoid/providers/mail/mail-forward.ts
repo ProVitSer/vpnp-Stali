@@ -1,4 +1,4 @@
-import { MailService } from '@app/database/mongo/services/mail.service';
+// import { MailService } from '@app/database/mongo/services/mail.service';
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -19,8 +19,7 @@ export class MailForward implements SelenoidProviderInterface {
   constructor(
     private readonly selenoidWebDriver: SelenoidWebdriver,
     private readonly configService: ConfigService,
-    private readonly logger: LoggerService,
-    private readonly mail: MailService,
+    private readonly logger: LoggerService, // private readonly mail: MailService,
   ) {
     this.serviceContext = MailForward.name;
   }
@@ -40,7 +39,7 @@ export class MailForward implements SelenoidProviderInterface {
   private async setInfo(data: MailForwardData) {
     try {
       if (this.enableForward && data?.change == undefined) {
-        return await this.mail.setMailForward(data);
+        //return await this.mail.setMailForward(data);
       }
     } catch (e) {
       throw e;

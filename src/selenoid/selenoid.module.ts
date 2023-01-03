@@ -1,4 +1,3 @@
-import { MongoModule } from '@app/database/mongo/mongo.module';
 import { DockerModule } from '@app/docker/docker.module';
 import { LoggerModule } from '@app/logger/logger.module';
 import { Module } from '@nestjs/common';
@@ -8,7 +7,7 @@ import { SelenoidProvider } from './selenoid.provider';
 import { SelenoidWebdriver } from './selenoid.webdriver';
 
 @Module({
-  imports: [ConfigModule, LoggerModule, DockerModule, MongoModule],
+  imports: [ConfigModule, LoggerModule, DockerModule],
   providers: [
     SelenoidProvider,
     SelenoidWebdriver,

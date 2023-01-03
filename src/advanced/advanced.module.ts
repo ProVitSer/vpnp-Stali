@@ -3,9 +3,10 @@ import { AdvancedService } from './advanced.service';
 import { AdvancedController } from './advanced.controller';
 import { SelenoidModule } from '@app/selenoid/selenoid.module';
 import { LoggerMiddleware } from '@app/middlewares/logger.middleware';
+import { LoggerModule } from '@app/logger/logger.module';
 
 @Module({
-  imports: [SelenoidModule],
+  imports: [LoggerModule, SelenoidModule],
   providers: [AdvancedService],
   controllers: [AdvancedController],
 })

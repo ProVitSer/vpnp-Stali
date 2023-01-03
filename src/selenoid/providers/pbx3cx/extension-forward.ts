@@ -1,4 +1,4 @@
-import { ForwardService } from '@app/database/mongo/services/forward.service';
+// import { ForwardService } from '@app/database/mongo/services/forward.service';
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import * as moment from 'moment';
@@ -26,8 +26,7 @@ export class ExtensionForward implements SelenoidProviderInterface {
     private readonly logger: LoggerService,
     private readonly login: Login,
     private readonly logout: Logout,
-    private readonly getPbxExtension: GetExtension,
-    private readonly forward: ForwardService,
+    private readonly getPbxExtension: GetExtension, // private readonly forward: ForwardService,
   ) {
     this.serviceContext = ExtensionForward.name;
   }
@@ -47,7 +46,7 @@ export class ExtensionForward implements SelenoidProviderInterface {
   private async setInfo(data: ExtensionStatusData) {
     try {
       if (this.enableForward && data?.change == undefined) {
-        return await this.forward.setExtensionForward(data);
+        //return await this.forward.setExtensionForward(data);
       }
     } catch (e) {
       throw e;

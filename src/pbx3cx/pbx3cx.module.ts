@@ -1,3 +1,4 @@
+import { LoggerModule } from '@app/logger/logger.module';
 import { LoggerMiddleware } from '@app/middlewares/logger.middleware';
 import { SelenoidModule } from '@app/selenoid/selenoid.module';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
@@ -5,7 +6,7 @@ import { Pbx3cxController } from './pbx3cx.controller';
 import { Pbx3cxService } from './pbx3cx.service';
 
 @Module({
-  imports: [SelenoidModule],
+  imports: [LoggerModule, SelenoidModule],
   controllers: [Pbx3cxController],
   providers: [Pbx3cxService],
 })
