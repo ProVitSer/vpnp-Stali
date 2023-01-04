@@ -4,3 +4,9 @@ export enum RemoteStatus {
   completed = 'completed',
   notFound = 'notFound',
 }
+
+export enum RemoteAccessStatus {
+  activate = "activate",
+  deactivate = "deactivate",
+
+}
