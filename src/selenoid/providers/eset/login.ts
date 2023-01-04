@@ -41,6 +41,7 @@ export class EsetLogin {
       await this.webDriver.manage().window().maximize();
       await this.webDriver.sleep(10000);
       await SelenoidUtils.checkPrivacy(this.webDriver);
+      await this.webDriver.sleep(10000);
       await this.webDriver.findElement(By.id('loginInputUsername')).sendKeys(this.configService.get('eset.username'));
       await this.webDriver.findElement(By.id('loginInputPassword')).sendKeys(this.configService.get('eset.password'));
       await this.webDriver.findElement(By.xpath("//button[contains(text(), 'Submit')]")).click();
