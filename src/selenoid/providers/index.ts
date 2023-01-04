@@ -4,6 +4,7 @@ export * from './pbx3cx/get-extension';
 export * from './pbx3cx/queue-status';
 export * from './pbx3cx/extension-forward';
 export * from './mail/mail-forward';
-export * from './eset/eset';
+export * from './eset/eset-set-remote-access';
+export * from './eset/eset-get-remote-access-status';
 export * from './eset/login';
 export * from './eset/logout';

@@ -31,13 +31,22 @@ export interface MailForwardData {
   change?: boolean;
 }
 
-export interface EsetData {
+export interface EsetSetRemoteAccessData {
   userName: string;
-  phoneNumber: string;
+  phoneNumber?: string;
   status: EsetStatus;
 }
 
-export type SelenoidDataTypes = QueueStatusData | ExtensionStatusData | MailForwardData | EsetData;
+export interface EsetGetRemoteAccessStatusData {
+  userName: string;
+}
+
+export type SelenoidDataTypes =
+  | QueueStatusData
+  | ExtensionStatusData
+  | MailForwardData
+  | EsetSetRemoteAccessData
+  | EsetGetRemoteAccessStatusData;
 
 export interface SelenoidProviderInterface {
   selenoidChange(data: SelenoidDataTypes): Promise<any>;

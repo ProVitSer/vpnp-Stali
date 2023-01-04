@@ -2,7 +2,8 @@ export enum ActionType {
   extensionForward = 'extensionForward',
   mailForward = 'mailForward',
   queueStatus = 'queueStatus',
-  eset = 'eset',
+  esetSetRemoteAccess = 'esetSetRemoteAccess',
+  esetCheckRemoteAccess = 'esetCheckRemoteAccess',
 }
 
 export enum ExtensionStatus {
