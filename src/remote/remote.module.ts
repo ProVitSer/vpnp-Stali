@@ -7,6 +7,8 @@ import { TypegooseModule } from 'nestjs-typegoose';
 import { RemoteModel } from './remote..model';
 import { RemoteController } from './remote.controller';
 import { RemoteModelService, RemoteService } from './remote.service';
+import { SetRemoteAccessScheduleService } from './schedule/set-remote-access.schedule';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   controllers: [RemoteController],
@@ -22,8 +24,9 @@ import { RemoteModelService, RemoteService } from './remote.service';
         },
       },
     ]),
+    ScheduleModule.forRoot(),
   ],
-  providers: [RemoteService, RemoteModelService],
+  providers: [RemoteService, RemoteModelService, SetRemoteAccessScheduleService],
 })
 export class RemoteModule {
   configure(consumer: MiddlewareConsumer): void {
