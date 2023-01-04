@@ -11,3 +11,9 @@ export interface RemoteResponse {
     isRemoteEsetActive: boolean;
   };
 }
+
+export interface UpdateRemoteStatusData {
+  remoteId: string | Types.ObjectId;
+  isRemoteAdActive: boolean;
+  isRemoteEsetActive: boolean;
+}
