@@ -18,4 +18,8 @@ export class UtilsService {
     const nowDate = format(new Date(), DATE_FORMAT);
     return nowDate === dateFrom;
   }
+
+  static timeout(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 }
