@@ -31,7 +31,7 @@ import { MailModule } from '@app/mail/mail.module';
     }),
   ],
   controllers: [HealthController],
-  providers: [HealthService, DockerImgServiceHealthIndicator, DockerServiceHealthIndicator],
+  providers: [HealthService, DockerImgServiceHealthIndicator, DockerServiceHealthIndicator, HealthScheduledService],
   exports: [HealthService],
 })
 export class HealthModule {
