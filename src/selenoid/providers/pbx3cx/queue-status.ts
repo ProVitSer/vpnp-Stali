@@ -1,7 +1,7 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { By, WebDriver } from 'selenium-webdriver';
-import { QueueStatusData, SelenoidProviderInterface } from '../../interfaces/interface';
+import { QueueStatusData, SelenoidProviderInterface } from '../../interfaces/selenoid-interface';
 import { GetExtension } from './get-extension';
 import { Login } from './login';
 import { Logout } from './logout';

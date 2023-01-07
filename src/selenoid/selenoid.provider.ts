@@ -1,8 +1,8 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { EsetSetRemoteAccess, ExtensionForward, MailForward, QueueStatus, EsetGetRemoteAccessStatus } from './providers/index';
-import { SelenoidDataTypes, SelenoidProviderInterface } from './interfaces/interface';
-import { ActionType } from './interfaces/types';
+import { SelenoidDataTypes, SelenoidProviderInterface } from './interfaces/selenoid-interface';
+import { ActionType } from './interfaces/selenoid-types';
 
 @Injectable()
 export class SelenoidProvider {

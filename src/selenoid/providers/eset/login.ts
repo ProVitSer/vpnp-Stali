@@ -1,5 +1,5 @@
 import { LoggerService } from '@app/logger/logger.service';
-import { EsetPath } from '@app/selenoid/interfaces/types';
+import { EsetPath } from '@app/selenoid/interfaces/selenoid-types';
 import { SelenoidUtils } from '@app/selenoid/selenoid.utils';
 import { SelenoidWebdriver } from '@app/selenoid/selenoid.webdriver';
 import { Injectable } from '@nestjs/common';

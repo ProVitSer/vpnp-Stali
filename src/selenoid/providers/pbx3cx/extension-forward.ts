@@ -1,10 +1,8 @@
-// import { ForwardService } from '@app/database/mongo/services/forward.service';
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
-import * as moment from 'moment';
 import { By, WebDriver, WebElement } from 'selenium-webdriver';
-import { ExtensionStatusData, SelenoidProviderInterface } from '../../interfaces/interface';
-import { ExtensionForwardRuleType, ForwardingType, PbxExtensionStatus } from '../../interfaces/types';
+import { ExtensionStatusData, ForwardRuleType, SelenoidProviderInterface } from '../../interfaces/selenoid-interface';
+import { ForwardingType, PbxExtensionStatus } from '../../interfaces/selenoid-types';
 import { GetExtension } from './get-extension';
 import { Login } from './login';
 import { Logout } from './logout';
@@ -16,6 +14,7 @@ import {
   ERROR_SET_FORWARD,
   SAVE_ERROR,
 } from './constants';
+import { UtilsService } from '@app/utils/utils.service';
 
 @Injectable()
 export class ExtensionForward implements SelenoidProviderInterface {
@@ -26,41 +25,26 @@ export class ExtensionForward implements SelenoidProviderInterface {
     private readonly logger: LoggerService,
     private readonly login: Login,
     private readonly logout: Logout,
-    private readonly getPbxExtension: GetExtension, // private readonly forward: ForwardService,
+    private readonly getPbxExtension: GetExtension,
   ) {
     this.serviceContext = ExtensionForward.name;
   }
 
-  async selenoidChange(data: ExtensionStatusData): Promise<any> {
+  async selenoidChange(data: ExtensionStatusData): Promise<boolean> {
     try {
       this.enableForward = data.status;
-      if (this.chechUpdateNow(data.dateFrom)) {
+      if (UtilsService.isDateNow(data.dateFrom)) {
         await this.updateExtensionForward(data);
       }
-      return await this.setInfo(data);
+      return true;
     } catch (e) {
       throw e;
     }
-  }
-
-  private async setInfo(data: ExtensionStatusData) {
-    try {
-      if (this.enableForward && data?.change == undefined) {
-        //return await this.forward.setExtensionForward(data);
-      }
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  private chechUpdateNow(dateFrom: string) {
-    return dateFrom == moment().format('DD.MM.YYYY').toString();
   }
 
   private async updateExtensionForward(data: ExtensionStatusData) {
     try {
       this.webDriver = await this.login.loginOnPbx();
-      console.log(this.webDriver);
       await this.getPbxExtension.getExtension(this.webDriver, data.exten);
       if (this.enableForward) {
         await this.webDriver.findElement(By.xpath(`//*[contains(text(), ' ${data.exten} ')]//parent::tr[@tabindex='0']`)).click();
@@ -206,13 +190,13 @@ export class ExtensionForward implements SelenoidProviderInterface {
     }
   }
 
-  private getExtensionForward(type: ExtensionForwardRuleType) {
+  private getExtensionForward(type: ForwardRuleType) {
     switch (type) {
-      case ExtensionForwardRuleType.extension:
+      case ForwardRuleType.extension:
         return 'extension';
-      case ExtensionForwardRuleType.external:
+      case ForwardRuleType.external:
         return 'external';
-      case ExtensionForwardRuleType.mobile:
+      case ForwardRuleType.mobile:
         return 'mobile';
     }
   }
