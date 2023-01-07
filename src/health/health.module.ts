@@ -9,6 +9,9 @@ import { DockerImgServiceHealthIndicator, DockerServiceHealthIndicator } from '.
 import { HttpModule } from '@nestjs/axios';
 import { LoggerMiddleware } from '@app/middlewares/logger.middleware';
 import { LoggerModule } from '@app/logger/logger.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { HealthScheduledService } from './schedule/health-service.schedule';
+import { MailModule } from '@app/mail/mail.module';
 
 @Module({
   imports: [
@@ -17,6 +20,8 @@ import { LoggerModule } from '@app/logger/logger.module';
     LoggerModule,
     DockerModule,
     AsteriskModule,
+    MailModule,
+    ScheduleModule.forRoot(),
     HttpModule.registerAsync({
       useFactory: () => ({
         timeout: 5000,
