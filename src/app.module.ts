@@ -10,15 +10,13 @@ import { Soap1cModule } from './soap1c/soap1c.module';
 import { XmlModule } from './xml/xml.module';
 import { SelenoidModule } from './selenoid/selenoid.module';
 import { DockerModule } from './docker/docker.module';
-import { ScheduleModule } from './schedule/schedule.module';
 import { ActiveDirectoryModule } from './active-directory/active-directory.module';
 import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
-import { Pbx3cxModule } from './pbx3cx/pbx3cx.module';
-import { AdvancedModule } from './advanced/advanced.module';
 import { RemoteModule } from './remote/remote.module';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { getMongoConfig } from './config/mongo.config';
+import { AdditionalServicesModule } from './additional-services/additional-services.module';
 
 @Module({
   controllers: [AppController],
@@ -40,9 +38,8 @@ import { getMongoConfig } from './config/mongo.config';
     ActiveDirectoryModule,
     HealthModule,
     MailModule,
-    Pbx3cxModule,
-    AdvancedModule,
     RemoteModule,
+    AdditionalServicesModule,
   ],
 })
 export class AppModule {}
