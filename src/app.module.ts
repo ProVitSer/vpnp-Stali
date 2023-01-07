@@ -4,7 +4,6 @@ import configuration from '@app/config/config.provides';
 import { LoggerModule } from './logger/logger.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { OrmModule } from './database/orm/orm.module';
 import { AsteriskModule } from './asterisk/asterisk.module';
 import { Soap1cModule } from './soap1c/soap1c.module';
 import { XmlModule } from './xml/xml.module';
@@ -17,6 +16,7 @@ import { RemoteModule } from './remote/remote.module';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { getMongoConfig } from './config/mongo.config';
 import { AdditionalServicesModule } from './additional-services/additional-services.module';
+import { Pbx3cxModule } from './pbx3cx/pbx3cx.module';
 
 @Module({
   controllers: [AppController],
@@ -33,13 +33,13 @@ import { AdditionalServicesModule } from './additional-services/additional-servi
     Soap1cModule,
     SelenoidModule,
     XmlModule,
-    OrmModule,
     DockerModule,
     ActiveDirectoryModule,
     HealthModule,
     MailModule,
     RemoteModule,
     AdditionalServicesModule,
+    Pbx3cxModule,
   ],
 })
 export class AppModule {}

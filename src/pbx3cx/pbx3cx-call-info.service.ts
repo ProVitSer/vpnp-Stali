@@ -5,7 +5,7 @@ import { CallcentQueuecalls, ClCalls, ClParticipants, ClPartyInfo, ClSegments, M
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class CallInfoService {
+export class Pbx3cxCallInfoService {
   private serviceContext: string;
   constructor(
     private readonly logger: LoggerService,
@@ -22,7 +22,7 @@ export class CallInfoService {
     @InjectRepository(Meetingsession)
     private meetings: Repository<Meetingsession>,
   ) {
-    this.serviceContext = CallInfoService.name;
+    this.serviceContext = Pbx3cxCallInfoService.name;
   }
 
   public async getAllMeetings() {
@@ -90,8 +90,6 @@ export class CallInfoService {
 
   public async searcInfoId(callId: number): Promise<ClParticipants> {
     try {
-      console.log(callId);
-
       return await this.callParticipants
         .createQueryBuilder('cl_participants')
         .select('cl_participants.infoId')
@@ -107,7 +105,6 @@ export class CallInfoService {
   //Последнийответивший согласно 3сх
   public async searchLastUserRing(ids: Array<number>, extension: string): Promise<ClPartyInfo> {
     try {
-      console.log(ids, extension);
       return await this.callPartyInfo
         .createQueryBuilder('cl_party_info')
         .select()

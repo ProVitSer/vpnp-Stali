@@ -2,9 +2,9 @@ import { LoggerModule } from '@app/logger/logger.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CallInfoService } from './call-info.service';
-import { CallService } from './call.service';
+import { Pbx3cxService } from './pbx3cx.service';
 import { ClParticipants, ClPartyInfo, ClSegments, ClCalls, CallcentQueuecalls, Meetingsession } from './entities';
+import { Pbx3cxCallInfoService } from './pbx3cx-call-info.service';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { ClParticipants, ClPartyInfo, ClSegments, ClCalls, CallcentQueuecalls, M
     }),
     TypeOrmModule.forFeature([ClParticipants, ClPartyInfo, ClSegments, ClCalls, CallcentQueuecalls, Meetingsession]),
   ],
-  providers: [CallInfoService, CallService],
-  exports: [CallInfoService, CallService],
+  providers: [Pbx3cxCallInfoService, Pbx3cxService],
+  exports: [Pbx3cxCallInfoService, Pbx3cxService],
 })
-export class OrmModule {}
+export class Pbx3cxModule {}
