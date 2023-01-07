@@ -33,6 +33,7 @@ export class HealthScheduledService implements OnApplicationBootstrap {
   async onApplicationBootstrap() {
     try {
       const result = await this.health.check<HealthCheckMailFormat>(ReturnHealthFormatType.mail);
+      console.log(result);
       this.mailSendInfo.lastCheckStatus = result.status;
       return await this.sendMailInfo(result);
     } catch (e) {

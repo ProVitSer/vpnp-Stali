@@ -12,6 +12,7 @@ import { LoggerModule } from '@app/logger/logger.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HealthScheduledService } from './schedule/health-service.schedule';
 import { MailModule } from '@app/mail/mail.module';
+import { TypegooseHealthIndicator } from './health-indicator/typegoose-health.indicator';
 
 @Module({
   imports: [
@@ -31,7 +32,13 @@ import { MailModule } from '@app/mail/mail.module';
     }),
   ],
   controllers: [HealthController],
-  providers: [HealthService, DockerImgServiceHealthIndicator, DockerServiceHealthIndicator, HealthScheduledService],
+  providers: [
+    HealthService,
+    DockerImgServiceHealthIndicator,
+    DockerServiceHealthIndicator,
+    TypegooseHealthIndicator,
+    HealthScheduledService,
+  ],
   exports: [HealthService],
 })
 export class HealthModule {

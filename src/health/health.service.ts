@@ -8,13 +8,12 @@ import {
   HealthIndicatorStatus,
   HttpHealthIndicator,
   TypeOrmHealthIndicator,
-  MongooseHealthIndicator,
 } from '@nestjs/terminus';
 import { DockerImgServiceHealthIndicator, DockerServiceHealthIndicator } from './health-indicator/docker.service.healthIndicator';
 import { HealthCheckMailFormat } from './types/interfaces';
 import { HealthCheckStatusType, ReturnHealthFormatType } from './types/type';
 import { HttpService } from '@nestjs/axios';
-import mongoose from 'mongoose';
+import { TypegooseHealthIndicator } from './health-indicator/typegoose-health.indicator';
 
 @Injectable()
 export class HealthService {
@@ -26,7 +25,7 @@ export class HealthService {
     private dockerImg: DockerImgServiceHealthIndicator,
     private httpService: HttpService,
     private http: HttpHealthIndicator,
-    private mongooseHealth: MongooseHealthIndicator,
+    private typegooseHealthIndicator: TypegooseHealthIndicator,
   ) {}
 
   public async check<T>(formatType: ReturnHealthFormatType): Promise<T> {
@@ -54,7 +53,8 @@ export class HealthService {
           .catch(({ code, config: { url } }) => {
             throw new HealthCheckError('Ad-service check failed', { 'Ad-service': { status: 'down', code, url } });
           }),
-      async () => this.mongooseHealth.pingCheck('mongoDB', { connection: mongoose.connection }),
+
+      async () => this.typegooseHealthIndicator.ping('MongoDB'),
       async () => this.dockerService.isHealthy('DockerService'),
       async () => this.dockerImg.isHealthy(this.configService.get('selenium.selenoidDockerImg'), 'DockerSelenoid'),
       async () => this.http.pingCheck('AsteriskService', this.configService.get('asterisk.ari.url')),
