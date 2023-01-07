@@ -1,13 +1,12 @@
-// import { MailService } from '@app/database/mongo/services/mail.service';
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { By, WebDriver } from 'selenium-webdriver';
 import { SelenoidWebdriver } from '../../selenoid.webdriver';
-import { MailForwardData, SelenoidProviderInterface } from '../../interfaces/interface';
-import * as moment from 'moment';
+import { MailForwardData, SelenoidProviderInterface } from '../../interfaces/selenoid-interface';
 import { AUTH_MAIL_ERROR, ERROR_LOGOUT, ERROR_USER_FORWARD, ERROR_USER_NOT_FOUND } from './constants';
 import { ERROR_WEB_DRIVER } from '@app/selenoid/selenoid.constants';
+import { UtilsService } from '@app/utils/utils.service';
 
 @Injectable()
 export class MailForward implements SelenoidProviderInterface {
@@ -19,35 +18,21 @@ export class MailForward implements SelenoidProviderInterface {
   constructor(
     private readonly selenoidWebDriver: SelenoidWebdriver,
     private readonly configService: ConfigService,
-    private readonly logger: LoggerService, // private readonly mail: MailService,
+    private readonly logger: LoggerService,
   ) {
     this.serviceContext = MailForward.name;
   }
 
-  async selenoidChange(data: MailForwardData): Promise<any> {
+  async selenoidChange(data: MailForwardData): Promise<boolean> {
     try {
       this.enableForward = data.status;
-      if (this.chechUpdateNow(data.dateFrom)) {
+      if (UtilsService.isDateNow(data.dateFrom)) {
         await this.setEmailForward(data);
       }
-      return await this.setInfo(data);
+      return true;
     } catch (e) {
       throw e;
     }
-  }
-
-  private async setInfo(data: MailForwardData) {
-    try {
-      if (this.enableForward && data?.change == undefined) {
-        //return await this.mail.setMailForward(data);
-      }
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  private chechUpdateNow(dateFrom: string) {
-    return dateFrom == moment().format('DD.MM.YYYY').toString();
   }
 
   private async setEmailForward(data: MailForwardData) {
@@ -162,7 +147,12 @@ export class MailForward implements SelenoidProviderInterface {
       await this.webDriver.findElement(By.id('username')).sendKeys(this.configService.get('mailServer.username'));
       await this.webDriver.findElement(By.id('password')).sendKeys(this.configService.get('mailServer.password'));
       await this.webDriver.findElement(By.id('Logon')).click();
-      return await this.webDriver.sleep(1000);
+      await this.webDriver.sleep(1000);
+      try {
+        return await this.webDriver.findElement(By.xpath(`//div[@onclick="RA.views.load('V_USERLIST', 'MainWindow=1');"]`));
+      } catch (e) {
+        throw e;
+      }
     } catch (e) {
       this.logger.error(e, this.serviceContext);
       throw AUTH_MAIL_ERROR;
