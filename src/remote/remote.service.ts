@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { RemoteActivateDto } from './dto/remote-activate.dto';
 import { RemoteActivateDtoWithId, RemoteDeactivateDtoWithId, RemoteResponse, UpdateRemoteStatusData } from './interfaces/remote-interface';
-import { RemoteModel } from './remote..model';
+import { RemoteModel } from './remote.model';
 import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
 import { RemoteStatus } from './interfaces/remote-enum';
 import { SelenoidProvider } from '@app/selenoid/selenoid.provider';
@@ -13,14 +13,14 @@ import { UtilsService } from '@app/utils/utils.service';
 import { RemoteDeleteDto } from './dto/remote-delete.dto';
 import * as moment from 'moment';
 import { RemoteDeactivateDto } from './dto/remote-deactivate.dto';
-import { ActionType, EsetStatus } from '@app/selenoid/interfaces/types';
+import { ActionType, EsetStatus } from '@app/selenoid/interfaces/selenoid-types';
 import { RemoteActualUserStatusDto } from './dto/remote-actual-user-status.dto';
 import { DATE_FORMAT, FORMAT_INCOMING_DATE } from './remote..constants';
 import { LoggerService } from '@app/logger/logger.service';
 
 @Injectable()
 export class RemoteModelService {
-  constructor(@InjectModel(RemoteModel) private readonly remoteModel: ModelType<RemoteModel>) { }
+  constructor(@InjectModel(RemoteModel) private readonly remoteModel: ModelType<RemoteModel>) {}
 
   public async create(data: { [key: string]: any }): Promise<DocumentType<RemoteModel>> {
     return this.remoteModel.create(data);
@@ -50,7 +50,7 @@ export class RemoteService {
     private readonly remoteModelService: RemoteModelService,
     private readonly selenoidProvider: SelenoidProvider,
     private readonly adService: ActiveDirectoryService,
-    private readonly logger: LoggerService
+    private readonly logger: LoggerService,
   ) {
     this.serviceContext = RemoteService.name;
   }
@@ -144,7 +144,7 @@ export class RemoteService {
       };
       await this.remoteModelService.updateById(remoteId, updateInfo);
     } catch (e) {
-      this.logger.error(e, this.serviceContext)
+      this.logger.error(e, this.serviceContext);
       await this.remoteModelService.updateById(remoteId, { remoteData: { error: String(e) }, status: RemoteStatus.apiFail });
     }
   }
@@ -159,14 +159,13 @@ export class RemoteService {
       });
       await this.updateRemoteStatus({ remoteId: data.remoteId, isRemoteAdActive: true, isRemoteEsetActive: true });
     } catch (e) {
-      this.logger.error(e, this.serviceContext)
+      this.logger.error(e, this.serviceContext);
       await this.remoteModelService.updateById(data.remoteId, { remoteData: { error: String(e) }, status: RemoteStatus.apiFail });
     }
   }
 
   public async deactivateRemoteAccess(data: RemoteDeactivateDtoWithId) {
     try {
-      console.log(data)
       await this.adService.setAdRemoteStatus({ user: data.user, action: AdActionTypes.deleteRemoteAccess });
       await this.selenoidProvider.change(ActionType.esetSetRemoteAccess, {
         userName: data.user,
@@ -174,7 +173,7 @@ export class RemoteService {
       });
       await this.updateRemoteStatus({ remoteId: data.remoteId, isRemoteAdActive: false, isRemoteEsetActive: false });
     } catch (e) {
-      this.logger.error(e, this.serviceContext)
+      this.logger.error(e, this.serviceContext);
       await this.remoteModelService.updateById(data.remoteId, { remoteData: { error: String(e) }, status: RemoteStatus.apiFail });
     }
   }
