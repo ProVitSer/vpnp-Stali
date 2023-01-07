@@ -4,7 +4,7 @@ import { LoggerMiddleware } from '@app/middlewares/logger.middleware';
 import { SelenoidModule } from '@app/selenoid/selenoid.module';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { TypegooseModule } from 'nestjs-typegoose';
-import { RemoteModel } from './remote..model';
+import { RemoteModel } from './remote.model';
 import { RemoteController } from './remote.controller';
 import { RemoteModelService, RemoteService } from './remote.service';
 import { SetRemoteAccessScheduleService } from './schedule/set-remote-access.schedule';
