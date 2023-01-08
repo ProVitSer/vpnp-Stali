@@ -17,6 +17,7 @@ import { TypegooseModule } from 'nestjs-typegoose';
 import { getMongoConfig } from './config/mongo.config';
 import { AdditionalServicesModule } from './additional-services/additional-services.module';
 import { Pbx3cxModule } from './pbx3cx/pbx3cx.module';
+import { AsteriskApiModule } from './asterisk-api/asterisk-api.module';
 
 @Module({
   controllers: [AppController],
@@ -40,6 +41,7 @@ import { Pbx3cxModule } from './pbx3cx/pbx3cx.module';
     RemoteModule,
     AdditionalServicesModule,
     Pbx3cxModule,
+    AsteriskApiModule,
   ],
 })
 export class AppModule {}
