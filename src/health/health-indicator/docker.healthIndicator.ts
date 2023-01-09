@@ -11,7 +11,7 @@ export class DockerServiceHealthIndicator extends HealthIndicator {
   async isHealthy(key: string): Promise<HealthIndicatorResult> {
     try {
       await this.docker.checkDocker();
-      return this.getStatus(key, true);
+      return super.getStatus(key, true);
     } catch (e) {
       const errorMsg = e;
       throw new HealthCheckError(`${key} failed`, this.getStatus(key, false, { message: errorMsg }));
@@ -29,7 +29,7 @@ export class DockerImgServiceHealthIndicator extends HealthIndicator {
     try {
       const result = await this.docker.checkImgRunning(img);
       if (!result) throw `Нужный img: ${img} не запущен`;
-      return this.getStatus(key, true);
+      return super.getStatus(key, true);
     } catch (e) {
       const errorMsg = e;
       throw new HealthCheckError(`${key} failed`, this.getStatus(key, false, { message: errorMsg }));
