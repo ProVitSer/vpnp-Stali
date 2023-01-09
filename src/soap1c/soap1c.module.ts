@@ -3,9 +3,10 @@ import { XmlModule } from '@app/xml/xml.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ReturnNumber } from './providers/return-number';
-import { SetId } from './providers/set-id';
+import { SetID } from './providers/set-id';
 import { Soap1cProvider } from './sopa1c.provider';
 import { HttpModule } from '@nestjs/axios';
+import { SetNumber } from './providers/set-number';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { HttpModule } from '@nestjs/axios';
       inject: [ConfigService],
     }),
   ],
-  providers: [Soap1cProvider, ReturnNumber, SetId],
+  providers: [Soap1cProvider, ReturnNumber, SetID, SetNumber],
   exports: [Soap1cProvider],
 })
 export class Soap1cModule {}

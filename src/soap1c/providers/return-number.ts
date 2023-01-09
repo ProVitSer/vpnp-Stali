@@ -7,7 +7,7 @@ export class ReturnNumber implements Soap1cProviderInterface {
   async getRequestData(requestData: ReturnNumberData): Promise<ReturnNumberRequestStruct> {
     return {
       Number: requestData.incomingNumber,
-      Number1: requestData.dialExtension,
+      Number1: requestData.dialedNumber,
       DateTime: moment().format('YYYY-MM-DDTHH:mm:ss'),
       ID: requestData.channelId,
     };

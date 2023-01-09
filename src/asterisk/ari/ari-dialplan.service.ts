@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import Ari, { StasisStart } from 'ari-client';
 import { DEFAULT_ROUTING, LOCAL_ROUTING } from '../asterisk.constants';
 import { RouteInfo } from '../types/interface';
+import * as moment from 'moment';
 
 @Injectable()
 export class DialplanApplicationService implements OnApplicationBootstrap {
@@ -73,22 +74,23 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
   private async getRouteInfo(event: StasisStart): Promise<RouteInfo> {
     try {
       const incomingNumber = UtilsService.formatNumber(event.channel.caller.number);
-      const dialExtension = this.getDialExtension(event);
-      this.logger.info(`${incomingNumber} ${dialExtension} ${event.channel.id}`);
+      const dialedNumber = this.getDialExtension(event);
+      this.logger.info(`${incomingNumber} ${dialedNumber} ${event.channel.id}`);
       const requestInfo = {
         action: Soap1cActionTypes.getRouteNumber,
-        envelop: Soap1cEnvelopeTypes.ReturnNumber,
+        envelop: Soap1cEnvelopeTypes.returnNumber,
         data: {
           incomingNumber,
-          dialExtension,
+          dialedNumber,
           channelId: event.channel.id,
+          callDateTime: moment().format('YYYY-MM-DDTHH:mm:ss'),
         },
       };
 
       const routeInfo = await this.soap1c.request<ReturnNumberResponseData>(requestInfo);
       const parseRouteInfo = routeInfo.Envelope.Body.ReturnNumberResponse.return.name.split(';');
       return {
-        dialExtension,
+        dialedNumber,
         returnDialExtension: parseRouteInfo[0],
         channelId: parseRouteInfo[1],
       };

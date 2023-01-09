@@ -1,5 +1,5 @@
 export interface RouteInfo {
-  dialExtension: string;
+  dialedNumber: string;
   channelId: string;
   returnDialExtension: string;
 }
