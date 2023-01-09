@@ -36,7 +36,7 @@ import { AsteriskApiModule } from './asterisk-api/asterisk-api.module';
     XmlModule,
     DockerModule,
     ActiveDirectoryModule,
-    HealthModule,
+    //HealthModule,
     MailModule,
     RemoteModule,
     AdditionalServicesModule,

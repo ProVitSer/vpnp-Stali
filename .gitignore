@@ -402,3 +402,4 @@ api-log
 config.json
 config.ts
 .idie
+trunk.ts

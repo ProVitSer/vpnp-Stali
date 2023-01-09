@@ -1,30 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { AsteriskActionType } from './interfaces/aasteriks-api.enum';
+import { AsteriskActionType } from './interfaces/asteriks-api.enum';
+import { AsteriskApiProviderInterface, AsteriskApiProviders, CallInfo } from './interfaces/asteriks-api.interface';
 import { GroupCall, NotWorkTime, ExtensionCall, DialExtension } from './providers';
 
 @Injectable()
-export class AsteriskProvider {
+export class AsteriskApiProvider {
   constructor(
     private readonly groupCall: GroupCall,
     private readonly notWorkCall: NotWorkTime,
     private readonly extensionCall: ExtensionCall,
-    private readonly mail: DialExtension,
+    private readonly dialExtension: DialExtension,
   ) {}
 
-  get providers(): any {
+  private get providers(): AsteriskApiProviders {
     return {
       [AsteriskActionType.GroupCallInfo]: this.groupCall,
-      [AsteriskActionType.NotWorkTimeInfo]: this.notWorkCall,
+      [AsteriskActionType.NotWorkTimeCallInfo]: this.notWorkCall,
       [AsteriskActionType.ExtensionCallInfo]: this.extensionCall,
-      [AsteriskActionType.DialExtensionInfo]: this.mail,
+      [AsteriskActionType.DialExtensionCallInfo]: this.dialExtension,
     };
   }
 
-  public async sendCallInfo(callInfo: any) {
-    return;
+  public async sendCallInfo(callInfo: CallInfo, actionType: AsteriskActionType) {
+    const provider = this.getProvider(actionType);
+    return provider.aggregateCallInfo(callInfo);
   }
 
-  private getProvider(route: any): any {
-    return this.providers[route];
+  private getProvider(actionType: AsteriskActionType): AsteriskApiProviderInterface {
+    return this.providers[actionType];
   }
 }

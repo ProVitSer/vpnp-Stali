@@ -1,14 +1,45 @@
-import { LoggerService } from '@app/logger/logger.service';
-import { Controller, Get, Req, Res, Query } from '@nestjs/common';
-import { AsteriskProvider } from './asterisk-api.provider';
+import { Controller, Get, Res, Query, HttpStatus, UsePipes, ValidationPipe } from '@nestjs/common';
+import { AsteriskApiProvider } from './asterisk-api.provider';
 import { Response } from 'express';
+import { DialExtensionDto } from './dto/dial-extension.dto';
+import { GroupCallDto } from './dto/group-call.dto';
+import { ExtensionCallDto } from './dto/extension-call.dto';
+import { OffHoursDto } from './dto/off-hours.dto';
+import { AsteriskActionType } from './interfaces/asteriks-api.enum';
 
+@UsePipes(ValidationPipe)
 @Controller('asterisk-api')
 export class AsteriskApiController {
-  constructor(private readonly asteriskProvider: AsteriskProvider, private readonly logger: LoggerService) {}
+  constructor(private readonly asteriskApiProvider: AsteriskApiProvider) {}
 
-  @Get('*')
-  async sendСhanges(@Req() req: any, @Res() res: Response, @Query() callInfo: any): Promise<void> {
-    const response = await this.asteriskProvider.sendCallInfo(callInfo);
+  //Set(C_RESULT=${CURL(localhost:3001/sendDialExtensionInfo?incomingNumber=${CALLERID(num)}&context=${CONTEXT}&extension=${EXTEN}&unicueid=${UNIQUEID})});
+
+  @Get('dial-extension')
+  async dialExtension(@Res() res: Response, @Query() data: DialExtensionDto): Promise<Response> {
+    this.asteriskApiProvider.sendCallInfo(data, AsteriskActionType.DialExtensionCallInfo);
+    return res.status(HttpStatus.OK).json({});
+  }
+
+  //Set(C_RESULT=${CURL(localhost:3001/sendGroupCallInfo?incomingNumber=${CALLERID(num)}&unicueid=${UNIQUEID})});
+
+  @Get('group-call')
+  async groupCall(@Res() res: Response, @Query() data: GroupCallDto): Promise<Response> {
+    this.asteriskApiProvider.sendCallInfo(data, AsteriskActionType.GroupCallInfo);
+    return res.status(HttpStatus.OK).json({});
+  }
+  //Set(C_RESULT=${CURL(localhost:3001/sendExtensionCallInfo?incomingNumber=${CALLERID(num)}&unicueid=${UNIQUEID}&extension=${EXTEN})});
+
+  @Get('extension-call')
+  async extensionCall(@Res() res: Response, @Query() data: ExtensionCallDto): Promise<Response> {
+    this.asteriskApiProvider.sendCallInfo(data, AsteriskActionType.ExtensionCallInfo);
+    return res.status(HttpStatus.OK).json({});
+  }
+
+  //Set(C_RESULT=${CURL(localhost:3001/sendDialExtensionInfo?incomingNumber=${CALLERID(num)}&dialExtension=${EXTEN})});
+
+  @Get('off-hours')
+  async offHours(@Res() res: Response, @Query() data: OffHoursDto): Promise<Response> {
+    this.asteriskApiProvider.sendCallInfo(data, AsteriskActionType.NotWorkTimeCallInfo);
+    return res.status(HttpStatus.OK).json({});
   }
 }
