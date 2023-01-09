@@ -3,7 +3,7 @@ import { LoggerService } from '@app/logger/logger.service';
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Builder } from 'selenium-webdriver';
-import { Capabilities } from './interfaces/selenoid-interface';
+import { Capabilities } from './interfaces/selenoid.interface';
 
 @Injectable()
 export class SelenoidWebdriver implements OnApplicationBootstrap {

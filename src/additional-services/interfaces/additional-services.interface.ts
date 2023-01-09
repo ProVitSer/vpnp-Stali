@@ -1,4 +1,4 @@
-import { ActionType } from '@app/selenoid/interfaces/selenoid-types';
+import { ActionType } from '@app/selenoid/interfaces/selenoid.enum';
 import { ExtensionForwardDto } from '../dto/extension-forward.dto';
 import { MailForwardDto } from '../dto/mail-forward.dto';
 import { QueueStatusDto } from '../dto/queue-status.dto';

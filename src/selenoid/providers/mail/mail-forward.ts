@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { By, WebDriver } from 'selenium-webdriver';
 import { SelenoidWebdriver } from '../../selenoid.webdriver';
-import { MailForwardData, SelenoidProviderInterface } from '../../interfaces/selenoid-interface';
+import { MailForwardData, SelenoidProviderInterface } from '../../interfaces/selenoid.interface';
 import { AUTH_MAIL_ERROR, ERROR_LOGOUT, ERROR_USER_FORWARD, ERROR_USER_NOT_FOUND } from './constants';
 import { ERROR_WEB_DRIVER } from '@app/selenoid/selenoid.constants';
 import { UtilsService } from '@app/utils/utils.service';

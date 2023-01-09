@@ -1,12 +1,12 @@
 import { XmlService } from '@app/xml/xml.service';
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ReturnNumber } from './providers/return-number';
 import { SetId } from './providers/set-id';
-import { NAMESPACE } from './types/constaints';
-import { PlainObject, Soap1cApiRequestInterface, Soap1cProviderInterface } from './types/interface';
-import { Soap1cActionTypes, Soap1cEnvelopeTypes } from './types/types';
+import { NAMESPACE } from './soap1c.constants';
+import { PlainObject, Soap1cApiRequestInterface, Soap1cProviderInterface, Soap1cProviders } from './interfaces/soap1c.interface';
+import { Soap1cActionTypes, Soap1cEnvelopeTypes } from './interfaces/soap1c.enum';
 
 @Injectable()
 export class Soap1cProvider {
@@ -21,7 +21,7 @@ export class Soap1cProvider {
     this.serviceContext = Soap1cProvider.name;
   }
 
-  get providers(): any {
+  private get providers(): Soap1cProviders {
     return {
       [Soap1cActionTypes.getRouteNumber]: this.returnNumber,
       [Soap1cActionTypes.sendCallInfo]: this.setId,
@@ -34,7 +34,8 @@ export class Soap1cProvider {
     try {
       const data = await provider.getRequestData(request.data);
       const xmlRequest = await this.makeXmlRequest(data, request.envelop, request.action);
-      const response = await this.httpService.post(this.configService.get('server1C.url'), xmlRequest).toPromise();
+      //const response = await this.httpService.post(this.configService.get('server1C.url'), xmlRequest).toPromise();
+      const response = await this.httpService.post('https://webhook.site/670338c1-d4a7-4906-ac57-feef31c6527b', xmlRequest).toPromise();
       return (await this.xml.createObjectFromXmlAsync(response.data)) as T;
     } catch (e) {
       throw e;

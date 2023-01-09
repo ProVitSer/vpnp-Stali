@@ -1,6 +1,6 @@
 import { LoggerService } from '@app/logger/logger.service';
-import { EsetSetRemoteAccessData, SelenoidProviderInterface } from '@app/selenoid/interfaces/selenoid-interface';
-import { EsetPath, EsetStatus } from '@app/selenoid/interfaces/selenoid-types';
+import { EsetSetRemoteAccessData, SelenoidProviderInterface } from '@app/selenoid/interfaces/selenoid.interface';
+import { EsetPath, EsetStatus } from '@app/selenoid/interfaces/selenoid.enum';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { By, WebDriver } from 'selenium-webdriver';

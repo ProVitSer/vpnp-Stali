@@ -1,8 +1,8 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { By, WebDriver, WebElement } from 'selenium-webdriver';
-import { ExtensionStatusData, ForwardRuleType, SelenoidProviderInterface } from '../../interfaces/selenoid-interface';
-import { ForwardingType, PbxExtensionStatus } from '../../interfaces/selenoid-types';
+import { ExtensionStatusData, ForwardRuleType, SelenoidProviderInterface } from '../../interfaces/selenoid.interface';
+import { ForwardingType, PbxExtensionStatus } from '../../interfaces/selenoid.enum';
 import { GetExtension } from './get-extension';
 import { Login } from './login';
 import { Logout } from './logout';

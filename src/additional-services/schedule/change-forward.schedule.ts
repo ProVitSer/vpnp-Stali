@@ -8,7 +8,7 @@ import { ServicesType } from '../interfaces/additional-services.enum';
 import { DocumentType } from '@typegoose/typegoose/lib/types';
 import { AdditionalServicesModel } from '../additional-services..model';
 import { ServicesTypeToActionTypeMap } from '../interfaces/additional-services.interface';
-import { ForwardRuleType, SelenoidDataTypes } from '@app/selenoid/interfaces/selenoid-interface';
+import { ForwardRuleType, SelenoidDataTypes } from '@app/selenoid/interfaces/selenoid.interface';
 import * as PromiseBluebird from 'bluebird';
 
 @Injectable()

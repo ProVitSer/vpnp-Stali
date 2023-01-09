@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ReturnNumberData, ReturnNumberRequestStruct, Soap1cProviderInterface } from '../types/interface';
+import { ReturnNumberData, ReturnNumberRequestStruct, Soap1cProviderInterface } from '../interfaces/soap1c.interface';
 import * as moment from 'moment';
 
 @Injectable()

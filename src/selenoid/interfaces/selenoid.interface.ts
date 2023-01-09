@@ -1,4 +1,4 @@
-import { EsetStatus } from './selenoid-types';
+import { ActionType, EsetStatus } from './selenoid.enum';
 
 export interface Capabilities {
   browserName: string;
@@ -53,6 +53,10 @@ export type SelenoidDataTypes =
   | MailForwardData
   | EsetSetRemoteAccessData
   | EsetGetRemoteAccessStatusData;
+
+export type SelenoidProviders = {
+  [key in ActionType]: SelenoidProviderInterface;
+};
 
 export interface SelenoidProviderInterface {
   selenoidChange(data: SelenoidDataTypes): Promise<any>;

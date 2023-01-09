@@ -1,10 +1,14 @@
-import { Soap1cActionTypes, Soap1cEnvelopeTypes, Soap1cRequestData, Soap1cRequestDataStructType } from './types';
+import { Soap1cActionTypes, Soap1cEnvelopeTypes, Soap1cRequestData, Soap1cRequestDataStructType } from './soap1c.enum';
 
 export interface Soap1cApiRequestInterface {
   action: Soap1cActionTypes;
   envelop: Soap1cEnvelopeTypes;
   data: Soap1cRequestData;
 }
+
+export type Soap1cProviders = {
+  [key in Soap1cActionTypes]: Soap1cProviderInterface;
+};
 
 export interface Soap1cProviderInterface {
   getRequestData(requestData: Soap1cRequestData): Promise<Soap1cRequestDataStructType>;

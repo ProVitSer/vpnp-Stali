@@ -13,7 +13,7 @@ import { UtilsService } from '@app/utils/utils.service';
 import { RemoteDeleteDto } from './dto/remote-delete.dto';
 import * as moment from 'moment';
 import { RemoteDeactivateDto } from './dto/remote-deactivate.dto';
-import { ActionType, EsetStatus } from '@app/selenoid/interfaces/selenoid-types';
+import { ActionType, EsetStatus } from '@app/selenoid/interfaces/selenoid.enum';
 import { RemoteActualUserStatusDto } from './dto/remote-actual-user-status.dto';
 import { DATE_FORMAT, FORMAT_INCOMING_DATE } from './remote..constants';
 import { LoggerService } from '@app/logger/logger.service';

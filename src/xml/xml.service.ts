@@ -1,28 +1,8 @@
-import { PlainObject } from '@app/soap1c/types/interface';
+import { PlainObject } from '@app/soap1c/interfaces/soap1c.interface';
 import { Injectable } from '@nestjs/common';
-import { SPECIALSYMBOLS } from './types/constaints';
 import { create as createXml, CreateOptions } from 'xmlbuilder';
-import { Parser, ParserOptions, processors } from 'xml2js';
-
-const FINALIZE_XML_OPTIONS = {
-  pretty: true,
-  allowEmpty: false,
-};
-
-const CREATE_XML_OPTIONS = {
-  separateArrayItems: true,
-};
-
-export const XML_TOO_OBJECT_OPTIONS: ParserOptions = {
-  attrNameProcessors: [processors.stripPrefix],
-  tagNameProcessors: [processors.stripPrefix],
-  explicitArray: false,
-  mergeAttrs: true,
-  normalize: true,
-  normalizeTags: false,
-  explicitCharkey: true,
-  charkey: 'name',
-};
+import { Parser, ParserOptions } from 'xml2js';
+import { CREATE_XML_OPTIONS, FINALIZE_XML_OPTIONS, SPECIALSYMBOLS, XML_TOO_OBJECT_OPTIONS } from './xml.constants';
 
 @Injectable()
 export class XmlService {

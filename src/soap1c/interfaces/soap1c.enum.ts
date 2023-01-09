@@ -1,4 +1,4 @@
-import { ReturnNumberData, ReturnNumberRequestStruct, SetIdRequestStruct } from './interface';
+import { ReturnNumberData, ReturnNumberRequestStruct, SetIdRequestStruct } from './soap1c.interface';
 
 export enum Soap1cActionTypes {
   getRouteNumber = 'ReturnNumber',

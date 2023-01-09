@@ -1,8 +1,8 @@
 import { ContextDialplanNumberMap } from '@app/config/config';
 import { LoggerService } from '@app/logger/logger.service';
 import { Soap1cProvider } from '@app/soap1c/sopa1c.provider';
-import { ReturnNumberResponseData } from '@app/soap1c/types/interface';
-import { Soap1cActionTypes, Soap1cEnvelopeTypes } from '@app/soap1c/types/types';
+import { ReturnNumberResponseData } from '@app/soap1c/interfaces/soap1c.interface';
+import { Soap1cActionTypes, Soap1cEnvelopeTypes } from '@app/soap1c/interfaces/soap1c.enum';
 import { UtilsService } from '@app/utils/utils.service';
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
