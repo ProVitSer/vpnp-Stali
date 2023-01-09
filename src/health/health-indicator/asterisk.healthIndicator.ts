@@ -1,17 +1,15 @@
-import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
 import * as ARI from 'ari-client';
 
 @Injectable()
-export class AsteriskApi {
-  private serviceContext: string;
-
-  constructor(private readonly configService: ConfigService, private readonly logger: LoggerService) {
-    this.serviceContext = AsteriskApi.name;
+export class AsteriskHealthIndicator extends HealthIndicator {
+  constructor(private readonly configService: ConfigService) {
+    super();
   }
 
-  public async ping() {
+  public async ping(key: string): Promise<HealthIndicatorResult> {
     try {
       const ariClient = await ARI.connect(
         this.configService.get('asterisk.ari.url'),
@@ -21,13 +19,13 @@ export class AsteriskApi {
       return new Promise((resolve) => {
         ariClient.on('WebSocketConnected', () => {
           ariClient.on('pong', () => {
-            resolve(true);
+            resolve(super.getStatus(key, true));
           });
           ariClient.ping();
         });
       });
     } catch (e) {
-      throw e;
+      throw new HealthCheckError(`${key} failed`, this.getStatus(key, false, { message: e }));
     }
   }
 }

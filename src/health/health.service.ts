@@ -9,11 +9,11 @@ import {
   HttpHealthIndicator,
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
-import { DockerImgServiceHealthIndicator, DockerServiceHealthIndicator } from './health-indicator/docker.service.healthIndicator';
+import { DockerImgServiceHealthIndicator, DockerServiceHealthIndicator } from './health-indicator/docker.healthIndicator';
 import { HealthCheckMailFormat } from './types/interfaces';
 import { HealthCheckStatusType, ReturnHealthFormatType } from './types/type';
 import { HttpService } from '@nestjs/axios';
-import { TypegooseHealthIndicator } from './health-indicator/typegoose-health.indicator';
+import { TypegooseHealthIndicator } from './health-indicator/typegoose.healthIndicator';
 
 @Injectable()
 export class HealthService {

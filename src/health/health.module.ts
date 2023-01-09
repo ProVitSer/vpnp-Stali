@@ -5,14 +5,15 @@ import { TerminusModule } from '@nestjs/terminus';
 import { ConfigModule } from '@nestjs/config';
 import { AsteriskModule } from '@app/asterisk/asterisk.module';
 import { DockerModule } from '@app/docker/docker.module';
-import { DockerImgServiceHealthIndicator, DockerServiceHealthIndicator } from './health-indicator/docker.service.healthIndicator';
+import { DockerImgServiceHealthIndicator, DockerServiceHealthIndicator } from './health-indicator/docker.healthIndicator';
 import { HttpModule } from '@nestjs/axios';
 import { LoggerMiddleware } from '@app/middlewares/logger.middleware';
 import { LoggerModule } from '@app/logger/logger.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HealthScheduledService } from './schedule/health-service.schedule';
 import { MailModule } from '@app/mail/mail.module';
-import { TypegooseHealthIndicator } from './health-indicator/typegoose-health.indicator';
+import { TypegooseHealthIndicator } from './health-indicator/typegoose.healthIndicator';
+import { AsteriskHealthIndicator } from './health-indicator/asterisk.healthIndicator';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { TypegooseHealthIndicator } from './health-indicator/typegoose-health.in
     DockerServiceHealthIndicator,
     TypegooseHealthIndicator,
     HealthScheduledService,
+    AsteriskHealthIndicator,
   ],
   exports: [HealthService],
 })
