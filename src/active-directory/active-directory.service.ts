@@ -3,7 +3,14 @@ import { HttpService } from '@nestjs/axios';
 import { LoggerService } from '@app/logger/logger.service';
 import { ConfigService } from '@nestjs/config';
 import { AdRemoteDataRequest, AdRemoteStatusResponse, AdRGetUsersResponse } from './interfaces/active-directory.interface';
-import { ERROR_GET_AD_USERS, ERROR_SET_AD_REMOTE_STATUS, HEADERS } from './active-directory.constans';
+import {
+  ENCODING_FROM_AD_MICROSERVICE,
+  ERROR_GET_AD_USERS,
+  ERROR_SET_AD_REMOTE_STATUS,
+  HEADERS,
+  NEED_ENCODING,
+} from './active-directory.constans';
+import { encode, decode } from 'iconv-lite';
 
 @Injectable()
 export class ActiveDirectoryService {
@@ -31,10 +38,23 @@ export class ActiveDirectoryService {
       if (result.status !== 200) {
         throw result.data.error || ERROR_GET_AD_USERS;
       }
-      return result.data as AdRGetUsersResponse;
+      const responseData = result.data as AdRGetUsersResponse;
+      const decodeData = this.decodeAdUsers(responseData);
+      return decodeData as AdRGetUsersResponse;
     } catch (e) {
       this.logger.error(e, this.serviceContext);
       throw e;
     }
+  }
+
+  private decodeAdUsers(responseData: AdRGetUsersResponse): AdRGetUsersResponse {
+    const { data, result } = responseData;
+    const decodeUsers = data.map((user: string) => {
+      return decode(encode(user, ENCODING_FROM_AD_MICROSERVICE), NEED_ENCODING);
+    });
+    return {
+      result,
+      data: decodeUsers,
+    };
   }
 }
