@@ -18,7 +18,6 @@ import { Response } from 'express';
 import { RemoteActivateDto } from './dto/remote-activate.dto';
 import { RemoteDeleteDto } from './dto/remote-delete.dto';
 import { RemoteDeactivateDto } from './dto/remote-deactivate.dto';
-import { RemoteActualUserStatusDto } from './dto/remote-actual-user-status.dto';
 
 @UsePipes(ValidationPipe)
 @UseFilters(HttpExceptionFilter)
