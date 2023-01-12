@@ -75,10 +75,10 @@ export class RemoteController {
     }
   }
 
-  @Get('user')
-  async getActualRemoteStatus(@Body() body: RemoteActualUserStatusDto, @Res() res: Response) {
+  @Get('user/:user')
+  async getActualRemoteStatus(@Param('user') user: string, @Res() res: Response) {
     try {
-      const result = await this.remoteService.getActualRemoteStatus(body);
+      const result = await this.remoteService.getActualRemoteStatus({ user });
       return res.status(HttpStatus.OK).json({ ...result });
     } catch (e) {
       throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
