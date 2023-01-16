@@ -1,7 +1,7 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { SelenoidProvider } from '@app/selenoid/selenoid.provider';
 import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { AdditionalServicesModelService } from '../additional-services.service';
 import { format } from 'date-fns';
 import { ServicesType } from '../interfaces/additional-services.enum';
@@ -10,6 +10,7 @@ import { AdditionalServicesModel } from '../additional-services..model';
 import { ServicesTypeToActionTypeMap } from '../interfaces/additional-services.interface';
 import { ForwardRuleType, SelenoidDataTypes } from '@app/selenoid/interfaces/selenoid.interface';
 import * as PromiseBluebird from 'bluebird';
+import { DATE_FORMAT, DEFERRED_PBX_SET_FROWARD_TIME, REVERT_PBX_SET_FROWARD_TIME } from '@app/config/app.config';
 
 @Injectable()
 export class ChangeForwardScheduleService {
@@ -23,13 +24,13 @@ export class ChangeForwardScheduleService {
     this.serviceContext = ChangeForwardScheduleService.name;
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_3AM)
+  @Cron(DEFERRED_PBX_SET_FROWARD_TIME)
   async setForward() {
     try {
       const result = await this.additionalServicesModel.findByCriteria({
         service: { $in: [ServicesType.mail, ServicesType.extension] },
         revertChange: { $exists: true, $ne: true },
-        dateFrom: format(new Date(), 'dd.MM.yyyy'),
+        dateFrom: format(new Date(), DATE_FORMAT),
       });
       if (result.length === 0) return;
       await this.change(result);
@@ -38,7 +39,7 @@ export class ChangeForwardScheduleService {
     }
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_4AM)
+  @Cron(REVERT_PBX_SET_FROWARD_TIME)
   async revertForward() {
     try {
       const result = await this.additionalServicesModel.findByCriteria({

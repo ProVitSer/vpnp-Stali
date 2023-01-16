@@ -1,5 +1,5 @@
+import { DATE_FORMAT } from '@app/config/app.config';
 import { Injectable } from '@nestjs/common';
-import { DATE_FORMAT } from './util.constants';
 import { format } from 'date-fns';
 
 @Injectable()
