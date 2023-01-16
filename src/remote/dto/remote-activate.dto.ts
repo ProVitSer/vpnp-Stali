@@ -9,7 +9,7 @@ export class RemoteActivateDto {
 
   @IsString()
   @IsNotEmpty({ message: 'Поле mobile не может быть пустым' })
-  @Transform(({ value }) => UtilsService.formatNumberToE164(value))
+  //@Transform(({ value }) => UtilsService.formatNumberToE164(value))
   mobile: string;
 
   @IsEmail()

@@ -4,18 +4,17 @@ import { RemoteActivateDto } from './dto/remote-activate.dto';
 import { RemoteActivateDtoWithId, RemoteDeactivateDtoWithId, RemoteResponse, UpdateRemoteStatusData } from './interfaces/remote-interface';
 import { RemoteModel } from './remote.model';
 import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
-import { RemoteStatus } from './interfaces/remote-enum';
+import { RemoteStatus, RemoteStatusChangeType, RemoteTaskType } from './interfaces/remote-enum';
 import { SelenoidProvider } from '@app/selenoid/selenoid.provider';
 import { Types } from 'mongoose';
 import { ActiveDirectoryService } from '@app/active-directory/active-directory.service';
 import { AdActionTypes } from '@app/active-directory/interfaces/active-directory.enum';
-import { UtilsService } from '@app/utils/utils.service';
 import { RemoteDeleteDto } from './dto/remote-delete.dto';
 import * as moment from 'moment';
 import { RemoteDeactivateDto } from './dto/remote-deactivate.dto';
 import { ActionType, EsetStatus } from '@app/selenoid/interfaces/selenoid.enum';
 import { RemoteActualUserStatusDto } from './dto/remote-actual-user-status.dto';
-import { DATE_FORMAT, FORMAT_INCOMING_DATE } from './remote..constants';
+import { REMOTE_DATE_FORMAT, FORMAT_INCOMING_DATE } from './remote..constants';
 import { LoggerService } from '@app/logger/logger.service';
 
 @Injectable()
@@ -56,22 +55,28 @@ export class RemoteService {
   }
 
   public async remoteActivate(data: RemoteActivateDto): Promise<RemoteResponse> {
-    const responseData = await this.gerRemoteDefaultResponse(data);
-    if (UtilsService.isDateNow(data.dateFrom)) {
-      this.activateRemoteAccess({ ...data, remoteId: responseData.remoteId });
-    }
+    const responseData = await this.gerRemoteDefaultResponse(data, {
+      remoteTaskType: RemoteTaskType.activateRemote,
+      remoteStatusChange: RemoteStatusChangeType.start,
+    });
+    // if (UtilsService.isDateNow(data.dateFrom)) {
+    //   this.activateRemoteAccess({ ...data, remoteId: responseData.remoteId });
+    // }
 
     return responseData;
   }
 
   public async remoteDeactivate(data: RemoteDeactivateDto): Promise<RemoteResponse> {
-    const responseData = await this.gerRemoteDefaultResponse(data);
-    this.deactivateRemoteAccess({ ...data, remoteId: responseData.remoteId });
+    const responseData = await this.gerRemoteDefaultResponse(data, {
+      remoteTaskType: RemoteTaskType.deactivateRemote,
+      remoteStatusChange: RemoteStatusChangeType.start,
+    });
+    //this.deactivateRemoteAccess({ ...data, remoteId: responseData.remoteId });
     return responseData;
   }
 
   public async getRemoteAdUsers(): Promise<RemoteResponse> {
-    const responseData = await this.gerRemoteDefaultResponse({});
+    const responseData = await this.gerRemoteDefaultResponse({}, { remoteTaskType: RemoteTaskType.deactivateRemote });
     this.getAdUsers(responseData.remoteId);
     return responseData;
   }
@@ -101,29 +106,36 @@ export class RemoteService {
   }
 
   public async getActualRemoteStatus(data: RemoteActualUserStatusDto): Promise<RemoteResponse> {
-    const responseData = await this.gerRemoteDefaultResponse({});
-    this.getUserStatus({ ...data, remoteId: responseData.remoteId });
+    const responseData = await this.gerRemoteDefaultResponse(data, {
+      remoteTaskType: RemoteTaskType.getUserStatus,
+      remoteStatusChange: RemoteStatusChangeType.start,
+    });
+    //this.getUserStatus({ ...data, remoteId: responseData.remoteId });
     return responseData;
   }
 
-  private async getUserStatus(data: RemoteActualUserStatusDto & { remoteId: string | Types.ObjectId }) {
+  public async getUserStatus(data: RemoteActualUserStatusDto & { remoteId: string | Types.ObjectId }) {
     try {
       const adUsers = await this.adService.getAdUsers();
       const isRemoteEsetActive = await this.selenoidProvider.change(ActionType.esetCheckRemoteAccess, { userName: data.user });
-      await this.updateRemoteStatus({
+      await this.updateRemoteCompleted({
         remoteId: data.remoteId,
         isRemoteAdActive: adUsers.data.some((adUser) => adUser === data.user),
         isRemoteEsetActive,
       });
     } catch (e) {
-      await this.remoteModelService.updateById(data.remoteId, { remoteData: { error: String(e) }, status: RemoteStatus.apiFail });
+      await this.remoteModelService.updateById(data.remoteId, {
+        remoteData: { error: String(e) },
+        status: RemoteStatus.apiFail,
+        remoteStatusChange: RemoteStatusChangeType.end,
+      });
     }
   }
 
   private async deleteByDate(dateFrom, dateTo) {
     const criteria = {
       createdAt: {
-        $gte: new Date(moment(dateFrom, FORMAT_INCOMING_DATE).format(DATE_FORMAT)),
+        $gte: new Date(moment(dateFrom, FORMAT_INCOMING_DATE).format(REMOTE_DATE_FORMAT)),
         $lte: new Date(moment(dateTo, FORMAT_INCOMING_DATE).endOf('day').format()),
       },
     };
@@ -145,7 +157,11 @@ export class RemoteService {
       await this.remoteModelService.updateById(remoteId, updateInfo);
     } catch (e) {
       this.logger.error(e, this.serviceContext);
-      await this.remoteModelService.updateById(remoteId, { remoteData: { error: String(e) }, status: RemoteStatus.apiFail });
+      await this.remoteModelService.updateById(remoteId, {
+        remoteData: { error: String(e) },
+        status: RemoteStatus.apiFail,
+        remoteStatusChange: RemoteStatusChangeType.end,
+      });
     }
   }
 
@@ -157,10 +173,14 @@ export class RemoteService {
         phoneNumber: data.mobile,
         status: EsetStatus.on,
       });
-      await this.updateRemoteStatus({ remoteId: data.remoteId, isRemoteAdActive: true, isRemoteEsetActive: true });
+      await this.updateRemoteCompleted({ remoteId: data.remoteId, isRemoteAdActive: true, isRemoteEsetActive: true });
     } catch (e) {
       this.logger.error(e, this.serviceContext);
-      await this.remoteModelService.updateById(data.remoteId, { remoteData: { error: String(e) }, status: RemoteStatus.apiFail });
+      await this.remoteModelService.updateById(data.remoteId, {
+        remoteData: { error: String(e) },
+        status: RemoteStatus.apiFail,
+        remoteStatusChange: RemoteStatusChangeType.end,
+      });
     }
   }
 
@@ -171,14 +191,18 @@ export class RemoteService {
         userName: data.user,
         status: EsetStatus.off,
       });
-      await this.updateRemoteStatus({ remoteId: data.remoteId, isRemoteAdActive: false, isRemoteEsetActive: false });
+      await this.updateRemoteCompleted({ remoteId: data.remoteId, isRemoteAdActive: false, isRemoteEsetActive: false });
     } catch (e) {
       this.logger.error(e, this.serviceContext);
-      await this.remoteModelService.updateById(data.remoteId, { remoteData: { error: String(e) }, status: RemoteStatus.apiFail });
+      await this.remoteModelService.updateById(data.remoteId, {
+        remoteData: { error: String(e) },
+        status: RemoteStatus.apiFail,
+        remoteStatusChange: RemoteStatusChangeType.end,
+      });
     }
   }
 
-  private async updateRemoteStatus(data: UpdateRemoteStatusData) {
+  private async updateRemoteCompleted(data: UpdateRemoteStatusData) {
     const { isRemoteAdActive, isRemoteEsetActive } = data;
     await this.remoteModelService.updateById(data.remoteId, {
       remoteData: { remoteStatus: { isRemoteAdActive, isRemoteEsetActive } },
@@ -186,8 +210,8 @@ export class RemoteService {
     });
   }
 
-  private async gerRemoteDefaultResponse(data: { [key: string]: any }) {
-    const { _id } = await this.remoteModelService.create(data);
+  private async gerRemoteDefaultResponse(data: { [key: string]: any }, fields?: { [key: string]: any }) {
+    const { _id } = await this.remoteModelService.create({ ...data, ...fields });
     return {
       remoteId: _id,
       status: RemoteStatus.inProgress,

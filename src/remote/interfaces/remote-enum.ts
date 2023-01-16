@@ -5,8 +5,15 @@ export enum RemoteStatus {
   notFound = 'notFound',
 }
 
-export enum RemoteAccessStatus {
-  activate = "activate",
-  deactivate = "deactivate",
+export enum RemoteTaskType {
+  adUsersList = 'adUsersList',
+  getUserStatus = 'getUserStatus',
+  activateRemote = 'activateRemote',
+  deactivateRemote = 'deactivateRemote',
+}
 
+export enum RemoteStatusChangeType {
+  start = 'start',
+  progress = 'progress',
+  end = 'end',
 }

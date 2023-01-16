@@ -9,6 +9,7 @@ import { RemoteController } from './remote.controller';
 import { RemoteModelService, RemoteService } from './remote.service';
 import { SetRemoteAccessScheduleService } from './schedule/set-remote-access.schedule';
 import { ScheduleModule } from '@nestjs/schedule';
+import { RateLimiterGuard, RateLimiterModule } from 'nestjs-rate-limiter';
 
 @Module({
   controllers: [RemoteController],
@@ -25,8 +26,17 @@ import { ScheduleModule } from '@nestjs/schedule';
       },
     ]),
     ScheduleModule.forRoot(),
+    RateLimiterModule,
   ],
-  providers: [RemoteService, RemoteModelService, SetRemoteAccessScheduleService],
+  providers: [
+    RemoteService,
+    RemoteModelService,
+    SetRemoteAccessScheduleService,
+    {
+      provide: 'APP_GUARD',
+      useClass: RateLimiterGuard,
+    },
+  ],
 })
 export class RemoteModule {
   configure(consumer: MiddlewareConsumer): void {
