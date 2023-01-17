@@ -30,6 +30,7 @@ export class EsetSearchUser {
       await this.webDriver.findElement(By.xpath("//input[@placeholder='User Name']")).sendKeys(userName);
       await this.webDriver.sleep(5000);
       await this.webDriver.findElement(By.xpath("//input[@placeholder='User Name']")).sendKeys(Key.ENTER);
+      await this.webDriver.sleep(5000);
       await this.webDriver.findElement(By.xpath(`(//div[contains(text(), '${userName}')])[1]`)).click();
       return await this.webDriver.sleep(5000);
     } catch (e) {
