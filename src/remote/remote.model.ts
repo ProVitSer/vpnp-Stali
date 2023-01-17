@@ -1,6 +1,6 @@
 import { modelOptions, prop, Severity } from '@typegoose/typegoose';
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
-import { RemoteStatus, RemoteStatusChangeType, RemoteTaskType } from './interfaces/remote-enum';
+import { RemoteStatus, RemoteStatusChangeType, RemoteActionType } from './interfaces/remote-enum';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface RemoteModel extends Base {}
@@ -14,8 +14,8 @@ export class RemoteModel extends TimeStamps {
   @prop({ enum: RemoteStatus, default: RemoteStatus.inProgress })
   status: RemoteStatus;
 
-  @prop({ enum: RemoteTaskType })
-  remoteTaskType: RemoteTaskType;
+  @prop({ enum: RemoteActionType })
+  remoteActionType: RemoteActionType;
 
   @prop({ enum: RemoteStatusChangeType })
   remoteStatusChange: RemoteStatusChangeType;

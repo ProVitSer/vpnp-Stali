@@ -5,7 +5,7 @@ export enum RemoteStatus {
   notFound = 'notFound',
 }
 
-export enum RemoteTaskType {
+export enum RemoteActionType {
   adUsersList = 'adUsersList',
   getUserStatus = 'getUserStatus',
   activateRemote = 'activateRemote',

@@ -9,14 +9,26 @@ import { RemoteController } from './remote.controller';
 import { RemoteModelService, RemoteService } from './remote.service';
 import { SetRemoteAccessScheduleService } from './schedule/set-remote-access.schedule';
 import { ScheduleModule } from '@nestjs/schedule';
-import { RateLimiterGuard, RateLimiterModule } from 'nestjs-rate-limiter';
+import { RateLimiterModule } from 'nestjs-rate-limiter';
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { RemoteMessageQueueService } from './remote-message-queue.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { getRabbitMQConfig } from '@app/config/rabbit.config';
+import { RemoteProvider } from './remote.provider';
+import { ActivateRemote, AdUsersListRemote, DeactivateRemote, GetUserStatusRemote } from './providers';
+import { MAX_REMOTE_DURATION, MAX_REMOTE_POINTS } from '@app/config/app.config';
+import { RATELIMIT_REQUEST_ERROR } from './remote.constants';
 
 @Module({
-  controllers: [RemoteController],
   imports: [
     LoggerModule,
     SelenoidModule,
     ActiveDirectoryModule,
+    RateLimiterModule.register({
+      duration: MAX_REMOTE_DURATION,
+      points: MAX_REMOTE_POINTS,
+      errorMessage: RATELIMIT_REQUEST_ERROR,
+    }),
     TypegooseModule.forFeature([
       {
         typegooseClass: RemoteModel,
@@ -25,18 +37,26 @@ import { RateLimiterGuard, RateLimiterModule } from 'nestjs-rate-limiter';
         },
       },
     ]),
+    RabbitMQModule.forRootAsync(RabbitMQModule, {
+      imports: [ConfigModule],
+      useFactory: getRabbitMQConfig,
+      inject: [ConfigService],
+    }),
     ScheduleModule.forRoot(),
-    RateLimiterModule,
   ],
   providers: [
     RemoteService,
     RemoteModelService,
+    RemoteMessageQueueService,
+    RemoteProvider,
+    ActivateRemote,
+    DeactivateRemote,
+    GetUserStatusRemote,
+    AdUsersListRemote,
     SetRemoteAccessScheduleService,
-    {
-      provide: 'APP_GUARD',
-      useClass: RateLimiterGuard,
-    },
   ],
+  exports: [RemoteService],
+  controllers: [RemoteController],
 })
 export class RemoteModule {
   configure(consumer: MiddlewareConsumer): void {
