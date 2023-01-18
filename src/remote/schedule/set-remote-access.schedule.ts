@@ -3,17 +3,17 @@ import { Injectable } from '@nestjs/common';
 import { RemoteModelService } from '../remote.service';
 import { Cron } from '@nestjs/schedule';
 import { format } from 'date-fns';
-import { RemoteStatus } from '../interfaces/remote-enum';
+import { RemoteActionType, RemoteStatus } from '../interfaces/remote-enum';
 import { DATE_FORMAT, DEFERRED__CHANGES_ACTIVATE_TIME, DEFERRED_CHANGES_DEACTIVATE_TIME } from '@app/config/app.config';
-import { RemoteProvider } from '../remote.provider';
+import { RemoteMessageQueueService } from '../remote-message-queue.service';
 
 @Injectable()
 export class SetRemoteAccessScheduleService {
   private serviceContext: string;
   constructor(
     private readonly logger: LoggerService,
-    private readonly remoteProvider: RemoteProvider,
     private readonly remoteModelService: RemoteModelService,
+    private readonly remoteMessage: RemoteMessageQueueService,
   ) {
     this.serviceContext = SetRemoteAccessScheduleService.name;
   }
@@ -28,7 +28,7 @@ export class SetRemoteAccessScheduleService {
       if (result.length === 0) return;
       await Promise.all(
         result.map(async (user) => {
-          await this.remoteProvider.action({ remoteId: user._id, status: user.status, remoteActionType: user.remoteActionType });
+          await this.remoteMessage.publish({ remoteId: user._id, status: user.status, remoteActionType: RemoteActionType.activateRemote });
         }),
       );
     } catch (e) {
@@ -46,7 +46,11 @@ export class SetRemoteAccessScheduleService {
       if (result.length === 0) return;
       await Promise.all(
         result.map(async (user) => {
-          await this.remoteProvider.action({ remoteId: user._id, status: user.status, remoteActionType: user.remoteActionType });
+          await this.remoteMessage.publish({
+            remoteId: user._id,
+            status: user.status,
+            remoteActionType: RemoteActionType.deactivateRemote,
+          });
         }),
       );
     } catch (e) {
