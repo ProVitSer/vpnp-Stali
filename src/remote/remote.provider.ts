@@ -13,6 +13,7 @@ import { PROVIDER_NOT_EXISTS } from './remote.constants';
 import { RemoteModel } from './remote.model';
 import { RemoteModelService } from './remote.service';
 import { DocumentType } from '@typegoose/typegoose/lib/types';
+import { UtilsService } from '@app/utils/utils.service';
 
 @Injectable()
 export class RemoteProvider {
@@ -40,11 +41,10 @@ export class RemoteProvider {
 
   public async action(data: RemoteProviderData): Promise<void> {
     try {
-      console.log(data);
       const provider = this.getProvider(data.remoteActionType);
       const actionData = await this.getData(String(data.remoteId));
       const complitedData = await provider.remoteAction(this.getRemoteAccessData(actionData));
-      return await this.updateRemoteCompleted(complitedData);
+      return await this.updateRemoteCompleted(complitedData, actionData);
     } catch (e) {
       this.logger.error(e, this.serviceContext);
       await this.remoteModelService.updateById(data.remoteId, {
@@ -71,10 +71,11 @@ export class RemoteProvider {
     return await this.remoteModelService.findById(remoteId);
   }
 
-  private async updateRemoteCompleted(data: RemoteActionDataCompleted) {
-    await this.remoteModelService.updateById(data.remoteId, {
-      remoteData: data.remoteData,
+  private async updateRemoteCompleted(dataCompleted: RemoteActionDataCompleted, actionData: DocumentType<RemoteModel>) {
+    await this.remoteModelService.updateById(dataCompleted.remoteId, {
+      remoteData: dataCompleted.remoteData,
       status: RemoteStatus.completed,
+      remoteStatusChange: UtilsService.isDateNow(actionData.dateTo) ? RemoteStatusChangeType.end : RemoteStatusChangeType.progress,
     });
   }
 
