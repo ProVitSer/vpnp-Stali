@@ -15,7 +15,7 @@ export class RemoteMessageQueueService {
     this.serviceContext = RemoteMessageQueueService.name;
   }
 
-  public async publish(message: any): Promise<void> {
+  public async publish(message: RemoteProviderData): Promise<void> {
     return this.connection.publish(RemoteMessageQueueService.EXCHANGE, RemoteMessageQueueService.MQ_ROUTINGKEY, message);
   }
 
@@ -27,14 +27,11 @@ export class RemoteMessageQueueService {
   public async subForRemote(message: RemoteProviderData): Promise<void> {
     try {
       await UtilsService.timeout(10000);
-      console.log(message);
       return await this.remoteProvider.action(message);
     } catch (e) {
       this.logger.error(e, this.serviceContext);
       return;
     }
   }
-  private static errorHandler(channel: any, msg: any, error: any): void {
-    console.log('errorHandler', error);
-  }
+  // private static errorHandler(channel: any, msg: any, error: any): void {}
 }
