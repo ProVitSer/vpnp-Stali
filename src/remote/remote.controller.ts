@@ -79,7 +79,7 @@ export class RemoteController {
   }
 
   @UseGuards(RateLimiterGuard)
-  @Get('ad/user/:user')
+  @Get('user/:user')
   async getActualRemoteStatus(@Param('user') user: string, @Res() res: Response) {
     try {
       const result = await this.remoteService.getActualRemoteStatus({ user });
