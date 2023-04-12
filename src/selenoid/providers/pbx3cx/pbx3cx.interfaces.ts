@@ -1,3 +1,5 @@
+import { ForwardRuleType } from './pbx3cx.enum';
+
 export interface QueueStatusData {
   exten: string;
   status: boolean;
@@ -13,8 +15,8 @@ export interface ExtensionStatusData {
   change?: boolean;
 }
 
-export enum ForwardRuleType {
-  mobile = 'mobile',
-  extension = 'extension',
-  external = 'external',
+export interface GetExtensionForwardStatus {
+  isForwardEnable: boolean;
+  forwardType?: ForwardRuleType;
+  exten?: string;
 }

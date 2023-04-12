@@ -6,3 +6,8 @@ export interface MailForwardData {
   status: boolean;
   change?: boolean;
 }
+
+export interface GetMailForwardStatus {
+  isForwardEnable: boolean;
+  email?: string;
+}
