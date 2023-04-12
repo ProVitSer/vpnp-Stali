@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { By, until, WebDriver } from 'selenium-webdriver';
 import { SelenoidWebdriver } from '../../selenoid.webdriver';
 import { AUTH_PBX_ERROR } from './pbx3cx.constants';
+import { Pbx3cxPath } from './pbx3cx.enum';
 
 @Injectable()
 export class Login {
@@ -37,7 +38,7 @@ export class Login {
 
   private async authorization(): Promise<WebDriver> {
     try {
-      await this.webDriver.get(`https://${this.configService.get('pbx3cx.url')}/#/login`);
+      await this.webDriver.get(`https://${this.configService.get('pbx3cx.url')}${Pbx3cxPath.login}`);
       await this.webDriver.manage().window().maximize();
       await this.webDriver.sleep(10000);
       await SelenoidUtils.checkPrivacy(this.webDriver);

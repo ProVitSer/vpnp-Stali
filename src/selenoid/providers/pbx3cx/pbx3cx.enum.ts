@@ -19,5 +19,7 @@ export enum ForwardingType {
   ExternalForwarding = 'ExternalForwarding',
 }
 
-// /#/login
-// /#/app/extensions
+export enum Pbx3cxPath {
+  login = '/#/login',
+  extensions = '/#/app/extensions',
+}

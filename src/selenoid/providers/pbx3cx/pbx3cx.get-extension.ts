@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { By, until, WebDriver } from 'selenium-webdriver';
 import { ERROR_EXTENSION_NOT_FOUND } from './pbx3cx.constants';
+import { Pbx3cxPath } from './pbx3cx.enum';
 
 @Injectable()
 export class GetExtension {
@@ -11,7 +12,7 @@ export class GetExtension {
   public async getExtension(webDriver: WebDriver, extension: string): Promise<void> {
     try {
       this.webDriver = webDriver;
-      await this.webDriver.get(`https://${this.configService.get('pbx3cx.url')}/#/app/extensions`);
+      await this.webDriver.get(`https://${this.configService.get('pbx3cx.url')}${Pbx3cxPath.extensions}`);
       await this.webDriver.wait(until.elementLocated(By.className('btn btn-sm btn-success btn-responsive ng-scope')), 10 * 10000);
       await this.webDriver.findElement(By.xpath("//input[@id='inputSearch']")).sendKeys(extension);
       await this.webDriver.sleep(5000);
