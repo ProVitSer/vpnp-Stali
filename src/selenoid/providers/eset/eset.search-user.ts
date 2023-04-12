@@ -1,7 +1,7 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { By, Key, WebDriver } from 'selenium-webdriver';
-import { ERROR_SEARCH_USER } from './constants';
+import { ERROR_SEARCH_USER } from './eset.constants';
 
 @Injectable()
 export class EsetSearchUser {
@@ -20,7 +20,7 @@ export class EsetSearchUser {
     }
   }
 
-  private async _search(userName: string) {
+  private async _search(userName: string): Promise<void> {
     try {
       await this.webDriver.findElement(By.xpath("//div[contains(text(), 'Filter...')]")).click();
       await this.webDriver.sleep(5000);

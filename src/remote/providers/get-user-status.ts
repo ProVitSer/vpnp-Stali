@@ -27,7 +27,7 @@ export class GetUserStatusRemote implements RemoteProviderInterface {
   private async getUserStatus(data: RemoteActualUserStatusDtoWithId) {
     try {
       const adUsers = await this.adService.getAdUsers();
-      const isRemoteEsetActive = await this.selenoidProvider.change(ActionType.esetCheckRemoteAccess, { userName: data.user });
+      const isRemoteEsetActive = await this.selenoidProvider.action(ActionType.esetCheckRemoteAccess, { userName: data.user });
       return {
         remoteId: data.remoteId,
         remoteData: { remoteStatus: { isRemoteAdActive: adUsers.data.some((adUser) => adUser === data.user), isRemoteEsetActive } },

@@ -28,7 +28,7 @@ export class DeactivateRemote implements RemoteProviderInterface {
   private async deactivateRemoteAccess(data: RemoteDeactivateDtoWithId) {
     try {
       await this.adService.setAdRemoteStatus({ user: data.user, action: AdActionTypes.deleteRemoteAccess });
-      await this.selenoidProvider.change(ActionType.esetSetRemoteAccess, {
+      await this.selenoidProvider.action(ActionType.esetSetRemoteAccess, {
         userName: data.user,
         status: EsetStatus.off,
       });

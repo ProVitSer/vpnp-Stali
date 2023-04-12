@@ -1,12 +1,13 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { By, WebDriver } from 'selenium-webdriver';
+import { By, WebDriver, WebElementPromise } from 'selenium-webdriver';
 import { SelenoidWebdriver } from '../../selenoid.webdriver';
-import { MailForwardData, SelenoidProviderInterface } from '../../interfaces/selenoid.interface';
-import { AUTH_MAIL_ERROR, ERROR_LOGOUT, ERROR_USER_FORWARD, ERROR_USER_NOT_FOUND } from './constants';
+import { SelenoidProviderInterface } from '../../interfaces/selenoid.interface';
+import { AUTH_MAIL_ERROR, ERROR_LOGOUT, ERROR_USER_FORWARD, ERROR_USER_NOT_FOUND } from './mail.constants';
 import { ERROR_WEB_DRIVER } from '@app/selenoid/selenoid.constants';
 import { UtilsService } from '@app/utils/utils.service';
+import { MailForwardData } from './mail.interfaces';
 
 @Injectable()
 export class MailForward implements SelenoidProviderInterface {
@@ -23,7 +24,7 @@ export class MailForward implements SelenoidProviderInterface {
     this.serviceContext = MailForward.name;
   }
 
-  async selenoidChange(data: MailForwardData): Promise<boolean> {
+  async selenoidAction(data: MailForwardData): Promise<boolean> {
     try {
       this.enableForward = data.status;
       if (UtilsService.isDateNow(data.dateFrom)) {
@@ -35,7 +36,7 @@ export class MailForward implements SelenoidProviderInterface {
     }
   }
 
-  private async setEmailForward(data: MailForwardData) {
+  private async setEmailForward(data: MailForwardData): Promise<void> {
     this.userName = data.from.match(/(.+)@(.+)/)[1];
     this.email = data.from.match(/(.+)@(.+)/)[0];
     try {
@@ -54,7 +55,7 @@ export class MailForward implements SelenoidProviderInterface {
     }
   }
 
-  private async setForward(data: MailForwardData) {
+  private async setForward(data: MailForwardData): Promise<void> {
     try {
       // Проверка включена переадресация или нет
       // <input type="checkbox" name="EnableForwarding" id="EnableForwarding" onclick="Enable();RA.setIsDirty()" checked="true">
@@ -88,7 +89,7 @@ export class MailForward implements SelenoidProviderInterface {
     }
   }
 
-  private async exit() {
+  private async exit(): Promise<void> {
     try {
       await this.webDriver.sleep(5000);
       await this.webDriver.switchTo().defaultContent();
@@ -100,7 +101,7 @@ export class MailForward implements SelenoidProviderInterface {
     }
   }
 
-  private async goToUserForward() {
+  private async goToUserForward(): Promise<void> {
     try {
       // Проваливаемся в открывшееся диалоговое окно,переход в раздел переадресации
       await this.webDriver.switchTo().frame(this.webDriver.findElement(By.id('dialog:useredit_account.wdm')));
@@ -112,7 +113,7 @@ export class MailForward implements SelenoidProviderInterface {
     }
   }
 
-  private async searchNeedUser(userName: string) {
+  private async searchNeedUser(userName: string): Promise<void> {
     try {
       // Переходво во вкладку Администрирования почты
       await this.webDriver.findElement(By.xpath(`//div[@onclick="RA.views.load('V_USERLIST', 'MainWindow=1');"]`)).click();
@@ -142,7 +143,7 @@ export class MailForward implements SelenoidProviderInterface {
     }
   }
 
-  private async authorization() {
+  private async authorization(): Promise<WebElementPromise> {
     try {
       await this.webDriver.findElement(By.id('username')).sendKeys(this.configService.get('mailServer.username'));
       await this.webDriver.findElement(By.id('password')).sendKeys(this.configService.get('mailServer.password'));
@@ -159,10 +160,9 @@ export class MailForward implements SelenoidProviderInterface {
     }
   }
 
-  private async getWebDriver() {
+  private async getWebDriver(): Promise<void> {
     try {
       this.webDriver = await this.selenoidWebDriver.getWebDriver();
-      return;
     } catch (e) {
       !!this.webDriver ? await this.webDriver.quit() : '';
       this.logger.error(e, this.serviceContext);

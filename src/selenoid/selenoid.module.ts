@@ -14,7 +14,7 @@ import {
   EsetSetRemoteAccess,
   EsetGetRemoteAccessStatus,
 } from './providers';
-import { EsetSearchUser } from './providers/eset/search-user';
+import { EsetSearchUser } from './providers/eset/eset.search-user';
 import { SelenoidProvider } from './selenoid.provider';
 import { SelenoidWebdriver } from './selenoid.webdriver';
 

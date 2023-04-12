@@ -1,13 +1,14 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { SelenoidUtils } from '@app/selenoid/selenoid.utils';
+import { SelenoidWebdriver } from '@app/selenoid/selenoid.webdriver';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { By, until, WebDriver } from 'selenium-webdriver';
-import { SelenoidWebdriver } from '../../selenoid.webdriver';
-import { AUTH_PBX_ERROR } from './constants';
+import { By, WebDriver } from 'selenium-webdriver';
+import { AUTH_ESET_ERROR } from './eset.constants';
+import { EsetPath } from './eset.enum';
 
 @Injectable()
-export class Login {
+export class EsetLogin {
   private webDriver: WebDriver;
   private serviceContext: string;
   constructor(
@@ -15,10 +16,9 @@ export class Login {
     private readonly configService: ConfigService,
     private readonly logger: LoggerService,
   ) {
-    this.serviceContext = Login.name;
+    this.serviceContext = EsetLogin.name;
   }
-
-  public async loginOnPbx(): Promise<WebDriver> {
+  public async loginOnEset(): Promise<WebDriver> {
     try {
       return await this._login();
     } catch (e) {
@@ -37,22 +37,20 @@ export class Login {
 
   private async authorization(): Promise<WebDriver> {
     try {
-      await this.webDriver.get(`https://${this.configService.get('pbx3cx.url')}/#/login`);
+      await this.webDriver.get(`${this.configService.get('eset.url')}${EsetPath.startPage}`);
       await this.webDriver.manage().window().maximize();
       await this.webDriver.sleep(10000);
       await SelenoidUtils.checkPrivacy(this.webDriver);
-      await this.webDriver.wait(until.elementLocated(By.className('btn btn-lg btn-primary btn-block ng-scope')), 10 * 10000);
-      await this.webDriver
-        .findElement(By.xpath("//input[@placeholder='User name or extension number']"))
-        .sendKeys(this.configService.get('pbx3cx.username'));
-      await this.webDriver.findElement(By.xpath("//input[@placeholder='Password']")).sendKeys(this.configService.get('pbx3cx.password'));
-      await this.webDriver.findElement(By.xpath('//*[@ng-dblclick="$ctrl.emptyAction()"]')).click();
+      await this.webDriver.sleep(10000);
+      await this.webDriver.findElement(By.id('loginInputUsername')).sendKeys(this.configService.get('eset.username'));
+      await this.webDriver.findElement(By.id('loginInputPassword')).sendKeys(this.configService.get('eset.password'));
+      await this.webDriver.findElement(By.xpath("//button[contains(text(), 'Submit')]")).click();
       await this.webDriver.sleep(5000);
       return this.webDriver;
     } catch (e) {
       !!this.webDriver ? await this.webDriver.quit() : '';
       this.logger.error(e, this.serviceContext);
-      throw AUTH_PBX_ERROR;
+      throw AUTH_ESET_ERROR;
     }
   }
 }

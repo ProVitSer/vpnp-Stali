@@ -61,12 +61,13 @@ export class ChangeForwardScheduleService {
       return a;
     });
   }
+
   private async change(data: DocumentType<AdditionalServicesModel>[]): Promise<void> {
     try {
       await PromiseBluebird.map(
         data,
         async (a: DocumentType<AdditionalServicesModel>) => {
-          await this.selenoid.change(ServicesTypeToActionTypeMap[a.service], { ...this.getForwardData(a) });
+          await this.selenoid.action(ServicesTypeToActionTypeMap[a.service], { ...this.getForwardData(a) });
           if (!a.status) await this.additionalServicesModel.updateById(a._id, { revertChange: true });
         },
         { concurrency: 1 },

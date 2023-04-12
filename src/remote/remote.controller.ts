@@ -1,4 +1,4 @@
-import { HttpExceptionFilter } from '@app/http-exception.filter';
+import { HttpExceptionFilter } from '@app/exceptions/http-exception/http-exception.filter';
 import {
   Body,
   Controller,

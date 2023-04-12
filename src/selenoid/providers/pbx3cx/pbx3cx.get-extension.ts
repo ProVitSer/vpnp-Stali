@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { By, until, WebDriver } from 'selenium-webdriver';
-import { ERROR_EXTENSION_NOT_FOUND } from './constants';
+import { ERROR_EXTENSION_NOT_FOUND } from './pbx3cx.constants';
 
 @Injectable()
 export class GetExtension {
   private webDriver: WebDriver;
   constructor(private readonly configService: ConfigService) {}
 
-  public async getExtension(webDriver: WebDriver, extension: string) {
+  public async getExtension(webDriver: WebDriver, extension: string): Promise<void> {
     try {
       this.webDriver = webDriver;
       await this.webDriver.get(`https://${this.configService.get('pbx3cx.url')}/#/app/extensions`);
@@ -21,7 +21,7 @@ export class GetExtension {
     }
   }
 
-  private async chechSearchExtension(exten: string) {
+  private async chechSearchExtension(exten: string): Promise<void> {
     try {
       await this.webDriver
         .findElement(By.xpath(`//*[contains(text(), ' ${exten} ')]//parent::tr[@tabindex='0']/td[@mc-select-row="item"]`))

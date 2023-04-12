@@ -28,10 +28,10 @@ export class SelenoidProvider {
     };
   }
 
-  public async change(action: ActionType, data: SelenoidDataTypes) {
+  public async action(action: ActionType, data: SelenoidDataTypes) {
     try {
       const provider = this.getProvider(action);
-      return await provider.selenoidChange(data);
+      return await provider.selenoidAction(data);
     } catch (e) {
       this.logger.error(e, this.serviceContext);
       throw e;

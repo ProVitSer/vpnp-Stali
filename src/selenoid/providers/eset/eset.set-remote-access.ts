@@ -1,13 +1,14 @@
 import { LoggerService } from '@app/logger/logger.service';
-import { EsetSetRemoteAccessData, SelenoidProviderInterface } from '@app/selenoid/interfaces/selenoid.interface';
-import { EsetPath, EsetStatus } from '@app/selenoid/interfaces/selenoid.enum';
+import { SelenoidProviderInterface } from '@app/selenoid/interfaces/selenoid.interface';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { By, WebDriver } from 'selenium-webdriver';
-import { ERROR_SET_PHONE_NUMBER, ERROR_SWITCH, SAVE_BUTTON_NOT_FOUND } from './constants';
-import { EsetLogin } from './login';
-import { EsetLogout } from './logout';
-import { EsetSearchUser } from './search-user';
+import { ERROR_SET_PHONE_NUMBER, ERROR_SWITCH, SAVE_BUTTON_NOT_FOUND } from './eset.constants';
+import { EsetLogin } from './eset.login';
+import { EsetLogout } from './eset.logout';
+import { EsetSearchUser } from './eset.search-user';
+import { EsetPath, EsetStatus } from './eset.enum';
+import { EsetSetRemoteAccessData } from './eset.interfaces';
 
 @Injectable()
 export class EsetSetRemoteAccess implements SelenoidProviderInterface {
@@ -23,7 +24,7 @@ export class EsetSetRemoteAccess implements SelenoidProviderInterface {
     this.serviceContext = EsetSetRemoteAccess.name;
   }
 
-  async selenoidChange(data: EsetSetRemoteAccessData): Promise<any> {
+  async selenoidAction(data: EsetSetRemoteAccessData): Promise<void> {
     try {
       return await this.change(data);
     } catch (e) {
@@ -31,7 +32,7 @@ export class EsetSetRemoteAccess implements SelenoidProviderInterface {
     }
   }
 
-  private async change(data: EsetSetRemoteAccessData) {
+  private async change(data: EsetSetRemoteAccessData): Promise<void> {
     try {
       this.webDriver = await this.login.loginOnEset();
       await this.webDriver.get(`${this.configService.get('eset.url')}${EsetPath.userPager}`);
@@ -46,7 +47,7 @@ export class EsetSetRemoteAccess implements SelenoidProviderInterface {
     }
   }
 
-  private async saveChange() {
+  private async saveChange(): Promise<void> {
     try {
       await this.webDriver.findElement(By.xpath("//button[contains(text(), 'Save')]")).click();
     } catch (e) {
@@ -55,7 +56,7 @@ export class EsetSetRemoteAccess implements SelenoidProviderInterface {
     }
   }
 
-  private async setPhoneNumber(phoneNumber: string) {
+  private async setPhoneNumber(phoneNumber: string): Promise<void> {
     try {
       await this.webDriver.findElement(By.id('phoneNumber')).clear();
       await this.webDriver.findElement(By.id('phoneNumber')).sendKeys(phoneNumber);
@@ -65,7 +66,7 @@ export class EsetSetRemoteAccess implements SelenoidProviderInterface {
     }
   }
 
-  private async changeRemoteAccess(data: EsetSetRemoteAccessData) {
+  private async changeRemoteAccess(data: EsetSetRemoteAccessData): Promise<void> {
     try {
       const otpStatus = await this.getOtpStatus();
       const pushStatus = await this.getPushStatus();
@@ -90,12 +91,12 @@ export class EsetSetRemoteAccess implements SelenoidProviderInterface {
     }
   }
 
-  private async changeOtp() {
+  private async changeOtp(): Promise<void> {
     await this.webDriver.findElement(By.xpath("(//td[contains(text(), 'Mobile Application OTP')]//parent::tr//td)[2]//div//div")).click();
     await this.webDriver.sleep(1000);
   }
 
-  private async changePush() {
+  private async changePush(): Promise<void> {
     await this.webDriver.findElement(By.xpath("(//td[contains(text(), 'Mobile Application Push')]//parent::tr//td)[2]//div//div")).click();
     await this.webDriver.sleep(1000);
   }

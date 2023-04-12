@@ -1,4 +1,4 @@
-import { HttpExceptionFilter } from '@app/http-exception.filter';
+import { HttpExceptionFilter } from '@app/exceptions/http-exception/http-exception.filter';
 import { Controller, HttpException, HttpStatus, Post, Query, Res, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AdditionalServicesService } from './additional-services.service';
 import { Response } from 'express';
@@ -12,17 +12,7 @@ import { MailForwardDto } from './dto/mail-forward.dto';
 export class AdditionalServicesController {
   constructor(private readonly additionalServices: AdditionalServicesService) {}
 
-  @Post('mail')
-  async changeMailForward(@Query() params: MailForwardDto, @Res() res: Response) {
-    try {
-      const result = await this.additionalServices.changeMailForward(params);
-      return res.status(HttpStatus.OK).json({ result });
-    } catch (e) {
-      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  @Post('queue')
+  @Post('queue/status')
   async changeQueueStatus(@Query() params: QueueStatusDto, @Res() res: Response) {
     try {
       const result = await this.additionalServices.changeQueueStatus(params);
@@ -32,7 +22,17 @@ export class AdditionalServicesController {
     }
   }
 
-  @Post('forward')
+  @Post('mail/forward')
+  async changeMailForward(@Query() params: MailForwardDto, @Res() res: Response) {
+    try {
+      const result = await this.additionalServices.changeMailForward(params);
+      return res.status(HttpStatus.OK).json({ result });
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Post('extension/forward')
   async changeExtensionForward(@Query() params: ExtensionForwardDto, @Res() res: Response) {
     try {
       const result = await this.additionalServices.changeExtensionForward(params);

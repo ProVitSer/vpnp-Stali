@@ -28,7 +28,7 @@ export class ActivateRemote implements RemoteProviderInterface {
   private async activateRemoteAccess(data: RemoteActivateDtoWithId) {
     try {
       await this.adService.setAdRemoteStatus({ user: data.user, action: AdActionTypes.addRemoteAccess });
-      await this.selenoidProvider.change(ActionType.esetSetRemoteAccess, {
+      await this.selenoidProvider.action(ActionType.esetSetRemoteAccess, {
         userName: data.user,
         phoneNumber: data.mobile,
         status: EsetStatus.on,

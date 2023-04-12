@@ -60,9 +60,9 @@ export class AdditionalServicesService {
     try {
       await this.additionalServicesModel.create({ ...data, service });
       if (service === ServicesType.queue) {
-        await this.selenoid.change(ServicesTypeToActionTypeMap[service], data);
+        await this.selenoid.action(ServicesTypeToActionTypeMap[service], data);
       } else if (UtilsService.isDateNow(data.dateFrom)) {
-        await this.selenoid.change(ServicesTypeToActionTypeMap[service], data);
+        await this.selenoid.action(ServicesTypeToActionTypeMap[service], data);
       }
       return true;
     } catch (e) {

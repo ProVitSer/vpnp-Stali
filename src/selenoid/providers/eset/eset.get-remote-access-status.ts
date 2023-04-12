@@ -1,13 +1,14 @@
 import { LoggerService } from '@app/logger/logger.service';
-import { EsetGetRemoteAccessStatusData, SelenoidProviderInterface } from '@app/selenoid/interfaces/selenoid.interface';
-import { EsetPath } from '@app/selenoid/interfaces/selenoid.enum';
+import { SelenoidProviderInterface } from '@app/selenoid/interfaces/selenoid.interface';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { By, WebDriver } from 'selenium-webdriver';
-import { ERROR_SWITCH } from './constants';
-import { EsetLogin } from './login';
-import { EsetLogout } from './logout';
-import { EsetSearchUser } from './search-user';
+import { ERROR_SWITCH } from './eset.constants';
+import { EsetLogin } from './eset.login';
+import { EsetLogout } from './eset.logout';
+import { EsetSearchUser } from './eset.search-user';
+import { EsetPath } from './eset.enum';
+import { EsetGetRemoteAccessStatusData } from './eset.interfaces';
 
 @Injectable()
 export class EsetGetRemoteAccessStatus implements SelenoidProviderInterface {
@@ -23,7 +24,7 @@ export class EsetGetRemoteAccessStatus implements SelenoidProviderInterface {
     this.serviceContext = EsetGetRemoteAccessStatus.name;
   }
 
-  async selenoidChange(data: EsetGetRemoteAccessStatusData): Promise<boolean> {
+  async selenoidAction(data: EsetGetRemoteAccessStatusData): Promise<boolean> {
     try {
       return await this.change(data);
     } catch (e) {
@@ -31,7 +32,7 @@ export class EsetGetRemoteAccessStatus implements SelenoidProviderInterface {
     }
   }
 
-  private async change(data: EsetGetRemoteAccessStatusData) {
+  private async change(data: EsetGetRemoteAccessStatusData): Promise<boolean> {
     try {
       this.webDriver = await this.login.loginOnEset();
       await this.webDriver.get(`${this.configService.get('eset.url')}${EsetPath.userPager}`);
@@ -46,7 +47,7 @@ export class EsetGetRemoteAccessStatus implements SelenoidProviderInterface {
     }
   }
 
-  private async checkRemoteAccess() {
+  private async checkRemoteAccess(): Promise<boolean> {
     try {
       const otpStatus = await this.getOtpStatus();
       const pushStatus = await this.getPushStatus();

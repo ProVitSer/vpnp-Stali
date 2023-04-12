@@ -1,7 +1,7 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { By, WebDriver } from 'selenium-webdriver';
-import { ERROR_LOGOUT_ESET } from './constants';
+import { ERROR_LOGOUT_ESET } from './eset.constants';
 
 @Injectable()
 export class EsetLogout {

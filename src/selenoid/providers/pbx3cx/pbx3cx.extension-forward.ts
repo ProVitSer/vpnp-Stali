@@ -1,11 +1,10 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { By, WebDriver, WebElement } from 'selenium-webdriver';
-import { ExtensionStatusData, ForwardRuleType, SelenoidProviderInterface } from '../../interfaces/selenoid.interface';
-import { ForwardingType, PbxExtensionStatus } from '../../interfaces/selenoid.enum';
-import { GetExtension } from './get-extension';
-import { Login } from './login';
-import { Logout } from './logout';
+import { SelenoidProviderInterface } from '../../interfaces/selenoid.interface';
+import { GetExtension } from './pbx3cx.get-extension';
+import { Login } from './pbx3cx.login';
+import { Logout } from './pbx3cx.logout';
 import {
   ERROR_FORWARD,
   ERROR_FORWARD_TO_EXTERNAL,
@@ -13,8 +12,10 @@ import {
   ERROR_FORWARD_TO_MOBILEL,
   ERROR_SET_FORWARD,
   SAVE_ERROR,
-} from './constants';
+} from './pbx3cx.constants';
 import { UtilsService } from '@app/utils/utils.service';
+import { ExtensionStatusData, ForwardRuleType } from './pbx3cx.interfaces';
+import { ForwardingType, PbxExtensionStatus } from './pbx3cx.enum';
 
 @Injectable()
 export class ExtensionForward implements SelenoidProviderInterface {
@@ -30,19 +31,18 @@ export class ExtensionForward implements SelenoidProviderInterface {
     this.serviceContext = ExtensionForward.name;
   }
 
-  async selenoidChange(data: ExtensionStatusData): Promise<boolean> {
+  async selenoidAction(data: ExtensionStatusData): Promise<void> {
     try {
       this.enableForward = data.status;
       if (UtilsService.isDateNow(data.dateFrom)) {
         await this.updateExtensionForward(data);
       }
-      return true;
     } catch (e) {
       throw e;
     }
   }
 
-  private async updateExtensionForward(data: ExtensionStatusData) {
+  private async updateExtensionForward(data: ExtensionStatusData): Promise<void> {
     try {
       this.webDriver = await this.login.loginOnPbx();
       await this.getPbxExtension.getExtension(this.webDriver, data.exten);
@@ -65,7 +65,7 @@ export class ExtensionForward implements SelenoidProviderInterface {
     }
   }
 
-  private async chooseForwardingStatus(frowardStatus: PbxExtensionStatus) {
+  private async chooseForwardingStatus(frowardStatus: PbxExtensionStatus): Promise<void> {
     try {
       await this.webDriver.findElement(By.xpath("//a[@ui-sref='.forwarding_rules']")).click();
       await this.webDriver.sleep(1000);
@@ -79,7 +79,7 @@ export class ExtensionForward implements SelenoidProviderInterface {
     }
   }
 
-  private async extension(number: string, forwardingType: ForwardingType) {
+  private async extension(number: string, forwardingType: ForwardingType): Promise<boolean> {
     try {
       await this.webDriver.sleep(1000);
       await this.webDriver
@@ -133,7 +133,7 @@ export class ExtensionForward implements SelenoidProviderInterface {
     }
   }
 
-  private async external(number: string, forwardingType: ForwardingType) {
+  private async external(number: string, forwardingType: ForwardingType): Promise<void> {
     try {
       await this.webDriver
         .findElement(
@@ -163,7 +163,7 @@ export class ExtensionForward implements SelenoidProviderInterface {
     }
   }
 
-  private async mobile(number: string, forwardingType: ForwardingType) {
+  private async mobile(number: string, forwardingType: ForwardingType): Promise<void> {
     try {
       await this.webDriver
         .findElement(
@@ -179,7 +179,7 @@ export class ExtensionForward implements SelenoidProviderInterface {
     }
   }
 
-  private async submitSetForwarding() {
+  private async submitSetForwarding(): Promise<void> {
     try {
       await this.webDriver.sleep(5000);
       await this.webDriver.findElement(By.id('btnSave')).click();
@@ -190,7 +190,7 @@ export class ExtensionForward implements SelenoidProviderInterface {
     }
   }
 
-  private getExtensionForward(type: ForwardRuleType) {
+  private getExtensionForward(type: ForwardRuleType): string {
     switch (type) {
       case ForwardRuleType.extension:
         return 'extension';
@@ -201,7 +201,7 @@ export class ExtensionForward implements SelenoidProviderInterface {
     }
   }
 
-  private async setForwardStatus(extensionStatus: PbxExtensionStatus) {
+  private async setForwardStatus(extensionStatus: PbxExtensionStatus): Promise<void> {
     try {
       await this.webDriver.sleep(1000);
       await this.webDriver.findElement(By.id('btnStatus')).click();

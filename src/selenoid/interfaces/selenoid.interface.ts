@@ -1,50 +1,13 @@
-import { ActionType, EsetStatus } from './selenoid.enum';
+import { EsetGetRemoteAccessStatusData, EsetSetRemoteAccessData } from '../providers/eset/eset.interfaces';
+import { MailForwardData } from '../providers/mail/mail.interfaces';
+import { ExtensionStatusData, QueueStatusData } from '../providers/pbx3cx/pbx3cx.interfaces';
+import { ActionType } from './selenoid.enum';
 
 export interface Capabilities {
   browserName: string;
   version: string;
   name: string;
   platform: string;
-}
-
-export interface QueueStatusData {
-  exten: string;
-  status: boolean;
-}
-
-export interface ExtensionStatusData {
-  exten: string;
-  type: ForwardRuleType;
-  number: string;
-  dateFrom: string;
-  dateTo: string;
-  status: boolean;
-  change?: boolean;
-}
-
-export enum ForwardRuleType {
-  mobile = 'mobile',
-  extension = 'extension',
-  external = 'external',
-}
-
-export interface MailForwardData {
-  from: string;
-  to: string;
-  dateFrom: string;
-  dateTo: string;
-  status: boolean;
-  change?: boolean;
-}
-
-export interface EsetSetRemoteAccessData {
-  userName: string;
-  phoneNumber?: string;
-  status: EsetStatus;
-}
-
-export interface EsetGetRemoteAccessStatusData {
-  userName: string;
 }
 
 export type SelenoidDataTypes =
@@ -59,5 +22,5 @@ export type SelenoidProviders = {
 };
 
 export interface SelenoidProviderInterface {
-  selenoidChange(data: SelenoidDataTypes): Promise<any>;
+  selenoidAction(data: SelenoidDataTypes): Promise<void | boolean>;
 }
