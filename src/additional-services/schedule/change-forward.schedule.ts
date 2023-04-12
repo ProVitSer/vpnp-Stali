@@ -8,9 +8,10 @@ import { ServicesType } from '../interfaces/additional-services.enum';
 import { DocumentType } from '@typegoose/typegoose/lib/types';
 import { AdditionalServicesModel } from '../additional-services..model';
 import { ServicesTypeToActionTypeMap } from '../interfaces/additional-services.interface';
-import { ForwardRuleType, SelenoidDataTypes } from '@app/selenoid/interfaces/selenoid.interface';
+import { SelenoidDataTypes } from '@app/selenoid/interfaces/selenoid.interface';
 import * as PromiseBluebird from 'bluebird';
 import { DATE_FORMAT, DEFERRED_PBX_SET_FROWARD_TIME, REVERT_PBX_SET_FROWARD_TIME } from '@app/config/app.config';
+import { ForwardRuleType } from '@app/selenoid/providers/pbx3cx/pbx3cx.interfaces';
 
 @Injectable()
 export class ChangeForwardScheduleService {
