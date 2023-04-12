@@ -23,3 +23,9 @@ export enum Pbx3cxPath {
   login = '/#/login',
   extensions = '/#/app/extensions',
 }
+
+export enum ForwardRuleType {
+  mobile = 'mobile',
+  extension = 'extension',
+  external = 'external',
+}

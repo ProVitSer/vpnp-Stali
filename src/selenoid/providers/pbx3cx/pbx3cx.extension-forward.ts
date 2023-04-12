@@ -14,8 +14,8 @@ import {
   SAVE_ERROR,
 } from './pbx3cx.constants';
 import { UtilsService } from '@app/utils/utils.service';
-import { ExtensionStatusData, ForwardRuleType } from './pbx3cx.interfaces';
-import { ForwardingType, PbxExtensionStatus } from './pbx3cx.enum';
+import { ExtensionStatusData } from './pbx3cx.interfaces';
+import { ForwardRuleType, ForwardingType, PbxExtensionStatus } from './pbx3cx.enum';
 
 @Injectable()
 export class ExtensionForward implements SelenoidProviderInterface {
