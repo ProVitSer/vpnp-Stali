@@ -116,7 +116,7 @@ export class MailForward implements SelenoidProviderInterface {
   private async searchNeedUser(userName: string): Promise<void> {
     try {
       // Переходво во вкладку Администрирования почты
-      await this.webDriver.findElement(By.xpath(`//div[@onclick="RA.views.load('V_USERLIST', 'MainWindow=1');"]`)).click();
+      await this.webDriver.findElement(By.xpath(`//div[@data-page="V_USERLIST"]`)).click();
       await this.webDriver.sleep(1000);
 
       // Нажатие кнопки фильтрации для поиска
@@ -150,7 +150,7 @@ export class MailForward implements SelenoidProviderInterface {
       await this.webDriver.findElement(By.id('Logon')).click();
       await this.webDriver.sleep(1000);
       try {
-        return await this.webDriver.findElement(By.xpath(`//div[@onclick="RA.views.load('V_USERLIST', 'MainWindow=1');"]`));
+        return await this.webDriver.findElement(By.xpath(`//div[@data-page="V_USERLIST"]`));
       } catch (e) {
         throw e;
       }
