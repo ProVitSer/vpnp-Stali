@@ -11,7 +11,7 @@ import { ServicesTypeToActionTypeMap } from '../interfaces/additional-services.i
 import { SelenoidDataTypes } from '@app/selenoid/interfaces/selenoid.interface';
 import * as PromiseBluebird from 'bluebird';
 import { DATE_FORMAT, DEFERRED_PBX_SET_FROWARD_TIME, REVERT_PBX_SET_FROWARD_TIME } from '@app/config/app.config';
-import { ForwardRuleType } from '@app/selenoid/providers/pbx3cx/pbx3cx.interfaces';
+import { ForwardRuleType } from '@app/selenoid/providers/pbx3cx/pbx3cx.enum';
 
 @Injectable()
 export class ChangeForwardScheduleService {
