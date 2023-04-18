@@ -7,3 +7,4 @@ export * from './Meetingsession';
 export * from './Dn';
 export * from './Extension';
 export * from './Fwdprofile';
+export * from './Dnprop';
