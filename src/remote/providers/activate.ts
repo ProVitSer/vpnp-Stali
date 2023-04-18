@@ -1,10 +1,11 @@
 import { ActiveDirectoryService } from '@app/active-directory/active-directory.service';
 import { AdActionTypes } from '@app/active-directory/interfaces/active-directory.enum';
 import { LoggerService } from '@app/logger/logger.service';
-import { ActionType, EsetStatus } from '@app/selenoid/interfaces/selenoid.enum';
+import { ActionType } from '@app/selenoid/interfaces/selenoid.enum';
 import { SelenoidProvider } from '@app/selenoid/selenoid.provider';
 import { Injectable } from '@nestjs/common';
 import { RemoteActionDataCompleted, RemoteActivateDtoWithId, RemoteProviderInterface } from '../interfaces/remote-interface';
+import { EsetStatus } from '@app/selenoid/providers/eset/eset.enum';
 
 @Injectable()
 export class ActivateRemote implements RemoteProviderInterface {
