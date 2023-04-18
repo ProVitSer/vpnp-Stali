@@ -8,6 +8,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { AdditionalServicesModel } from './additional-services..model';
 import { ChangeForwardScheduleService } from './schedule/change-forward.schedule';
+import { Pbx3cxModule } from '@app/pbx3cx/pbx3cx.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ChangeForwardScheduleService } from './schedule/change-forward.schedule
         },
       },
     ]),
+    Pbx3cxModule,
   ],
   providers: [AdditionalServicesService, AdditionalServicesModelService, ChangeForwardScheduleService],
   controllers: [AdditionalServicesController],

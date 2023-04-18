@@ -1,13 +1,31 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { Pbx3cxCallInfoService } from './pbx3cx-call-info.service';
-import { CallInfoData, CallInfoEventData, KindCall } from './types/interface';
+import { CallInfoData, CallInfoEventData } from './types/pbx3cx.interface';
+import { Pbx3cxForwardStatusService } from './pbx3cx-forward-status.service';
+import { CallType } from './types/pbx3cx.enum';
 
 @Injectable()
 export class Pbx3cxService {
   private serviceContext: string;
-  constructor(private readonly pbxCallService: Pbx3cxCallInfoService, private readonly logger: LoggerService) {
+  constructor(
+    private readonly pbxCallService: Pbx3cxCallInfoService,
+    private readonly logger: LoggerService,
+    private readonly pbxForward: Pbx3cxForwardStatusService,
+  ) {
     this.serviceContext = Pbx3cxService.name;
+  }
+
+  public async getExtenForwardStatus(exten: string) {
+    const dn = await this.pbxForward.getExtenId(exten);
+    console.log(dn);
+
+    if (dn == null) return;
+    const extension = await this.pbxForward.getExtensionInfo(dn.iddn);
+    console.log(extension);
+
+    const profile = await this.pbxForward.getExtenProfiles(dn.iddn);
+    console.log(profile);
   }
 
   public async search3cxExtensionCall(data: CallInfoEventData): Promise<CallInfoData> {
@@ -16,13 +34,13 @@ export class Pbx3cxService {
       this.logger.info(`${unicueid} ${incomingNumber} ${extension}`, this.serviceContext);
       const callInfo = await this.getCallInfo(incomingNumber);
       const answerCalls = await this.pbxCallService.searchAnswerByCallID(callInfo.callId);
-      const mapAnswerCalls = answerCalls.map((answerCalls: any) => {
+      const mapAnswerCalls = answerCalls.map((answerCalls: { cl_participants_info_id: number }) => {
         return answerCalls.cl_participants_info_id;
       });
       const callUserInfo = await this.pbxCallService.searchLastUserRing(mapAnswerCalls, extension.trim());
       if (!!callUserInfo) {
         return {
-          kind: KindCall.local,
+          callType: CallType.local,
           moduleUnicueId: data.unicueid,
           pbx3cxUnicueId: callInfo.callId,
           destinationNumber: callUserInfo.dn,
@@ -48,7 +66,7 @@ export class Pbx3cxService {
         return await this.search3cxInfoMobileRedirection(unicueid, callInfo.callId);
       } else {
         return {
-          kind: KindCall.group,
+          callType: CallType.group,
           moduleUnicueId: data.unicueid,
           pbx3cxUnicueId: callInfo.callId,
           destinationNumber: callCenterCallInfo.toDialednum,
@@ -75,7 +93,7 @@ export class Pbx3cxService {
       const callPartyInfo = await this.pbxCallService.searchCallPartyInfo(infoId.infoId);
       const callParticipants = await this.pbxCallService.searchCallInfo(infoId.infoId);
       return {
-        kind: KindCall.mobile,
+        callType: CallType.mobile,
         moduleUnicueId: unicueid,
         pbx3cxUnicueId: callParticipants.callId, //infoId.callId,
         destinationNumber: callPartyInfo.dn, //callPartyInfo.displayName,
@@ -86,6 +104,8 @@ export class Pbx3cxService {
       this.logger.error(e, this.serviceContext);
     }
   }
+
+  // private formatCallInfoData(): CallInfoData {}
 
   private async getCallInfo(incomingNumber: string) {
     try {
