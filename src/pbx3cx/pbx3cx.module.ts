@@ -13,6 +13,7 @@ import {
   Extension,
   Dn,
   Fwdprofile,
+  Dnprop,
 } from './entities';
 import { Pbx3cxCallInfoService } from './pbx3cx-call-info.service';
 import { Pbx3cxForwardStatusService } from './pbx3cx-forward-status.service';
@@ -34,6 +35,7 @@ import { Pbx3cxForwardStatusService } from './pbx3cx-forward-status.service';
         entities: [__dirname + '/entities/*{.ts,.js}'],
         synchronize: false,
         useUnifiedTopology: false,
+        logging: true,
       }),
       inject: [ConfigService],
     }),
@@ -47,6 +49,7 @@ import { Pbx3cxForwardStatusService } from './pbx3cx-forward-status.service';
       Dn,
       Extension,
       Fwdprofile,
+      Dnprop,
     ]),
   ],
   providers: [Pbx3cxCallInfoService, Pbx3cxService, Pbx3cxForwardStatusService],
