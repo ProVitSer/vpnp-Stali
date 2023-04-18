@@ -8,24 +8,8 @@ import { CallType } from './types/pbx3cx.enum';
 @Injectable()
 export class Pbx3cxService {
   private serviceContext: string;
-  constructor(
-    private readonly pbxCallService: Pbx3cxCallInfoService,
-    private readonly logger: LoggerService,
-    private readonly pbxForward: Pbx3cxForwardStatusService,
-  ) {
+  constructor(private readonly pbxCallService: Pbx3cxCallInfoService, private readonly logger: LoggerService) {
     this.serviceContext = Pbx3cxService.name;
-  }
-
-  public async getExtenForwardStatus(exten: string) {
-    const dn = await this.pbxForward.getExtenId(exten);
-    console.log(dn);
-
-    if (dn == null) return;
-    const extension = await this.pbxForward.getExtensionInfo(dn.iddn);
-    console.log(extension);
-
-    const profile = await this.pbxForward.getExtenProfiles(dn.iddn);
-    console.log(profile);
   }
 
   public async search3cxExtensionCall(data: CallInfoEventData): Promise<CallInfoData> {
