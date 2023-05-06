@@ -45,7 +45,7 @@ export class AdditionalServicesController {
   @Get('forward/extension/status')
   async getExtensionStatus(@Query('exten') exten: string, @Res() res: Response) {
     try {
-      const result = this.additionalServices.getExtenForwardStatus(exten);
+      const result = await this.additionalServices.getExtenForwardStatus(exten);
       return res.status(HttpStatus.OK).json(result);
     } catch (e) {
       throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
