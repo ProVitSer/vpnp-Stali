@@ -30,6 +30,15 @@ export class Pbx3cxForwardStatusService {
     }
   }
 
+  public async getExtenByIDDN(iddn: number): Promise<Dn> {
+    try {
+      return await this.dn.createQueryBuilder('dn').select().where('dn.iddn = :value', { value: iddn }).getOne();
+    } catch (e) {
+      this.logger.error(e, this.serviceContext);
+      throw e;
+    }
+  }
+
   public async getExtensionInfo(extenId: number): Promise<Extension> {
     try {
       return await this.extension.createQueryBuilder('extension').select().where('extension.fkiddn = :id', { id: extenId }).getOne();
