@@ -117,45 +117,21 @@ export class Fwdprofile {
   })
   fwdtooutsidenumberDontmatch3: string | null;
 
-  @Column('character varying', {
-    name: 'fkforwardtodn_dontmatch1',
-    nullable: true,
-    length: 255,
-  })
-  fkforwardtodnDontmatch: string | null;
+  @Column('integer', { name: 'fkforwardtodn_dontmatch1', nullable: true })
+  fkforwardtodnDontmatch1: number | null;
 
-  @Column('character varying', {
-    name: 'fkforwardtodn_dontmatch2',
-    nullable: true,
-    length: 255,
-  })
-  fkforwardtodnDontmatch2: string | null;
+  @Column('integer', { name: 'fkforwardtodn_dontmatch2', nullable: true })
+  fkforwardtodnDontmatch2: number | null;
 
-  @Column('character varying', {
-    name: 'fkforwardtodn_dontmatch3',
-    nullable: true,
-    length: 255,
-  })
-  fkforwardtodnDontmatch3: string | null;
+  @Column('integer', { name: 'fkforwardtodn_dontmatch3', nullable: true })
+  fkforwardtodnDontmatch3: number | null;
 
-  @Column('character varying', {
-    name: 'fkforwardtodn_match1',
-    nullable: true,
-    length: 255,
-  })
-  fkforwardtodnMatch: string | null;
+  @Column('integer', { name: 'fkforwardtodn_match1', nullable: true })
+  fkforwardtodnMatch1: number | null;
 
-  @Column('character varying', {
-    name: 'fkforwardtodn_match2',
-    nullable: true,
-    length: 255,
-  })
-  fkforwardtodnMatch2: string | null;
+  @Column('integer', { name: 'fkforwardtodn_match2', nullable: true })
+  fkforwardtodnMatch2: number | null;
 
-  @Column('character varying', {
-    name: 'fkforwardtodn_match3',
-    nullable: true,
-    length: 255,
-  })
-  fkforwardtodnMatch3: string | null;
+  @Column('integer', { name: 'fkforwardtodn_match3', nullable: true })
+  fkforwardtodnMatch3: number | null;
 }
