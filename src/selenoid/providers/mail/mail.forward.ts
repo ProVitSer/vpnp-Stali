@@ -1,13 +1,16 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { By, WebDriver, WebElementPromise } from 'selenium-webdriver';
+import { By, WebDriver } from 'selenium-webdriver';
 import { SelenoidWebdriver } from '../../selenoid.webdriver';
 import { SelenoidProviderInterface } from '../../interfaces/selenoid.interface';
-import { AUTH_MAIL_ERROR, ERROR_LOGOUT, ERROR_USER_FORWARD, ERROR_USER_NOT_FOUND } from './mail.constants';
+import { ERROR_LOGOUT } from './mail.constants';
 import { ERROR_WEB_DRIVER } from '@app/selenoid/selenoid.constants';
 import { UtilsService } from '@app/utils/utils.service';
 import { MailForwardData } from './mail.interfaces';
+import { MailAuthorization } from './mail.authorization';
+import { MailSearchNeedUser } from './mail.search-need-user';
+import { MailUserForward } from './mail.user-forward';
 
 @Injectable()
 export class MailForward implements SelenoidProviderInterface {
@@ -20,6 +23,9 @@ export class MailForward implements SelenoidProviderInterface {
     private readonly selenoidWebDriver: SelenoidWebdriver,
     private readonly configService: ConfigService,
     private readonly logger: LoggerService,
+    private readonly mailAuthorization: MailAuthorization,
+    private readonly mailSearchNeedUser: MailSearchNeedUser,
+    private readonly mailUserForward: MailUserForward,
   ) {
     this.serviceContext = MailForward.name;
   }
@@ -39,14 +45,16 @@ export class MailForward implements SelenoidProviderInterface {
   private async setEmailForward(data: MailForwardData): Promise<void> {
     this.userName = data.from.match(/(.+)@(.+)/)[1];
     this.email = data.from.match(/(.+)@(.+)/)[0];
+    const forwardData = { userName: this.userName, email: this.email };
     try {
       await this.getWebDriver();
       await this.webDriver.get(this.configService.get('mailServer.url'));
       await this.webDriver.manage().window().maximize();
       await this.webDriver.sleep(10000);
-      await this.authorization();
-      await this.searchNeedUser(this.userName);
-      await this.goToUserForward();
+
+      await this.mailAuthorization.authorization(this.webDriver);
+      await this.mailSearchNeedUser.searchNeedUser(this.webDriver, forwardData);
+      await this.mailUserForward.goToUserForward(this.webDriver, forwardData);
       await this.setForward(data);
       return await this.webDriver.quit();
     } catch (e) {
@@ -98,65 +106,6 @@ export class MailForward implements SelenoidProviderInterface {
     } catch (e) {
       this.logger.error(e, this.serviceContext);
       throw `${ERROR_LOGOUT} ${this.email}`;
-    }
-  }
-
-  private async goToUserForward(): Promise<void> {
-    try {
-      // Проваливаемся в открывшееся диалоговое окно,переход в раздел переадресации
-      await this.webDriver.switchTo().frame(this.webDriver.findElement(By.id('dialog:useredit_account.wdm')));
-      await this.webDriver.findElement(By.id('MAForwarding')).click();
-      await this.webDriver.sleep(1000);
-    } catch (e) {
-      this.logger.error(e, this.serviceContext);
-      throw `${ERROR_USER_FORWARD} ${this.email}`;
-    }
-  }
-
-  private async searchNeedUser(userName: string): Promise<void> {
-    try {
-      // Переходво во вкладку Администрирования почты
-      await this.webDriver.findElement(By.xpath(`//div[@onclick="RA.views.load('V_USERLIST', 'MainWindow=1');"]`)).click();
-      await this.webDriver.sleep(1000);
-
-      // Нажатие кнопки фильтрации для поиска
-      await this.webDriver.findElement(By.id('filter_button')).click();
-      await this.webDriver.sleep(5000);
-
-      // Проваливаемся в открывшееся диалоговое окно. Очищаем бокс поиска и заполянем именем пользователя, который которго требуется найти
-      await this.webDriver.switchTo().frame(this.webDriver.findElement(By.id('dialog:userlist_filter.wdm')));
-      await this.webDriver.findElement(By.id('filterPattern')).clear();
-      await this.webDriver.findElement(By.id('filterPattern')).sendKeys(userName);
-      await this.webDriver.findElement(By.id('ApplyButton')).click();
-      await this.webDriver.sleep(1000);
-
-      // Возвращаемся в основное окно
-      await this.webDriver.switchTo().defaultContent();
-
-      // Поиск пользователя по полному совпадению пользователь@домен, двойное нажатие
-      const item = await this.webDriver.findElement(By.xpath(`//tr[@glc_form_waform_selectid='${this.email}']`));
-      await this.webDriver.actions().doubleClick(item).perform();
-      return await this.webDriver.sleep(1000);
-    } catch (e) {
-      this.logger.error(e, this.serviceContext);
-      throw `${ERROR_USER_NOT_FOUND} ${this.email}`;
-    }
-  }
-
-  private async authorization(): Promise<WebElementPromise> {
-    try {
-      await this.webDriver.findElement(By.id('username')).sendKeys(this.configService.get('mailServer.username'));
-      await this.webDriver.findElement(By.id('password')).sendKeys(this.configService.get('mailServer.password'));
-      await this.webDriver.findElement(By.id('Logon')).click();
-      await this.webDriver.sleep(1000);
-      try {
-        return await this.webDriver.findElement(By.xpath(`//div[@onclick="RA.views.load('V_USERLIST', 'MainWindow=1');"]`));
-      } catch (e) {
-        throw e;
-      }
-    } catch (e) {
-      this.logger.error(e, this.serviceContext);
-      throw AUTH_MAIL_ERROR;
     }
   }
 

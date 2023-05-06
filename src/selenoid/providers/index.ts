@@ -8,3 +8,7 @@ export * from './eset/eset.set-remote-access';
 export * from './eset/eset.get-remote-access-status';
 export * from './eset/eset.login';
 export * from './eset/eset.logout';
+export * from './mail/mail.authorization';
+export * from './mail/mail.search-need-user';
+export * from './mail/mail.user-forward';
+export * from './mail/mail.check-forward';
