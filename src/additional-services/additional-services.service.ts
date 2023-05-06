@@ -7,12 +7,13 @@ import { LoggerService } from '@app/logger/logger.service';
 import { ChangeTypes, ExtensionForwardStatus, ServicesTypeToActionTypeMap } from './interfaces/additional-services.interface';
 import { ServicesType } from './interfaces/additional-services.enum';
 import { UtilsService } from '@app/utils/utils.service';
-import { Pbx3cxService } from '@app/pbx3cx/pbx3cx.service';
 import { Pbx3cxForwardStatusService } from '@app/pbx3cx/pbx3cx-forward-status.service';
 import { EXTENSION_NOT_FOUND, FWPROFILE_NOT_FOUND } from './additional-services.constants';
 import { Dn, Extension, Fwdprofile } from '@app/pbx3cx/entities';
 import { ForwardType } from '@app/pbx3cx/types/pbx3cx.enum';
 import { AdditionalModelService, ExtensionForwardService } from './services';
+import { ActionType } from '@app/selenoid/interfaces/selenoid.enum';
+import { MailCheckForwardResult } from '@app/selenoid/providers/mail/mail.interfaces';
 
 @Injectable()
 export class AdditionalServicesService {
@@ -21,7 +22,6 @@ export class AdditionalServicesService {
     private readonly additionalModelService: AdditionalModelService,
     private readonly selenoid: SelenoidProvider,
     private readonly logger: LoggerService,
-    private readonly pbx3cxService: Pbx3cxService,
     private readonly pbxForward: Pbx3cxForwardStatusService,
     private readonly extensionForward: ExtensionForwardService,
   ) {
@@ -52,6 +52,14 @@ export class AdditionalServicesService {
           isForwardEnable: false,
         };
       return await this.getCurrentForwardInfo(await this.getForwardInfo(dn, extension), mobile);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  public async getCurrentMailForward(email: string): Promise<MailCheckForwardResult> {
+    try {
+      return (await this.selenoid.action(ActionType.mailCheckForward, { email })) as MailCheckForwardResult;
     } catch (e) {
       throw e;
     }

@@ -55,7 +55,8 @@ export class AdditionalServicesController {
   @Get('forward/mail/status')
   async getMailStatus(@Query('mail') mail: string, @Res() res: Response) {
     try {
-      return res.status(HttpStatus.OK).json();
+      const result = await this.additionalServices.getCurrentMailForward(mail);
+      return res.status(HttpStatus.OK).json(result);
     } catch (e) {
       throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }

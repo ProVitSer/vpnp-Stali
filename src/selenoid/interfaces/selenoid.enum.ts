@@ -4,4 +4,5 @@ export enum ActionType {
   queueStatus = 'queueStatus',
   esetSetRemoteAccess = 'esetSetRemoteAccess',
   esetCheckRemoteAccess = 'esetCheckRemoteAccess',
+  mailCheckForward = 'mailCheckForward',
 }
