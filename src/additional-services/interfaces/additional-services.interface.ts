@@ -17,3 +17,10 @@ export interface ExtensionForwardStatus {
   forwardType?: ExtensionForwardRuleType;
   exten?: string;
 }
+
+export interface GetExtensionForward {
+  extension: number;
+  mobile: string;
+  outsideNumber: string;
+  forwardToDn: number | null;
+}
