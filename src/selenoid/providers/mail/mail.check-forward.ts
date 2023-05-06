@@ -50,7 +50,6 @@ export class MailCheckForward implements SelenoidProviderInterface {
       await this.mailUserForward.goToUserForward(this.webDriver, forwardData);
 
       const result = await this.getForwardData();
-      console.log(result);
       await this.webDriver.quit();
       return result;
     } catch (e) {
