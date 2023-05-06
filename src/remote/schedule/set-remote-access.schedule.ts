@@ -1,11 +1,11 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
-import { RemoteModelService } from '../remote.service';
 import { Cron } from '@nestjs/schedule';
 import { format } from 'date-fns';
 import { RemoteActionType, RemoteStatus } from '../interfaces/remote-enum';
 import { DATE_FORMAT, DEFERRED__CHANGES_ACTIVATE_TIME, DEFERRED_CHANGES_DEACTIVATE_TIME } from '@app/config/app.config';
 import { RemoteMessageQueueService } from '../remote-message-queue.service';
+import { RemoteModelService } from '../services/remote-model-service';
 
 @Injectable()
 export class SetRemoteAccessScheduleService {

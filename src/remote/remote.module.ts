@@ -6,7 +6,7 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { RemoteModel } from './remote.model';
 import { RemoteController } from './remote.controller';
-import { RemoteModelService, RemoteService } from './remote.service';
+import { RemoteService } from './remote.service';
 import { SetRemoteAccessScheduleService } from './schedule/set-remote-access.schedule';
 import { ScheduleModule } from '@nestjs/schedule';
 import { RateLimiterModule } from 'nestjs-rate-limiter';
@@ -18,6 +18,7 @@ import { RemoteProvider } from './remote.provider';
 import { ActivateRemote, AdUsersListRemote, DeactivateRemote, GetUserStatusRemote } from './providers';
 import { MAX_REMOTE_DURATION, MAX_REMOTE_POINTS } from '@app/config/app.config';
 import { RATELIMIT_REQUEST_ERROR } from './remote.constants';
+import { RemoteModelService } from './services/remote-model-service';
 
 @Module({
   imports: [
