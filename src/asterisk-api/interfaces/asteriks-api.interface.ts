@@ -11,5 +11,5 @@ export type AsteriskApiProviders = {
 };
 
 export interface AsteriskApiProviderInterface {
-  aggregateCallInfo(data: CallInfo): Promise<void>;
+  sendAggregateCallInfo(data: CallInfo): Promise<void>;
 }

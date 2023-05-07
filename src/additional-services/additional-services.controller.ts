@@ -15,8 +15,8 @@ export class AdditionalServicesController {
   @Post('forward/queue')
   async changeQueueStatus(@Body() body: QueueStatusDto, @Res() res: Response) {
     try {
-      const result = await this.additionalServices.changeQueueStatus(body);
-      return res.status(HttpStatus.OK).json({ result });
+      await this.additionalServices.changeQueueStatus(body);
+      return res.status(HttpStatus.OK).json({ result: true });
     } catch (e) {
       throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -25,8 +25,8 @@ export class AdditionalServicesController {
   @Post('forward/mail')
   async changeMailForward(@Body() body: MailForwardDto, @Res() res: Response) {
     try {
-      const result = await this.additionalServices.changeMailForward(body);
-      return res.status(HttpStatus.OK).json({ result });
+      await this.additionalServices.changeMailForward(body);
+      return res.status(HttpStatus.OK).json({ result: true });
     } catch (e) {
       throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -35,8 +35,8 @@ export class AdditionalServicesController {
   @Post('forward/extension')
   async changeExtensionForward(@Body() body: ExtensionForwardDto, @Res() res: Response) {
     try {
-      const result = await this.additionalServices.changeExtensionForward(body);
-      return res.status(HttpStatus.OK).json({ result });
+      await this.additionalServices.changeExtensionForward(body);
+      return res.status(HttpStatus.OK).json({ result: true });
     } catch (e) {
       throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }

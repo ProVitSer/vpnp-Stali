@@ -16,3 +16,7 @@ export interface CallInfoData {
   startCallTime: Date;
   endCallTime: Date;
 }
+
+export interface CallMobileInfoData extends CallInfoData {
+  displayName: string;
+}

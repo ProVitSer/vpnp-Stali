@@ -35,7 +35,7 @@ export class Pbx3cxCallInfoService {
   }
 
   //Поиск первый ID вызова в базе 3сх
-  public async searchFirstIncomingIdByNumber(incomingNumber: string): Promise<ClPartyInfo> {
+  public async searchFirstIncomingIdByNumber(incomingNumber: string): Promise<{ id: number }> {
     try {
       return await this.callPartyInfo
         .createQueryBuilder('cl_party_info')
@@ -88,7 +88,7 @@ export class Pbx3cxCallInfoService {
     }
   }
 
-  public async searcInfoId(callId: number): Promise<ClParticipants> {
+  public async searcInfoId(callId: number): Promise<{ infoId: number }> {
     try {
       return await this.callParticipants
         .createQueryBuilder('cl_participants')
@@ -119,7 +119,7 @@ export class Pbx3cxCallInfoService {
     }
   }
 
-  public async getCallcenterInfo(incomingNumber: string): Promise<CallcentQueuecalls> {
+  public async getCallCenterInfo(incomingNumber: string): Promise<CallcentQueuecalls> {
     try {
       return await this.queue
         .createQueryBuilder('callcent_queuecalls')

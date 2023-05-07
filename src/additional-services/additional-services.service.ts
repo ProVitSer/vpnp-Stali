@@ -28,15 +28,15 @@ export class AdditionalServicesService {
     this.serviceContext = AdditionalServicesService.name;
   }
 
-  public async changeQueueStatus(data: QueueStatusDto): Promise<boolean> {
+  public async changeQueueStatus(data: QueueStatusDto): Promise<void> {
     return await this.change(ServicesType.queue, data);
   }
 
-  public async changeExtensionForward(data: ExtensionForwardDto): Promise<boolean> {
+  public async changeExtensionForward(data: ExtensionForwardDto): Promise<void> {
     return await this.change(ServicesType.extension, data);
   }
 
-  public async changeMailForward(data: MailForwardDto): Promise<boolean> {
+  public async changeMailForward(data: MailForwardDto): Promise<void> {
     return await this.change(ServicesType.mail, data);
   }
 
@@ -90,7 +90,7 @@ export class AdditionalServicesService {
     return currentProf.profilename == ForwardType.available;
   }
 
-  private async change(service: ServicesType, data: ChangeTypes): Promise<boolean> {
+  private async change(service: ServicesType, data: ChangeTypes): Promise<void> {
     try {
       await this.additionalModelService.create({ ...data, service });
       if (service === ServicesType.queue) {
@@ -98,7 +98,6 @@ export class AdditionalServicesService {
       } else if (UtilsService.isDateNow(data.dateFrom)) {
         await this.selenoid.action(ServicesTypeToActionTypeMap[service], data);
       }
-      return true;
     } catch (e) {
       this.logger.error(e, this.serviceContext);
       throw e;
