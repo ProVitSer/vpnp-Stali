@@ -1,9 +1,9 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { Pbx3cxCallInfoService } from './pbx3cx-call-info.service';
-import { CallInfoData, CallInfoEventData } from './types/pbx3cx.interface';
-import { Pbx3cxForwardStatusService } from './pbx3cx-forward-status.service';
+import { CallInfoData, CallInfoEventData, CallMobileInfoData } from './types/pbx3cx.interface';
 import { CallType } from './types/pbx3cx.enum';
+import { ClParticipants } from './entities';
 
 @Injectable()
 export class Pbx3cxService {
@@ -12,16 +12,16 @@ export class Pbx3cxService {
     this.serviceContext = Pbx3cxService.name;
   }
 
-  public async search3cxExtensionCall(data: CallInfoEventData): Promise<CallInfoData> {
+  public async search3cxExtensionCall(data: CallInfoEventData): Promise<CallInfoData | CallMobileInfoData> {
     try {
       const { unicueid, incomingNumber, extension } = data;
       this.logger.info(`${unicueid} ${incomingNumber} ${extension}`, this.serviceContext);
       const callInfo = await this.getCallInfo(incomingNumber);
       const answerCalls = await this.pbxCallService.searchAnswerByCallID(callInfo.callId);
-      const mapAnswerCalls = answerCalls.map((answerCalls: { cl_participants_info_id: number }) => {
+      const clParticipantsInfoIds = answerCalls.map((answerCalls: { cl_participants_info_id: number }) => {
         return answerCalls.cl_participants_info_id;
       });
-      const callUserInfo = await this.pbxCallService.searchLastUserRing(mapAnswerCalls, extension.trim());
+      const callUserInfo = await this.pbxCallService.searchLastUserRing(clParticipantsInfoIds, extension.trim());
       if (!!callUserInfo) {
         return {
           callType: CallType.local,
@@ -39,13 +39,13 @@ export class Pbx3cxService {
     }
   }
 
-  public async search3cxGroupCall(data: CallInfoEventData): Promise<CallInfoData> {
+  public async search3cxGroupCall(data: Omit<CallInfoEventData, 'extension'>): Promise<CallInfoData | CallMobileInfoData> {
     try {
-      const { unicueid, incomingNumber, extension } = data;
-      this.logger.info(`${unicueid} ${incomingNumber} ${extension}`);
+      const { unicueid, incomingNumber } = data;
+      this.logger.info(`${unicueid} ${incomingNumber} `);
       const modIncomingNumber = incomingNumber.length == 12 ? incomingNumber.substring(1) : incomingNumber;
       const callInfo = await this.getCallInfo(modIncomingNumber);
-      const callCenterCallInfo = await this.pbxCallService.getCallcenterInfo(modIncomingNumber);
+      const callCenterCallInfo = await this.pbxCallService.getCallCenterInfo(modIncomingNumber);
       if (!callCenterCallInfo.callHistoryId || callCenterCallInfo.toDialednum == '') {
         return await this.search3cxInfoMobileRedirection(unicueid, callInfo.callId);
       } else {
@@ -71,7 +71,7 @@ export class Pbx3cxService {
     }
   }
 
-  private async search3cxInfoMobileRedirection(unicueid: string, callId: number): Promise<CallInfoData> {
+  private async search3cxInfoMobileRedirection(unicueid: string, callId: number): Promise<CallMobileInfoData> {
     try {
       const infoId = await this.pbxCallService.searcInfoId(callId);
       const callPartyInfo = await this.pbxCallService.searchCallPartyInfo(infoId.infoId);
@@ -80,7 +80,8 @@ export class Pbx3cxService {
         callType: CallType.mobile,
         moduleUnicueId: unicueid,
         pbx3cxUnicueId: callParticipants.callId, //infoId.callId,
-        destinationNumber: callPartyInfo.dn, //callPartyInfo.displayName,
+        destinationNumber: callPartyInfo.dn,
+        displayName: callPartyInfo.displayName,
         startCallTime: callParticipants.startTime,
         endCallTime: callParticipants.endTime,
       };
@@ -89,9 +90,7 @@ export class Pbx3cxService {
     }
   }
 
-  // private formatCallInfoData(): CallInfoData {}
-
-  private async getCallInfo(incomingNumber: string) {
+  private async getCallInfo(incomingNumber: string): Promise<ClParticipants> {
     try {
       const callPartyInfo = await this.pbxCallService.searchFirstIncomingIdByNumber(incomingNumber.trim());
       return await this.pbxCallService.searchCallInfo(callPartyInfo.id);
