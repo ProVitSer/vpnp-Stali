@@ -1,3 +1,4 @@
+import { DialExtensionByContext } from '@app/config/config';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -6,7 +7,11 @@ export class AsteriskApiUtilsService {
     return incomingNumber.length == 10 ? `8${incomingNumber}` : incomingNumber;
   }
 
-  static formatDialExtension(formatDialExtension: string): string {
-    return formatDialExtension.length > 8 ? formatDialExtension : `8495${formatDialExtension}`;
+  static formatDialExtensionByContext(context: string): string {
+    return context.length > 7 ? DialExtensionByContext[context] : `8495${context}`;
+  }
+
+  static formatDialExtension(dialExtension: string): string {
+    return dialExtension.length > 8 ? dialExtension : `8495${dialExtension}`;
   }
 }
