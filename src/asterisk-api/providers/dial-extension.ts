@@ -12,7 +12,7 @@ export class DialExtension implements AsteriskApiProviderInterface {
   constructor(private readonly soap1c: Soap1cProvider) {}
 
   public async sendAggregateCallInfo(data: DialExtensionDto): Promise<void> {
-    await this.soap1c.request({
+    return await this.soap1c.request({
       action: Soap1cActionTypes.setNumber,
       data: {
         channelId: data.unicueid,
@@ -22,6 +22,5 @@ export class DialExtension implements AsteriskApiProviderInterface {
         callDateTime: moment().format(CALL_DATE_TIME_FORMAT),
       },
     });
-    return;
   }
 }
