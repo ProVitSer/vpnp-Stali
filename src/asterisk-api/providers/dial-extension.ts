@@ -1,26 +1,25 @@
-import { trunkLocalExtension } from '@app/config/trunk';
-import { Soap1cActionTypes, Soap1cEnvelopeTypes } from '@app/soap1c/interfaces/soap1c.enum';
+import { Soap1cActionTypes } from '@app/soap1c/interfaces/soap1c.enum';
 import { Soap1cProvider } from '@app/soap1c/sopa1c.provider';
 import { Injectable } from '@nestjs/common';
 import { DialExtensionDto } from '../dto/dial-extension.dto';
-import { AsteriskApiProviderInterface, CallInfo } from '../interfaces/asteriks-api.interface';
+import { AsteriskApiProviderInterface } from '../interfaces/asteriks-api.interface';
 import * as moment from 'moment';
+import { CALL_DATE_TIME_FORMAT } from '@app/soap1c/soap1c.constants';
+import { AsteriskApiUtilsService } from '../asterisk-api.utils';
 
 @Injectable()
 export class DialExtension implements AsteriskApiProviderInterface {
   constructor(private readonly soap1c: Soap1cProvider) {}
 
-  public async aggregateCallInfo(data: CallInfo): Promise<void> {
-    const callData = data as DialExtensionDto;
-    const dialedNumber = callData.context.length > 7 ? trunkLocalExtension[callData.context] : `8495${callData.context}`;
+  public async sendAggregateCallInfo(data: DialExtensionDto): Promise<void> {
     await this.soap1c.request({
       action: Soap1cActionTypes.setNumber,
       data: {
-        channelId: callData.unicueid,
-        incomingNumber: callData.incomingNumber,
-        dialedNumber,
-        localExtension: callData.extension,
-        callDateTime: moment().format('YYYY-MM-DDTHH:mm:ss'),
+        channelId: data.unicueid,
+        incomingNumber: AsteriskApiUtilsService.formatIncomingNumber(data.incomingNumber),
+        dialedNumber: AsteriskApiUtilsService.formatDialExtensionByContext(data.context),
+        localExtension: data.extension,
+        callDateTime: moment().format(CALL_DATE_TIME_FORMAT),
       },
     });
     return;
