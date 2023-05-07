@@ -27,32 +27,36 @@ export class ChangeForwardScheduleService {
 
   @Cron(DEFERRED_PBX_SET_FROWARD_TIME)
   async setForward() {
-    try {
-      const result = await this.additionalModelService.findByCriteria({
-        service: { $in: [ServicesType.mail, ServicesType.extension] },
-        revertChange: { $exists: true, $ne: true },
-        dateFrom: format(new Date(), DATE_FORMAT),
-      });
-      if (result.length === 0) return;
-      await this.change(result);
-    } catch (e) {
-      this.logger.error(e, this.serviceContext);
+    if (!process.env.NODE_APP_INSTANCE || Number(process.env.NODE_APP_INSTANCE) === 0) {
+      try {
+        const result = await this.additionalModelService.findByCriteria({
+          service: { $in: [ServicesType.mail, ServicesType.extension] },
+          revertChange: { $exists: true, $ne: true },
+          dateFrom: format(new Date(), DATE_FORMAT),
+        });
+        if (result.length === 0) return;
+        await this.change(result);
+      } catch (e) {
+        this.logger.error(e, this.serviceContext);
+      }
     }
   }
 
   @Cron(REVERT_PBX_SET_FROWARD_TIME)
   async revertForward() {
-    try {
-      const result = await this.additionalModelService.findByCriteria({
-        service: { $in: [ServicesType.mail, ServicesType.extension] },
-        revertChange: { $exists: true, $ne: true },
-        dateTo: format(new Date(), 'dd.MM.yyyy'),
-      });
-      if (result.length === 0) return;
-      const revertData = this.revertStatus(result);
-      await this.change(revertData);
-    } catch (e) {
-      this.logger.error(e, this.serviceContext);
+    if (!process.env.NODE_APP_INSTANCE || Number(process.env.NODE_APP_INSTANCE) === 0) {
+      try {
+        const result = await this.additionalModelService.findByCriteria({
+          service: { $in: [ServicesType.mail, ServicesType.extension] },
+          revertChange: { $exists: true, $ne: true },
+          dateTo: format(new Date(), 'dd.MM.yyyy'),
+        });
+        if (result.length === 0) return;
+        const revertData = this.revertStatus(result);
+        await this.change(revertData);
+      } catch (e) {
+        this.logger.error(e, this.serviceContext);
+      }
     }
   }
 

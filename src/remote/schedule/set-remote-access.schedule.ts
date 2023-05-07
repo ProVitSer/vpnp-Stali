@@ -38,23 +38,25 @@ export class SetRemoteAccessScheduleService {
 
   @Cron(DEFERRED_CHANGES_DEACTIVATE_TIME)
   async defChangesDeactivateRemoteAccess() {
-    try {
-      const result = await this.remoteModelService.findByCriteria({
-        status: RemoteStatus.completed,
-        dateTo: format(new Date(), DATE_FORMAT),
-      });
-      if (result.length === 0) return;
-      await Promise.all(
-        result.map(async (user) => {
-          await this.remoteMessage.publish({
-            remoteId: user._id,
-            status: user.status,
-            remoteActionType: RemoteActionType.deactivateRemote,
-          });
-        }),
-      );
-    } catch (e) {
-      this.logger.error(e, this.serviceContext);
+    if (!process.env.NODE_APP_INSTANCE || Number(process.env.NODE_APP_INSTANCE) === 0) {
+      try {
+        const result = await this.remoteModelService.findByCriteria({
+          status: RemoteStatus.completed,
+          dateTo: format(new Date(), DATE_FORMAT),
+        });
+        if (result.length === 0) return;
+        await Promise.all(
+          result.map(async (user) => {
+            await this.remoteMessage.publish({
+              remoteId: user._id,
+              status: user.status,
+              remoteActionType: RemoteActionType.deactivateRemote,
+            });
+          }),
+        );
+      } catch (e) {
+        this.logger.error(e, this.serviceContext);
+      }
     }
   }
 }

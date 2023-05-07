@@ -31,34 +31,39 @@ export class HealthScheduledService implements OnApplicationBootstrap {
   }
 
   async onApplicationBootstrap() {
-    try {
-      const result = await this.health.check<HealthCheckMailFormat>(ReturnHealthFormatType.mail);
-      console.log(result);
-      this.mailSendInfo.lastCheckStatus = result.status;
-      return await this.sendMailInfo(result);
-    } catch (e) {
-      this.logger.error(`Error HealthServiceScheduledService on application start  ${e}`, this.serviceContext);
+    if (!process.env.NODE_APP_INSTANCE || Number(process.env.NODE_APP_INSTANCE) === 0) {
+      try {
+        const result = await this.health.check<HealthCheckMailFormat>(ReturnHealthFormatType.mail);
+        this.mailSendInfo.lastCheckStatus = result.status;
+        return await this.sendMailInfo(result);
+      } catch (e) {
+        this.logger.error(`Error HealthServiceScheduledService on application start  ${e}`, this.serviceContext);
+      }
     }
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
   async sendScheduled() {
-    try {
-      const result = await this.health.check<HealthCheckMailFormat>(ReturnHealthFormatType.mail);
-      this.logger.info(result, this.serviceContext);
-      if (this.checkSendMail(result.status)) {
-        this.mailSendInfo.isScheduledSend = true;
-        this.mailSendInfo.lastCheckStatus = result.status;
-        return await this.sendMailInfo(result);
+    if (!process.env.NODE_APP_INSTANCE || Number(process.env.NODE_APP_INSTANCE) === 0) {
+      try {
+        const result = await this.health.check<HealthCheckMailFormat>(ReturnHealthFormatType.mail);
+        this.logger.info(result, this.serviceContext);
+        if (this.checkSendMail(result.status)) {
+          this.mailSendInfo.isScheduledSend = true;
+          this.mailSendInfo.lastCheckStatus = result.status;
+          return await this.sendMailInfo(result);
+        }
+      } catch (e) {
+        this.logger.error(`Error HealthServiceScheduledService ${e}`, this.serviceContext);
       }
-    } catch (e) {
-      this.logger.error(`Error HealthServiceScheduledService ${e}`, this.serviceContext);
     }
   }
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   enableMailSend() {
-    return (this.mailSendInfo.isScheduledSend = false);
+    if (!process.env.NODE_APP_INSTANCE || Number(process.env.NODE_APP_INSTANCE) === 0) {
+      return (this.mailSendInfo.isScheduledSend = false);
+    }
   }
 
   private async sendMailInfo(healthResult: HealthCheckMailFormat) {
