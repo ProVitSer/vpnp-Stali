@@ -2,7 +2,7 @@ import { DialExtensionByContext } from '@app/config/config';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class AsteriskApiUtilsService {
+export class SmartRoutingApiUtilsService {
   static formatIncomingNumber(incomingNumber: string): string {
     return incomingNumber.length == 10 ? `8${incomingNumber}` : incomingNumber;
   }
