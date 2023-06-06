@@ -41,7 +41,7 @@ export class Pbx3cxCallInfoService {
         .createQueryBuilder('cl_party_info')
         .select('cl_party_info.id')
         .where('cl_party_info.callerNumber like :number', {
-          number: incomingNumber,
+          number: `%${incomingNumber}`,
         })
         .orderBy('cl_party_info.id', 'DESC')
         .getOne();
@@ -124,7 +124,7 @@ export class Pbx3cxCallInfoService {
       return await this.queue
         .createQueryBuilder('callcent_queuecalls')
         .select()
-        .where('callcent_queuecalls.from_userpart like :incomingNumber', { incomingNumber: incomingNumber })
+        .where('callcent_queuecalls.from_userpart like :incomingNumber', { incomingNumber: `%${incomingNumber}` })
         .orderBy('callcent_queuecalls.idcallcent_queuecalls', 'DESC')
         .getOne();
     } catch (e) {
