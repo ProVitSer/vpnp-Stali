@@ -11,6 +11,7 @@ import { DialplanApplicationService } from './ari/ari-dialplan.service';
     {
       provide: 'ARI',
       useFactory: async (configService: ConfigService) => {
+        console.log(configService.get('asterisk.ari.url'));
         return {
           ariClient: await ARI.connect(
             configService.get('asterisk.ari.url'),
