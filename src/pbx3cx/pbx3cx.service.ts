@@ -18,11 +18,14 @@ export class Pbx3cxService {
       this.logger.info(`${unicueid} ${incomingNumber} ${extension}`, this.serviceContext);
       const callInfo = await this.getCallInfo(incomingNumber);
       const answerCalls = await this.pbxCallService.searchAnswerByCallID(callInfo.callId);
+
       const clParticipantsInfoIds = answerCalls.map((answerCalls: { cl_participants_info_id: number }) => {
         return answerCalls.cl_participants_info_id;
       });
+
       const callUserInfo = await this.pbxCallService.searchLastUserRing(clParticipantsInfoIds, extension.trim());
-      if (!!callUserInfo) {
+
+      if (callUserInfo !== null) {
         return {
           callType: CallType.local,
           moduleUnicueId: data.unicueid,
@@ -35,18 +38,22 @@ export class Pbx3cxService {
         return await this.search3cxInfoMobileRedirection(unicueid, callInfo.callId);
       }
     } catch (e) {
-      this.logger.error(e, this.serviceContext);
+      throw e;
     }
   }
 
   public async search3cxGroupCall(data: Omit<CallInfoEventData, 'extension'>): Promise<CallInfoData | CallMobileInfoData> {
     try {
       const { unicueid, incomingNumber } = data;
-      this.logger.info(`${unicueid} ${incomingNumber} `);
+
       const modIncomingNumber = incomingNumber.length == 12 ? incomingNumber.substring(1) : incomingNumber;
+      this.logger.info(`${modIncomingNumber}`, this.serviceContext);
+
       const callInfo = await this.getCallInfo(modIncomingNumber);
+
       const callCenterCallInfo = await this.pbxCallService.getCallCenterInfo(modIncomingNumber);
-      if (!callCenterCallInfo.callHistoryId || callCenterCallInfo.toDialednum == '') {
+
+      if (callCenterCallInfo === null) {
         return await this.search3cxInfoMobileRedirection(unicueid, callInfo.callId);
       } else {
         return {
@@ -59,7 +66,7 @@ export class Pbx3cxService {
         };
       }
     } catch (e) {
-      this.logger.error(e, this.serviceContext);
+      throw e;
     }
   }
 
@@ -67,7 +74,7 @@ export class Pbx3cxService {
     try {
       return await this.pbxCallService.getAllMeetings();
     } catch (e) {
-      this.logger.error(e, this.serviceContext);
+      throw e;
     }
   }
 
@@ -86,7 +93,7 @@ export class Pbx3cxService {
         endCallTime: callParticipants.endTime,
       };
     } catch (e) {
-      this.logger.error(e, this.serviceContext);
+      throw e;
     }
   }
 
@@ -95,7 +102,7 @@ export class Pbx3cxService {
       const callPartyInfo = await this.pbxCallService.searchFirstIncomingIdByNumber(incomingNumber.trim());
       return await this.pbxCallService.searchCallInfo(callPartyInfo.id);
     } catch (e) {
-      this.logger.error(e, this.serviceContext);
+      throw e;
     }
   }
 }
