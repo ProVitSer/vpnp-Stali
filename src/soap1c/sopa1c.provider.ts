@@ -39,6 +39,8 @@ export class Soap1cProvider {
 
     try {
       const requestData = await provider.getRequestData(data);
+      this.logger.info(requestData, this.serviceContext);
+
       const xmlRequest = await this.makeXmlRequest(requestData, envelop || Soap1cEnvelopeTypes.returnNumber, action);
       const response = await firstValueFrom(
         this.httpService.post(this.soap1cUrl.get(data), xmlRequest).pipe(
@@ -47,7 +49,10 @@ export class Soap1cProvider {
           }),
         ),
       );
-      return (await this.xml.createObjectFromXmlAsync(response.data)) as T;
+      const formatResponse = (await this.xml.createObjectFromXmlAsync(response.data)) as T;
+      this.logger.info(formatResponse, this.serviceContext);
+
+      return formatResponse;
     } catch (e) {
       this.logger.error(e, this.serviceContext);
       throw e;
