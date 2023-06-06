@@ -33,22 +33,22 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
           this.logger.info(`Событие входящего вызова ${JSON.stringify(event)}`, this.serviceContext);
           const routeInfo = await this.getRouteInfo(event);
           if (routeInfo.returnDialExtension != DEFAULT_NOT_FOUND_EXTENSION) {
-            await this.continueDialplan(routeInfo.channelId, LOCAL_ROUTING, routeInfo.returnDialExtension);
+            await this.continueDialplan(routeInfo.channelId, LOCAL_ROUTING, routeInfo.dialedNumber);
           } else {
-            await this.continueDialplan(routeInfo.channelId, DEFAULT_ROUTING, routeInfo.returnDialExtension);
+            await this.continueDialplan(routeInfo.channelId, DEFAULT_ROUTING, routeInfo.dialedNumber);
           }
         } catch (e) {
           this.logger.info(` Error ARI continueDialplan ${e}`, this.serviceContext);
         }
       });
-      this.client.ariClient.start(this.configService.get('asterisk.ari.application.app'));
+      this.client.ariClient.start(this.configService.get('asterisk.ari.application'));
     }
   }
 
-  private async continueDialplan(returnChannelId: string, dialplanContext: string, returnDialExtension: string): Promise<string> {
+  private async continueDialplan(returnChannelId: string, dialplanContext: string, dialedNumber: string): Promise<string> {
     try {
       this.logger.info(
-        `Перенаправляем вызов в по нужному маршруту ${returnChannelId}  ${dialplanContext}  ${returnDialExtension}`,
+        `Перенаправляем вызов в по нужному маршруту ${returnChannelId}  ${dialplanContext}  ${dialedNumber}`,
         this.serviceContext,
       );
       return await new Promise((resolve, reject) => {
@@ -56,11 +56,11 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
           {
             channelId: returnChannelId,
             context: dialplanContext,
-            extension: returnDialExtension,
+            extension: dialedNumber,
           },
           (err: Error) => {
-            !!err
-              ? resolve(`ARI DialplanApplicationService continueDialplan ${returnChannelId} ${dialplanContext} ${returnDialExtension}`)
+            err == null
+              ? resolve(`ARI DialplanApplicationService continueDialplan ${returnChannelId} ${dialplanContext} ${dialedNumber}`)
               : reject(err);
           },
         );
@@ -73,7 +73,7 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
   private async getRouteInfo(event: StasisStart): Promise<RouteInfo> {
     try {
       const requestInfo = this.getSoapRequestInfo(event);
-      this.logger.info(`${JSON.stringify(requestInfo)}`);
+      this.logger.info(`${JSON.stringify(requestInfo)}`, this.serviceContext);
       const routeInfo = await this.soap1c.request<ReturnNumberResponseData>(requestInfo);
       const parseRouteInfo = routeInfo.Envelope.Body.ReturnNumberResponse.return.name.split(';');
       return {
@@ -91,7 +91,7 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
   private getSoapRequestInfo(event: StasisStart): Soap1cApiRequestInterface {
     const incomingNumber = UtilsService.formatNumber(event.channel.caller.number);
     const dialedNumber = this.getDialExtension(event);
-    this.logger.info(`${incomingNumber} ${dialedNumber} ${event.channel.id}`);
+    this.logger.info(`${incomingNumber} ${dialedNumber} ${event.channel.id}`, this.serviceContext);
     return {
       action: Soap1cActionTypes.getRouteNumber,
       envelop: Soap1cEnvelopeTypes.returnNumber,
