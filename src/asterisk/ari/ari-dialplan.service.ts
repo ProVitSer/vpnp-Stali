@@ -32,8 +32,10 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
         try {
           this.logger.info(`Событие входящего вызова ${JSON.stringify(event)}`, this.serviceContext);
           const routeInfo = await this.getRouteInfo(event);
+          this.logger.info(`${JSON.stringify(routeInfo)}`, this.serviceContext);
+
           if (routeInfo.returnDialExtension != DEFAULT_NOT_FOUND_EXTENSION) {
-            await this.continueDialplan(routeInfo.channelId, LOCAL_ROUTING, routeInfo.dialedNumber);
+            await this.continueDialplan(routeInfo.channelId, LOCAL_ROUTING, routeInfo.returnDialExtension);
           } else {
             await this.continueDialplan(routeInfo.channelId, DEFAULT_ROUTING, routeInfo.dialedNumber);
           }

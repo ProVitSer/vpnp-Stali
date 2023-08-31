@@ -19,6 +19,8 @@ export class Pbx3cxService {
       const callInfo = await this.getCallInfo(incomingNumber);
       const answerCalls = await this.pbxCallService.searchAnswerByCallID(callInfo.callId);
 
+      if (answerCalls.length == 0) return await await this.search3cxInfoMobileRedirection(unicueid, callInfo.callId);
+
       const clParticipantsInfoIds = answerCalls.map((answerCalls: { cl_participants_info_id: number }) => {
         return answerCalls.cl_participants_info_id;
       });

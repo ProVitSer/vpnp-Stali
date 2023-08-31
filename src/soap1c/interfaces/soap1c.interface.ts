@@ -1,3 +1,4 @@
+import { AxiosRequestConfig } from '@nestjs/terminus/dist/health-indicator/http/axios.interfaces';
 import { Soap1cActionTypes, Soap1cEnvelopeTypes, Soap1cRequestData, Soap1cRequestDataStructType } from './soap1c.enum';
 
 export interface Soap1cApiRequestInterface {
@@ -75,4 +76,9 @@ export interface ReturnNumberResponseData {
       };
     };
   };
+}
+
+export interface Soap1cConfig {
+  url: string;
+  config?: AxiosRequestConfig;
 }

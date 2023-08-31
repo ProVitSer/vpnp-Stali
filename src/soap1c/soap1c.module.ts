@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Soap1cProvider } from './sopa1c.provider';
 import { HttpModule } from '@nestjs/axios';
-import { GetSoap1cUrl } from './services/get-soap1c-url.service';
+import { Soap1CConfigService } from './services/soap-1c-config.service';
 import { GetRouteNumber, SetID, SetNumber } from './providers';
 
 @Module({
@@ -14,7 +14,7 @@ import { GetRouteNumber, SetID, SetNumber } from './providers';
     LoggerModule,
     HttpModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: async () => ({
         headers: {
           'User-Agent': 'StaliRRC/2.0.2',
           Content: 'application/json',
@@ -24,7 +24,7 @@ import { GetRouteNumber, SetID, SetNumber } from './providers';
       inject: [ConfigService],
     }),
   ],
-  providers: [Soap1cProvider, GetRouteNumber, SetID, SetNumber, GetSoap1cUrl],
+  providers: [Soap1cProvider, GetRouteNumber, SetID, SetNumber, Soap1CConfigService],
   exports: [Soap1cProvider],
 })
 export class Soap1cModule {}
