@@ -1,7 +1,14 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
-import { EsetSetRemoteAccess, ExtensionForward, MailForward, QueueStatus, EsetGetRemoteAccessStatus } from './providers/index';
-import { SelenoidDataTypes, SelenoidProviderInterface, SelenoidProviders } from './interfaces/selenoid.interface';
+import {
+  EsetSetRemoteAccess,
+  ExtensionForward,
+  MailForward,
+  QueueStatus,
+  EsetGetRemoteAccessStatus,
+  MailCheckForward,
+} from './providers/index';
+import { SelenoidDataResult, SelenoidDataTypes, SelenoidProviderInterface, SelenoidProviders } from './interfaces/selenoid.interface';
 import { ActionType } from './interfaces/selenoid.enum';
 
 @Injectable()
@@ -14,6 +21,7 @@ export class SelenoidProvider {
     private readonly mailForward: MailForward,
     private readonly esetSetRemoteAccess: EsetSetRemoteAccess,
     private readonly esetGetRemoteAccessStatus: EsetGetRemoteAccessStatus,
+    private readonly mailCheckForward: MailCheckForward,
   ) {
     this.serviceContext = SelenoidProvider.name;
   }
@@ -25,13 +33,14 @@ export class SelenoidProvider {
       [ActionType.queueStatus]: this.queueStatus,
       [ActionType.esetSetRemoteAccess]: this.esetSetRemoteAccess,
       [ActionType.esetCheckRemoteAccess]: this.esetGetRemoteAccessStatus,
+      [ActionType.mailCheckForward]: this.mailCheckForward,
     };
   }
 
-  public async change(action: ActionType, data: SelenoidDataTypes) {
+  public async action(action: ActionType, data: SelenoidDataTypes): Promise<SelenoidDataResult> {
     try {
       const provider = this.getProvider(action);
-      return await provider.selenoidChange(data);
+      return await provider.selenoidAction(data);
     } catch (e) {
       this.logger.error(e, this.serviceContext);
       throw e;

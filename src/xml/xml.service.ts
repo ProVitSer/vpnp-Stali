@@ -24,7 +24,7 @@ export class XmlService {
             r[nKey] = Array.isArray(o[k]) ? [] : {};
             renameKeys(o[k], r[nKey], ns);
           } else {
-            r[nKey] = o[k];
+            r[nKey] = o[k] === undefined ? 'undefined' : o[k];
           }
         }
       }

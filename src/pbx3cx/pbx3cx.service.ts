@@ -1,7 +1,9 @@
 import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { Pbx3cxCallInfoService } from './pbx3cx-call-info.service';
-import { CallInfoData, CallInfoEventData, KindCall } from './types/interface';
+import { CallInfoData, CallInfoEventData, CallMobileInfoData } from './types/pbx3cx.interface';
+import { CallType } from './types/pbx3cx.enum';
+import { ClParticipants } from './entities';
 
 @Injectable()
 export class Pbx3cxService {
@@ -10,19 +12,24 @@ export class Pbx3cxService {
     this.serviceContext = Pbx3cxService.name;
   }
 
-  public async search3cxExtensionCall(data: CallInfoEventData): Promise<CallInfoData> {
+  public async search3cxExtensionCall(data: CallInfoEventData): Promise<CallInfoData | CallMobileInfoData> {
     try {
       const { unicueid, incomingNumber, extension } = data;
       this.logger.info(`${unicueid} ${incomingNumber} ${extension}`, this.serviceContext);
       const callInfo = await this.getCallInfo(incomingNumber);
       const answerCalls = await this.pbxCallService.searchAnswerByCallID(callInfo.callId);
-      const mapAnswerCalls = answerCalls.map((answerCalls: any) => {
+
+      if (answerCalls.length == 0) return await await this.search3cxInfoMobileRedirection(unicueid, callInfo.callId);
+
+      const clParticipantsInfoIds = answerCalls.map((answerCalls: { cl_participants_info_id: number }) => {
         return answerCalls.cl_participants_info_id;
       });
-      const callUserInfo = await this.pbxCallService.searchLastUserRing(mapAnswerCalls, extension.trim());
-      if (!!callUserInfo) {
+
+      const callUserInfo = await this.pbxCallService.searchLastUserRing(clParticipantsInfoIds, extension.trim());
+
+      if (callUserInfo !== null) {
         return {
-          kind: KindCall.local,
+          callType: CallType.local,
           moduleUnicueId: data.unicueid,
           pbx3cxUnicueId: callInfo.callId,
           destinationNumber: callUserInfo.dn,
@@ -33,22 +40,26 @@ export class Pbx3cxService {
         return await this.search3cxInfoMobileRedirection(unicueid, callInfo.callId);
       }
     } catch (e) {
-      this.logger.error(e, this.serviceContext);
+      throw e;
     }
   }
 
-  public async search3cxGroupCall(data: CallInfoEventData): Promise<CallInfoData> {
+  public async search3cxGroupCall(data: Omit<CallInfoEventData, 'extension'>): Promise<CallInfoData | CallMobileInfoData> {
     try {
-      const { unicueid, incomingNumber, extension } = data;
-      this.logger.info(`${unicueid} ${incomingNumber} ${extension}`);
+      const { unicueid, incomingNumber } = data;
+
       const modIncomingNumber = incomingNumber.length == 12 ? incomingNumber.substring(1) : incomingNumber;
+      this.logger.info(`${modIncomingNumber}`, this.serviceContext);
+
       const callInfo = await this.getCallInfo(modIncomingNumber);
-      const callCenterCallInfo = await this.pbxCallService.getCallcenterInfo(modIncomingNumber);
-      if (!callCenterCallInfo.callHistoryId || callCenterCallInfo.toDialednum == '') {
+
+      const callCenterCallInfo = await this.pbxCallService.getCallCenterInfo(modIncomingNumber);
+
+      if (callCenterCallInfo === null) {
         return await this.search3cxInfoMobileRedirection(unicueid, callInfo.callId);
       } else {
         return {
-          kind: KindCall.group,
+          callType: CallType.group,
           moduleUnicueId: data.unicueid,
           pbx3cxUnicueId: callInfo.callId,
           destinationNumber: callCenterCallInfo.toDialednum,
@@ -57,7 +68,7 @@ export class Pbx3cxService {
         };
       }
     } catch (e) {
-      this.logger.error(e, this.serviceContext);
+      throw e;
     }
   }
 
@@ -65,34 +76,35 @@ export class Pbx3cxService {
     try {
       return await this.pbxCallService.getAllMeetings();
     } catch (e) {
-      this.logger.error(e, this.serviceContext);
+      throw e;
     }
   }
 
-  private async search3cxInfoMobileRedirection(unicueid: string, callId: number): Promise<CallInfoData> {
+  private async search3cxInfoMobileRedirection(unicueid: string, callId: number): Promise<CallMobileInfoData> {
     try {
       const infoId = await this.pbxCallService.searcInfoId(callId);
       const callPartyInfo = await this.pbxCallService.searchCallPartyInfo(infoId.infoId);
       const callParticipants = await this.pbxCallService.searchCallInfo(infoId.infoId);
       return {
-        kind: KindCall.mobile,
+        callType: CallType.mobile,
         moduleUnicueId: unicueid,
         pbx3cxUnicueId: callParticipants.callId, //infoId.callId,
-        destinationNumber: callPartyInfo.dn, //callPartyInfo.displayName,
+        destinationNumber: callPartyInfo.dn,
+        displayName: callPartyInfo.displayName,
         startCallTime: callParticipants.startTime,
         endCallTime: callParticipants.endTime,
       };
     } catch (e) {
-      this.logger.error(e, this.serviceContext);
+      throw e;
     }
   }
 
-  private async getCallInfo(incomingNumber: string) {
+  private async getCallInfo(incomingNumber: string): Promise<ClParticipants> {
     try {
       const callPartyInfo = await this.pbxCallService.searchFirstIncomingIdByNumber(incomingNumber.trim());
       return await this.pbxCallService.searchCallInfo(callPartyInfo.id);
     } catch (e) {
-      this.logger.error(e, this.serviceContext);
+      throw e;
     }
   }
 }

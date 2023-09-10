@@ -1,4 +1,4 @@
-import { HttpExceptionFilter } from '@app/http-exception.filter';
+import { HttpExceptionFilter } from '@app/exceptions/http-exception/http-exception.filter';
 import { Controller, Get, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { HealthCheck, HealthCheckResult } from '@nestjs/terminus';
 import { HealthService } from './health.service';

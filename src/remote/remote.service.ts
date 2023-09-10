@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from 'nestjs-typegoose';
 import { RemoteActivateDto } from './dto/remote-activate.dto';
 import { RemoteResponse } from './interfaces/remote-interface';
 import { RemoteModel } from './remote.model';
-import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
+import { DocumentType } from '@typegoose/typegoose/lib/types';
 import { RemoteStatus, RemoteStatusChangeType, RemoteActionType } from './interfaces/remote-enum';
-import { Types } from 'mongoose';
 import { RemoteDeleteDto } from './dto/remote-delete.dto';
 import * as moment from 'moment';
 import { RemoteDeactivateDto } from './dto/remote-deactivate.dto';
@@ -13,31 +11,7 @@ import { RemoteActualUserStatusDto } from './dto/remote-actual-user-status.dto';
 import { REMOTE_DATE_FORMAT, FORMAT_INCOMING_DATE } from './remote.constants';
 import { RemoteMessageQueueService } from './remote-message-queue.service';
 import { UtilsService } from '@app/utils/utils.service';
-
-@Injectable()
-export class RemoteModelService {
-  constructor(@InjectModel(RemoteModel) private readonly remoteModel: ModelType<RemoteModel>) {}
-
-  public async create(data: { [key: string]: any }): Promise<DocumentType<RemoteModel>> {
-    return this.remoteModel.create(data);
-  }
-
-  public async updateById(id: string | Types.ObjectId, data: { [key: string]: any }) {
-    return await this.remoteModel.findByIdAndUpdate(id, { ...data }, { new: true }).exec();
-  }
-
-  public async findById(id: string) {
-    return this.remoteModel.findById(id).exec();
-  }
-
-  public async deleteById(id: string) {
-    return await this.remoteModel.findByIdAndRemove(id).exec();
-  }
-
-  public async findByCriteria(criteria: { [key: string]: any }): Promise<DocumentType<RemoteModel>[]> {
-    return await this.remoteModel.find(criteria).exec();
-  }
-}
+import { RemoteModelService } from './services/remote-model-service';
 
 @Injectable()
 export class RemoteService {

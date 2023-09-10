@@ -11,7 +11,7 @@ export class SelenoidUtils {
       await webDriver.sleep(500);
       await webDriver.findElement(By.xpath("//a[@id='proceed-link']")).click();
       await webDriver.sleep(500);
-      return
+      return;
     } catch (e) {
       return;
     }
