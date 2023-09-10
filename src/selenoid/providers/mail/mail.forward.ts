@@ -8,6 +8,9 @@ import { AUTH_MAIL_ERROR, ERROR_LOGOUT, ERROR_USER_FORWARD, ERROR_USER_NOT_FOUND
 import { ERROR_WEB_DRIVER } from '@app/selenoid/selenoid.constants';
 import { UtilsService } from '@app/utils/utils.service';
 import { MailForwardData } from './mail.interfaces';
+import { MailAuthorization } from './mail.authorization';
+import { MailSearchNeedUser } from './mail.search-need-user';
+import { MailUserForward } from './mail.user-forward';
 
 @Injectable()
 export class MailForward implements SelenoidProviderInterface {
@@ -20,6 +23,9 @@ export class MailForward implements SelenoidProviderInterface {
     private readonly selenoidWebDriver: SelenoidWebdriver,
     private readonly configService: ConfigService,
     private readonly logger: LoggerService,
+    private readonly mailAuthorization: MailAuthorization,
+    private readonly mailSearchNeedUser: MailSearchNeedUser,
+    private readonly mailUserForward: MailUserForward,
   ) {
     this.serviceContext = MailForward.name;
   }
@@ -39,14 +45,16 @@ export class MailForward implements SelenoidProviderInterface {
   private async setEmailForward(data: MailForwardData): Promise<void> {
     this.userName = data.from.match(/(.+)@(.+)/)[1];
     this.email = data.from.match(/(.+)@(.+)/)[0];
+    const forwardData = { userName: this.userName, email: this.email };
     try {
       await this.getWebDriver();
       await this.webDriver.get(this.configService.get('mailServer.url'));
       await this.webDriver.manage().window().maximize();
       await this.webDriver.sleep(10000);
-      await this.authorization();
-      await this.searchNeedUser(this.userName);
-      await this.goToUserForward();
+
+      await this.mailAuthorization.authorization(this.webDriver);
+      await this.mailSearchNeedUser.searchNeedUser(this.webDriver, forwardData);
+      await this.mailUserForward.goToUserForward(this.webDriver, forwardData);
       await this.setForward(data);
       return await this.webDriver.quit();
     } catch (e) {

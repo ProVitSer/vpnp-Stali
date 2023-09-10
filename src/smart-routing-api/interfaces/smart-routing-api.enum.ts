@@ -1,4 +1,4 @@
-export enum AsteriskActionType {
+export enum SmartRoutingActionType {
   GroupCallInfo = 'GroupCallInfo',
   NotWorkTimeCallInfo = 'NotWorkTimeCallInfo',
   ExtensionCallInfo = 'ExtensionCallInfo',

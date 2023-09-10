@@ -10,14 +10,13 @@ import { XmlModule } from './xml/xml.module';
 import { SelenoidModule } from './selenoid/selenoid.module';
 import { DockerModule } from './docker/docker.module';
 import { ActiveDirectoryModule } from './active-directory/active-directory.module';
-import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
 import { RemoteModule } from './remote/remote.module';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { getMongoConfig } from './config/mongo.config';
 import { AdditionalServicesModule } from './additional-services/additional-services.module';
 import { Pbx3cxModule } from './pbx3cx/pbx3cx.module';
-import { AsteriskApiModule } from './asterisk-api/asterisk-api.module';
+import { SmartRoutingApiModule } from './smart-routing-api/smart-routing-api.module';
 
 @Module({
   controllers: [AppController],
@@ -41,7 +40,7 @@ import { AsteriskApiModule } from './asterisk-api/asterisk-api.module';
     RemoteModule,
     AdditionalServicesModule,
     Pbx3cxModule,
-    AsteriskApiModule,
+    SmartRoutingApiModule,
   ],
 })
 export class AppModule {}

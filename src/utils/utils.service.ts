@@ -1,6 +1,7 @@
 import { DATE_FORMAT } from '@app/config/app.config';
 import { Injectable } from '@nestjs/common';
 import { format } from 'date-fns';
+import * as moment from 'moment';
 
 @Injectable()
 export class UtilsService {
@@ -21,5 +22,11 @@ export class UtilsService {
 
   static timeout(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  static secondDiff(startTime: Date, endTime: Date, dateFormat: string): number {
+    const start = moment(moment(startTime).local().format(dateFormat), dateFormat);
+    const end = moment(moment(endTime).local().format(dateFormat), dateFormat);
+    return end.diff(start, 'second');
   }
 }

@@ -1,5 +1,5 @@
 import { EsetGetRemoteAccessStatusData, EsetSetRemoteAccessData } from '../providers/eset/eset.interfaces';
-import { MailForwardData } from '../providers/mail/mail.interfaces';
+import { MailCheckForwardData, MailCheckForwardResult, MailForwardData } from '../providers/mail/mail.interfaces';
 import { ExtensionStatusData, QueueStatusData } from '../providers/pbx3cx/pbx3cx.interfaces';
 import { ActionType } from './selenoid.enum';
 
@@ -15,12 +15,15 @@ export type SelenoidDataTypes =
   | ExtensionStatusData
   | MailForwardData
   | EsetSetRemoteAccessData
-  | EsetGetRemoteAccessStatusData;
+  | EsetGetRemoteAccessStatusData
+  | MailCheckForwardData;
 
 export type SelenoidProviders = {
   [key in ActionType]: SelenoidProviderInterface;
 };
 
 export interface SelenoidProviderInterface {
-  selenoidAction(data: SelenoidDataTypes): Promise<void | boolean>;
+  selenoidAction(data: SelenoidDataTypes): Promise<SelenoidDataResult>;
 }
+
+export type SelenoidDataResult = MailCheckForwardResult | void | boolean;

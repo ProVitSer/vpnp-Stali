@@ -11,9 +11,9 @@ import {
 import { AdUsersListRemote, ActivateRemote, DeactivateRemote, GetUserStatusRemote } from './providers';
 import { PROVIDER_NOT_EXISTS } from './remote.constants';
 import { RemoteModel } from './remote.model';
-import { RemoteModelService } from './remote.service';
 import { DocumentType } from '@typegoose/typegoose/lib/types';
 import { UtilsService } from '@app/utils/utils.service';
+import { RemoteModelService } from './services/remote-model-service';
 
 @Injectable()
 export class RemoteProvider {

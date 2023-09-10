@@ -1,3 +1,5 @@
+import { CallType } from './pbx3cx.enum';
+
 export interface CallInfoEventData {
   unicueid: string;
   incomingNumber: string;
@@ -5,7 +7,7 @@ export interface CallInfoEventData {
 }
 
 export interface CallInfoData {
-  kind: KindCall;
+  callType: CallType;
   moduleUnicueId: string;
   pbx3cxUnicueId: number;
   destinationNumber: string;
@@ -15,8 +17,6 @@ export interface CallInfoData {
   endCallTime: Date;
 }
 
-export enum KindCall {
-  local = 'local',
-  mobile = 'mobile',
-  group = 'group',
+export interface CallMobileInfoData extends CallInfoData {
+  displayName: string;
 }
