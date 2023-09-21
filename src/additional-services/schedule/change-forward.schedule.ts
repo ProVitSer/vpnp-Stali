@@ -49,7 +49,7 @@ export class ChangeForwardScheduleService {
         const result = await this.additionalModelService.findByCriteria({
           service: { $in: [ServicesType.mail, ServicesType.extension] },
           revertChange: { $exists: true, $ne: true },
-          dateTo: format(new Date(), 'dd.MM.yyyy'),
+          dateTo: format(new Date(), DATE_FORMAT),
         });
         if (result.length === 0) return;
         const revertData = this.revertStatus(result);

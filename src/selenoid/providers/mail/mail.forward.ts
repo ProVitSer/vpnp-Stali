@@ -33,10 +33,24 @@ export class MailForward implements SelenoidProviderInterface {
   async selenoidAction(data: MailForwardData): Promise<boolean> {
     try {
       this.enableForward = data.status;
+      await this._selenoidAction(data);
+      return true;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  private async _selenoidAction(data: MailForwardData): Promise<void> {
+    try {
       if (UtilsService.isDateNow(data.dateFrom)) {
         await this.setEmailForward(data);
+        return;
       }
-      return true;
+
+      if (UtilsService.isDateNow(data.dateTo)) {
+        await this.setEmailForward(data);
+        return;
+      }
     } catch (e) {
       throw e;
     }

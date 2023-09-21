@@ -34,8 +34,22 @@ export class ExtensionForward implements SelenoidProviderInterface {
   async selenoidAction(data: ExtensionStatusData): Promise<void> {
     try {
       this.enableForward = data.status;
+      return await this._selenoidAction(data);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  private async _selenoidAction(data: ExtensionStatusData): Promise<void> {
+    try {
       if (UtilsService.isDateNow(data.dateFrom)) {
         await this.updateExtensionForward(data);
+        return;
+      }
+
+      if (UtilsService.isDateNow(data.dateTo)) {
+        await this.updateExtensionForward(data);
+        return;
       }
     } catch (e) {
       throw e;
