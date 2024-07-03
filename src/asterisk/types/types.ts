@@ -1,20 +1,37 @@
 export enum AsterismContext {
-  westcallIn = 'westcall-in',
-  kolchuginoIn = 'kolchugino-in',
-  pyatigorskIn = 'pyatigorsk-in',
-  chelyabinskIn = 'chelyabinsk-in',
-  krasnodarIn = 'krasnodar-mango-in',
-  krasnodarDirect = 'krasnodar-mango-direct-in',
-  nizhniyIn = 'nizhniy-in',
-  nizhniyYandex = 'nizhniy-yandex-in',
-  mangoSamara = 'mango-samara-in',
-  mangoSpb = 'mango-spb-in',
-  mangoVoronezh = 'mango-voronezh-in',
-  mangoVoronezhDirect = 'mango-voronezh-direct-in',
-  mangoMoscowYandex = 'mango-moscow-yandex-in',
-  mamgoNovnosibirsk = 'mango-novnosibirsk-in',
-  mangoUfa = 'mango-ufa-in',
+    westcallIn = 'westcall-in',
+    kolchuginoIn = 'kolchugino-in',
+    pyatigorskIn = 'pyatigorsk-in',
+    chelyabinskIn = 'chelyabinsk-in',
+    krasnodarIn = 'krasnodar-mango-in',
+    krasnodarDirect = 'krasnodar-mango-direct-in',
+    nizhniyIn = 'nizhniy-in',
+    nizhniyYandex = 'nizhniy-yandex-in',
+    mangoSamara = 'mango-samara-in',
+    mangoSpb = 'mango-spb-in',
+    mangoVoronezh = 'mango-voronezh-in',
+    mangoVoronezhDirect = 'mango-voronezh-direct-in',
+    mangoMoscowYandex = 'mango-moscow-yandex-in',
+    mamgoNovnosibirsk = 'mango-novnosibirsk-in',
+    mangoUfa = 'mango-ufa-in',
+    mangoVladimir = 'mango-vladimir-in',
+    mangoVolgograd = 'mango-volgograd-in',
+    mangoGrozniy = 'mango-grozniy-in',
+    mangoEkt = 'mango-ekt-new-in',
+    mangoKazan = 'mango-kazan-in',
+    mangoNabaregChelni = 'mango-nc-in',
+    mangoPenza = 'mango-penza-in',
+    mangoPerm = 'mango-perm-in',
+    mangoRostov = 'mango-rostov-in',
+    mangoSaratov = 'mango-saratov-in',
+    mangoTumen = 'mango-tumen-in',
+    mangoUlanovsk = 'mango-ul-in',
+    mangoUlanovskNew = 'mango-ul-new-in'
+
 }
+
+
+
 
 export enum IdTrunk3CX {
   krasnodarIn = '10028',
@@ -31,4 +48,20 @@ export enum IdTrunk3CX {
   chelyabinskIn = '10024',
   beronet = '10021',
   kolchuginoIn = '10008',
+  mangoVladimir = '10033',
+  mangoVolgograd = '10034',
+  mangoGrozniy = '10035',
+  mangoEkt = '10036',
+  mangoKazan = '10020',
+  mangoNabaregChelni = '10031',
+  mangoPenza = '10037',
+  mangoPerm = '10022',
+  mangoRostov = '10038',
+  mangoSaratov = '10039',
+  mangoTumen = '10023',
+  mangoUlanovsk = '10032',
+  mangoUlanovskNew = '10040'
 }
+
+
+
