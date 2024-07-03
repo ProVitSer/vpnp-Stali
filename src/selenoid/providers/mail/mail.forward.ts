@@ -82,12 +82,15 @@ export class MailForward implements SelenoidProviderInterface {
       // Проверка включена переадресация или нет
       // <input type="checkbox" name="EnableForwarding" id="EnableForwarding" onclick="Enable();RA.setIsDirty()" checked="true">
       await this.webDriver.findElement(By.xpath("//label[@for='EnableForwarding']/input[@checked='true']"));
+
       if (this.enableForward) {
+        this.logger.info(`Переадресация включена, ничего не делаем`, this.serviceContext);
         this.logger.info(`Переадресация уже включена для пользователя ${this.email}`, this.serviceContext);
         await this.webDriver.findElement(By.id('CancelButton')).click();
         await this.webDriver.sleep(5000);
         return await this.exit();
       } else {
+        this.logger.info(`Переадресация включена, выключаем ее`, this.serviceContext);
         await this.webDriver.findElement(By.xpath("//input[@name='Address']")).clear();
         await this.webDriver.findElement(By.xpath("//label[@for='EnableForwarding']")).click();
         await this.webDriver.sleep(5000);
@@ -96,6 +99,7 @@ export class MailForward implements SelenoidProviderInterface {
       }
     } catch (e) {
       if (this.enableForward) {
+        this.logger.info(`Переадресация выключена, включаем ее`, this.serviceContext);
         await this.webDriver.findElement(By.xpath("//label[@for='EnableForwarding']")).click();
         await this.webDriver.findElement(By.xpath("//input[@name='Address']")).clear();
         await this.webDriver.findElement(By.xpath("//input[@name='Address']")).sendKeys(`${data.to}`);
@@ -103,6 +107,7 @@ export class MailForward implements SelenoidProviderInterface {
         await this.webDriver.findElement(By.id('SaveAndCloseButton')).click();
         return await this.exit();
       } else {
+        this.logger.info(`Переадресация включена, ничего не делаем`, this.serviceContext);
         this.logger.info(`Переадресация уже включена для пользователя ${this.email}`, this.serviceContext);
         await this.webDriver.findElement(By.id('CancelButton')).click();
         await this.webDriver.sleep(5000);
