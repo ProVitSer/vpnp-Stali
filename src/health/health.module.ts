@@ -16,35 +16,35 @@ import { TypegooseHealthIndicator } from './health-indicator/typegoose.healthInd
 import { AsteriskHealthIndicator } from './health-indicator/asterisk.healthIndicator';
 
 @Module({
-  imports: [
-    TerminusModule,
-    ConfigModule,
-    LoggerModule,
-    DockerModule,
-    AsteriskModule,
-    MailModule,
-    ScheduleModule.forRoot(),
-    HttpModule.registerAsync({
-      useFactory: () => ({
-        timeout: 5000,
-        maxRedirects: 5,
-        validateStatus: () => true,
-      }),
-    }),
-  ],
-  controllers: [HealthController],
-  providers: [
-    HealthService,
-    DockerImgServiceHealthIndicator,
-    DockerServiceHealthIndicator,
-    TypegooseHealthIndicator,
-    HealthScheduledService,
-    AsteriskHealthIndicator,
-  ],
-  exports: [HealthService],
+    imports: [
+        TerminusModule,
+        ConfigModule,
+        LoggerModule,
+        DockerModule,
+        AsteriskModule,
+        MailModule,
+        ScheduleModule.forRoot(),
+        HttpModule.registerAsync({
+            useFactory: () => ({
+                timeout: 5000,
+                maxRedirects: 5,
+                validateStatus: () => true,
+            }),
+        }),
+    ],
+    controllers: [HealthController],
+    providers: [
+        HealthService,
+        DockerImgServiceHealthIndicator,
+        DockerServiceHealthIndicator,
+        TypegooseHealthIndicator,
+        HealthScheduledService,
+        AsteriskHealthIndicator,
+    ],
+    exports: [HealthService],
 })
 export class HealthModule {
-  configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(LoggerMiddleware).forRoutes(HealthController);
-  }
+    configure(consumer: MiddlewareConsumer): void {
+        consumer.apply(LoggerMiddleware).forRoutes(HealthController);
+    }
 }

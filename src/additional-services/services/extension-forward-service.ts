@@ -7,95 +7,112 @@ import { ExtensionForwardStatus, GetExtensionForward } from '../interfaces/addit
 
 @Injectable()
 export class ExtensionForwardService {
-  private serviceContext: string;
-  constructor(private readonly pbxForward: Pbx3cxForwardStatusService) {
-    this.serviceContext = ExtensionForwardService.name;
-  }
-
-  public async getLocalExtensionForward(
-    currentForwardInfo: Fwdprofile,
-    mobile: string,
-  ): Promise<Omit<ExtensionForwardStatus, 'isForwardEnable'>> {
-    return await this.getExtensionForward(this.getExtensionForwardStruct(ExtensionForwardType.external, currentForwardInfo, mobile));
-  }
-
-  private async getExtensionForward(data: GetExtensionForward): Promise<Omit<ExtensionForwardStatus, 'isForwardEnable'>> {
-    if (this.isEndCall(data)) {
-      return {
-        forwardType: ExtensionForwardRuleType.endCall,
-      };
+    private serviceContext: string;
+    constructor(private readonly pbxForward: Pbx3cxForwardStatusService) {
+        this.serviceContext = ExtensionForwardService.name;
     }
 
-    if (this.checkIsVoiceMail(data)) {
-      return {
-        forwardType: ExtensionForwardRuleType.extensionVoiceMail,
-      };
+    public async getLocalExtensionForward(
+        currentForwardInfo: Fwdprofile,
+        mobile: string,
+    ): Promise<Omit<ExtensionForwardStatus, 'isForwardEnable'>> {
+
+        return await this.getExtensionForward(this.getExtensionForwardStruct(ExtensionForwardType.external, currentForwardInfo, mobile));
+
     }
 
-    if (this.checkIsMobile(data)) {
-      return {
-        forwardType: ExtensionForwardRuleType.mobile,
-        exten: data.mobile,
-      };
+    private async getExtensionForward(data: GetExtensionForward): Promise<Omit<ExtensionForwardStatus, 'isForwardEnable'>> {
+        if (this.isEndCall(data)) {
+
+            return {
+                forwardType: ExtensionForwardRuleType.endCall,
+            };
+
+        }
+
+        if (this.checkIsVoiceMail(data)) {
+
+            return {
+                forwardType: ExtensionForwardRuleType.extensionVoiceMail,
+            };
+
+        }
+
+        if (this.checkIsMobile(data)) {
+
+            return {
+                forwardType: ExtensionForwardRuleType.mobile,
+                exten: data.mobile,
+            };
+
+        }
+
+        if (this.checkIsExternalNumber(data)) {
+
+            return {
+                forwardType: ExtensionForwardRuleType.external,
+                exten: data.outsideNumber,
+            };
+
+        }
+
+        if (this.checkIsExtension(data)) {
+
+            return {
+                forwardType: ExtensionForwardRuleType.extension,
+                exten: (await this.pbxForward.getExtenByIDDN(data.forwardToDn)).value,
+            };
+
+        }
     }
 
-    if (this.checkIsExternalNumber(data)) {
-      return {
-        forwardType: ExtensionForwardRuleType.external,
-        exten: data.outsideNumber,
-      };
+    private getExtensionForwardStruct(
+        extensionForwardType: ExtensionForwardType,
+        currentForwardInfo: Fwdprofile,
+        mobile: string,
+    ): GetExtensionForward {
+
+        switch (extensionForwardType) {
+
+            case ExtensionForwardType.internal:
+                return {
+                    extension: currentForwardInfo.fkidextension,
+                    mobile,
+                    outsideNumber: currentForwardInfo.fwdtooutsidenumberMatch1,
+                    forwardToDn: currentForwardInfo.fkforwardtodnMatch1,
+                };
+
+            case ExtensionForwardType.external:
+                return {
+                    extension: currentForwardInfo.fkidextension,
+                    mobile,
+                    outsideNumber: currentForwardInfo.fwdtooutsidenumberMatch2,
+                    forwardToDn: currentForwardInfo.fkforwardtodnMatch2,
+                };
+
+            default:
+                throw FORWARD_TYPE_ERROR;
+                
+        }
     }
 
-    if (this.checkIsExtension(data)) {
-      return {
-        forwardType: ExtensionForwardRuleType.extension,
-        exten: (await this.pbxForward.getExtenByIDDN(data.forwardToDn)).value,
-      };
+    private checkIsExternalNumber(data: GetExtensionForward): boolean {
+        return data.forwardToDn == null && data.outsideNumber != data.mobile;
     }
-  }
 
-  private getExtensionForwardStruct(
-    extensionForwardType: ExtensionForwardType,
-    currentForwardInfo: Fwdprofile,
-    mobile: string,
-  ): GetExtensionForward {
-    switch (extensionForwardType) {
-      case ExtensionForwardType.internal:
-        return {
-          extension: currentForwardInfo.fkidextension,
-          mobile,
-          outsideNumber: currentForwardInfo.fwdtooutsidenumberMatch1,
-          forwardToDn: currentForwardInfo.fkforwardtodnMatch1,
-        };
-      case ExtensionForwardType.external:
-        return {
-          extension: currentForwardInfo.fkidextension,
-          mobile,
-          outsideNumber: currentForwardInfo.fwdtooutsidenumberMatch2,
-          forwardToDn: currentForwardInfo.fkforwardtodnMatch2,
-        };
-      default:
-        throw FORWARD_TYPE_ERROR;
+    private checkIsMobile(data: GetExtensionForward): boolean {
+        return data.forwardToDn == null && data.outsideNumber == data.mobile;
     }
-  }
 
-  private checkIsExternalNumber(data: GetExtensionForward): boolean {
-    return data.forwardToDn == null && data.outsideNumber != data.mobile;
-  }
+    private checkIsExtension(data: GetExtensionForward): boolean {
+        return data.outsideNumber == '' && data.forwardToDn != data.extension;
+    }
 
-  private checkIsMobile(data: GetExtensionForward): boolean {
-    return data.forwardToDn == null && data.outsideNumber == data.mobile;
-  }
+    private checkIsVoiceMail(data: GetExtensionForward): boolean {
+        return data.outsideNumber == '' && data.forwardToDn == data.extension;
+    }
 
-  private checkIsExtension(data: GetExtensionForward): boolean {
-    return data.outsideNumber == '' && data.forwardToDn != data.extension;
-  }
-
-  private checkIsVoiceMail(data: GetExtensionForward): boolean {
-    return data.outsideNumber == '' && data.forwardToDn == data.extension;
-  }
-
-  private isEndCall(data: GetExtensionForward): boolean {
-    return data.outsideNumber == '' && data.forwardToDn == null;
-  }
+    private isEndCall(data: GetExtensionForward): boolean {
+        return data.outsideNumber == '' && data.forwardToDn == null;
+    }
 }

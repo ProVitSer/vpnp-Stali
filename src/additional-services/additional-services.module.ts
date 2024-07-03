@@ -12,25 +12,25 @@ import { Pbx3cxModule } from '@app/pbx3cx/pbx3cx.module';
 import { AdditionalModelService, ExtensionForwardService } from './services';
 
 @Module({
-  imports: [
-    LoggerModule,
-    SelenoidModule,
-    ScheduleModule.forRoot(),
-    TypegooseModule.forFeature([
-      {
-        typegooseClass: AdditionalServicesModel,
-        schemaOptions: {
-          collection: 'additionalServices',
-        },
-      },
-    ]),
-    Pbx3cxModule,
-  ],
-  providers: [AdditionalServicesService, AdditionalModelService, ChangeForwardScheduleService, ExtensionForwardService],
-  controllers: [AdditionalServicesController],
+    imports: [
+        LoggerModule,
+        SelenoidModule,
+        ScheduleModule.forRoot(),
+        TypegooseModule.forFeature([
+            {
+                typegooseClass: AdditionalServicesModel,
+                schemaOptions: {
+                    collection: 'additionalServices',
+                },
+            },
+        ]),
+        Pbx3cxModule,
+    ],
+    providers: [AdditionalServicesService, AdditionalModelService, ChangeForwardScheduleService, ExtensionForwardService],
+    controllers: [AdditionalServicesController],
 })
 export class AdditionalServicesModule {
-  configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(LoggerMiddleware).forRoutes(AdditionalServicesController);
-  }
+    configure(consumer: MiddlewareConsumer): void {
+        consumer.apply(LoggerMiddleware).forRoutes(AdditionalServicesController);
+    }
 }

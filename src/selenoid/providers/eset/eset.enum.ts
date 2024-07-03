@@ -1,9 +1,9 @@
 export enum EsetPath {
-  startPage = '/users/ad_ldap',
-  userPager = '/users/all',
+    startPage = '/users/ad_ldap',
+    userPager = '/users/all',
 }
 
 export enum EsetStatus {
-  on = 'on',
-  off = 'off',
+    on = 'on',
+    off = 'off',
 }

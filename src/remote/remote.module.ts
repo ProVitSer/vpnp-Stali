@@ -21,46 +21,46 @@ import { RATELIMIT_REQUEST_ERROR } from './remote.constants';
 import { RemoteModelService } from './services/remote-model-service';
 
 @Module({
-  imports: [
-    LoggerModule,
-    SelenoidModule,
-    ActiveDirectoryModule,
-    RateLimiterModule.register({
-      duration: MAX_REMOTE_DURATION,
-      points: MAX_REMOTE_POINTS,
-      errorMessage: RATELIMIT_REQUEST_ERROR,
-    }),
-    TypegooseModule.forFeature([
-      {
-        typegooseClass: RemoteModel,
-        schemaOptions: {
-          collection: 'remote',
-        },
-      },
-    ]),
-    RabbitMQModule.forRootAsync(RabbitMQModule, {
-      imports: [ConfigModule],
-      useFactory: getRabbitMQConfig,
-      inject: [ConfigService],
-    }),
-    ScheduleModule.forRoot(),
-  ],
-  providers: [
-    RemoteService,
-    RemoteModelService,
-    RemoteMessageQueueService,
-    RemoteProvider,
-    ActivateRemote,
-    DeactivateRemote,
-    GetUserStatusRemote,
-    AdUsersListRemote,
-    SetRemoteAccessScheduleService,
-  ],
-  exports: [RemoteService],
-  controllers: [RemoteController],
+    imports: [
+        LoggerModule,
+        SelenoidModule,
+        ActiveDirectoryModule,
+        RateLimiterModule.register({
+            duration: MAX_REMOTE_DURATION,
+            points: MAX_REMOTE_POINTS,
+            errorMessage: RATELIMIT_REQUEST_ERROR,
+        }),
+        TypegooseModule.forFeature([
+            {
+                typegooseClass: RemoteModel,
+                schemaOptions: {
+                    collection: 'remote',
+                },
+            },
+        ]),
+        RabbitMQModule.forRootAsync(RabbitMQModule, {
+            imports: [ConfigModule],
+            useFactory: getRabbitMQConfig,
+            inject: [ConfigService],
+        }),
+        ScheduleModule.forRoot(),
+    ],
+    providers: [
+        RemoteService,
+        RemoteModelService,
+        RemoteMessageQueueService,
+        RemoteProvider,
+        ActivateRemote,
+        DeactivateRemote,
+        GetUserStatusRemote,
+        AdUsersListRemote,
+        SetRemoteAccessScheduleService,
+    ],
+    exports: [RemoteService],
+    controllers: [RemoteController],
 })
 export class RemoteModule {
-  configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(LoggerMiddleware).forRoutes(RemoteController);
-  }
+    configure(consumer: MiddlewareConsumer): void {
+        consumer.apply(LoggerMiddleware).forRoutes(RemoteController);
+    }
 }

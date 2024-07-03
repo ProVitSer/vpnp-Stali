@@ -5,20 +5,20 @@ import { RemoteDeactivateDto } from '../dto/remote-deactivate.dto';
 import { RemoteActionType, RemoteStatus } from './remote-enum';
 
 export interface RemoteResponse {
-  remoteId: string | Types.ObjectId;
-  status: RemoteStatus;
-  users?: Array<string>;
-  error?: Record<string, unknown>;
-  remoteStatus?: {
-    isRemoteAdActive: boolean;
-    isRemoteEsetActive: boolean;
-  };
+    remoteId: string | Types.ObjectId;
+    status: RemoteStatus;
+    users?: Array<string>;
+    error?: Record<string, unknown>;
+    remoteStatus?: {
+        isRemoteAdActive: boolean;
+        isRemoteEsetActive: boolean;
+    };
 }
 
 export interface UpdateRemoteStatusData {
-  remoteId: string | Types.ObjectId;
-  isRemoteAdActive: boolean;
-  isRemoteEsetActive: boolean;
+    remoteId: string | Types.ObjectId;
+    isRemoteAdActive: boolean;
+    isRemoteEsetActive: boolean;
 }
 
 export type RemoteActivateDtoWithId = RemoteActivateDto & { remoteId: string | Types.ObjectId };
@@ -26,26 +26,26 @@ export type RemoteDeactivateDtoWithId = RemoteDeactivateDto & { remoteId: string
 export type RemoteActualUserStatusDtoWithId = RemoteActualUserStatusDto & { remoteId: string | Types.ObjectId };
 
 export type RemoteChangeData =
-  | RemoteActivateDtoWithId
-  | RemoteDeactivateDtoWithId
-  | RemoteActualUserStatusDtoWithId
-  | { remoteId: string | Types.ObjectId };
+    | RemoteActivateDtoWithId
+    | RemoteDeactivateDtoWithId
+    | RemoteActualUserStatusDtoWithId
+    | { remoteId: string | Types.ObjectId };
 
 export interface RemoteProviderInterface {
-  remoteAction(data: RemoteChangeData): Promise<RemoteActionDataCompleted>;
+    remoteAction(data: RemoteChangeData): Promise<RemoteActionDataCompleted>;
 }
 
 export interface RemoteProviderData {
-  remoteId: string | Types.ObjectId;
-  status: RemoteStatus;
-  remoteActionType: RemoteActionType;
+    remoteId: string | Types.ObjectId;
+    status: RemoteStatus;
+    remoteActionType: RemoteActionType;
 }
 
 export type RemoteProviders = {
-  [key in RemoteActionType]: RemoteProviderInterface;
+    [key in RemoteActionType]: RemoteProviderInterface;
 };
 
 export interface RemoteActionDataCompleted {
-  remoteId: string | Types.ObjectId;
-  remoteData: { [key: string]: any };
+    remoteId: string | Types.ObjectId;
+    remoteData: { [key: string]: any };
 }

@@ -3,13 +3,15 @@ import { SetNumberRequestStruct, Soap1cProviderInterface, SetNumberData } from '
 
 @Injectable()
 export class SetNumber implements Soap1cProviderInterface {
-  async getRequestData(requestData: SetNumberData): Promise<SetNumberRequestStruct> {
-    return {
-      ID: requestData.channelId,
-      InNumber: requestData.incomingNumber,
-      DobNumber: requestData.localExtension,
-      OurNumber: requestData.dialedNumber,
-      DateTimeIn: requestData.callDateTime,
-    };
-  }
+    async getRequestData(requestData: SetNumberData): Promise<SetNumberRequestStruct> {
+
+        return {
+            ID: requestData.channelId,
+            InNumber: requestData.incomingNumber,
+            DobNumber: requestData.localExtension,
+            OurNumber: requestData.dialedNumber,
+            DateTimeIn: requestData.callDateTime,
+        };
+        
+    }
 }

@@ -5,26 +5,26 @@ import { RemoteActionDataCompleted, RemoteDeactivateDtoWithId, RemoteProviderInt
 
 @Injectable()
 export class AdUsersListRemote implements RemoteProviderInterface {
-  private serviceContext: string;
-  constructor(private readonly adService: ActiveDirectoryService, private readonly logger: LoggerService) {
-    this.serviceContext = AdUsersListRemote.name;
-  }
-
-  async remoteAction(data: RemoteDeactivateDtoWithId): Promise<RemoteActionDataCompleted> {
-    try {
-      return await this.getAdUsers(String(data.remoteId));
-    } catch (e) {
-      throw e;
+    private serviceContext: string;
+    constructor(private readonly adService: ActiveDirectoryService, private readonly logger: LoggerService) {
+        this.serviceContext = AdUsersListRemote.name;
     }
-  }
 
-  private async getAdUsers(remoteId: string) {
-    try {
-      const adUsers = await this.adService.getAdUsers();
-      return { remoteId, remoteData: { users: adUsers.data } };
-    } catch (e) {
-      this.logger.error(e, this.serviceContext);
-      throw e;
+    async remoteAction(data: RemoteDeactivateDtoWithId): Promise<RemoteActionDataCompleted> {
+        try {
+            return await this.getAdUsers(String(data.remoteId));
+        } catch (e) {
+            throw e;
+        }
     }
-  }
+
+    private async getAdUsers(remoteId: string) {
+        try {
+            const adUsers = await this.adService.getAdUsers();
+            return { remoteId, remoteData: { users: adUsers.data } };
+        } catch (e) {
+            this.logger.error(e, this.serviceContext);
+            throw e;
+        }
+    }
 }

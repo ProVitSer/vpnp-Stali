@@ -17,90 +17,114 @@ import { MailCheckForwardResult } from '@app/selenoid/providers/mail/mail.interf
 
 @Injectable()
 export class AdditionalServicesService {
-  private serviceContext: string;
-  constructor(
-    private readonly additionalModelService: AdditionalModelService,
-    private readonly selenoid: SelenoidProvider,
-    private readonly logger: LoggerService,
-    private readonly pbxForward: Pbx3cxForwardStatusService,
-    private readonly extensionForward: ExtensionForwardService,
-  ) {
-    this.serviceContext = AdditionalServicesService.name;
-  }
+    private serviceContext: string;
+    constructor(
+        private readonly additionalModelService: AdditionalModelService,
+        private readonly selenoid: SelenoidProvider,
+        private readonly logger: LoggerService,
+        private readonly pbxForward: Pbx3cxForwardStatusService,
+        private readonly extensionForward: ExtensionForwardService,
+    ) {
+        this.serviceContext = AdditionalServicesService.name;
+    }
 
-  public async changeQueueStatus(data: QueueStatusDto): Promise<void> {
-    return await this.change(ServicesType.queue, data);
-  }
+    public async changeQueueStatus(data: QueueStatusDto): Promise<void> {
+        return await this.change(ServicesType.queue, data);
+    }
 
-  public async changeExtensionForward(data: ExtensionForwardDto): Promise<void> {
-    return await this.change(ServicesType.extension, data);
-  }
+    public async changeExtensionForward(data: ExtensionForwardDto): Promise<void> {
+        return await this.change(ServicesType.extension, data);
+    }
 
-  public async changeMailForward(data: MailForwardDto): Promise<void> {
-    return await this.change(ServicesType.mail, data);
-  }
+    public async changeMailForward(data: MailForwardDto): Promise<void> {
+        return await this.change(ServicesType.mail, data);
+    }
 
-  public async getExtenForwardStatus(exten: string): Promise<ExtensionForwardStatus> {
-    try {
-      const dn = await this.pbxForward.getExtenId(exten);
-      if (dn == null) throw EXTENSION_NOT_FOUND;
+    public async getExtenForwardStatus(exten: string): Promise<ExtensionForwardStatus> {
+        try {
 
-      const extension = await this.pbxForward.getExtensionInfo(dn.iddn);
-      const mobile = (await this.pbxForward.getCurrentExtenMobile(dn.iddn)).value;
-      if (await this.isExtenStatusAvailable(extension))
+            const dn = await this.pbxForward.getExtenId(exten);
+
+            if (dn == null) throw EXTENSION_NOT_FOUND;
+
+            const extension = await this.pbxForward.getExtensionInfo(dn.iddn);
+
+            const mobile = (await this.pbxForward.getCurrentExtenMobile(dn.iddn)).value;
+
+            if (await this.isExtenStatusAvailable(extension)) return { isForwardEnable: false };
+
+            return await this.getCurrentForwardInfo(await this.getForwardInfo(dn, extension), mobile);
+
+        } catch (e) {
+
+            throw e;
+
+        }
+    }
+
+    public async getCurrentMailForward(email: string): Promise<MailCheckForwardResult> {
+        try {
+
+            return (await this.selenoid.action(ActionType.mailCheckForward, { email })) as MailCheckForwardResult;
+
+        } catch (e) {
+
+            throw e;
+
+        }
+    }
+
+    private async getCurrentForwardInfo(currentForwardInfo: Fwdprofile, mobile: string): Promise<ExtensionForwardStatus> {
         return {
-          isForwardEnable: false,
+            isForwardEnable: true,
+            ...(await this.extensionForward.getLocalExtensionForward(currentForwardInfo, mobile)),
         };
-      return await this.getCurrentForwardInfo(await this.getForwardInfo(dn, extension), mobile);
-    } catch (e) {
-      throw e;
     }
-  }
 
-  public async getCurrentMailForward(email: string): Promise<MailCheckForwardResult> {
-    try {
-      return (await this.selenoid.action(ActionType.mailCheckForward, { email })) as MailCheckForwardResult;
-    } catch (e) {
-      throw e;
+    private async getForwardInfo(dn: Dn, extension: Extension): Promise<Fwdprofile> {
+
+        const currentProfiles = await this.pbxForward.getExtenProfiles(dn.iddn);
+
+        if (!currentProfiles.some((fwdprofile: Fwdprofile) => {
+                return fwdprofile.idfwdprofile === extension.currentprofile;
+            })
+        ) throw FWPROFILE_NOT_FOUND;
+
+        return currentProfiles.filter((fwdprofile: Fwdprofile) => {
+            return fwdprofile.idfwdprofile === extension.currentprofile;
+        })[0];
+
     }
-  }
 
-  private async getCurrentForwardInfo(currentForwardInfo: Fwdprofile, mobile: string): Promise<ExtensionForwardStatus> {
-    return {
-      isForwardEnable: true,
-      ...(await this.extensionForward.getLocalExtensionForward(currentForwardInfo, mobile)),
-    };
-  }
+    private async isExtenStatusAvailable(extension: Extension): Promise<boolean> {
 
-  private async getForwardInfo(dn: Dn, extension: Extension): Promise<Fwdprofile> {
-    const currentProfiles = await this.pbxForward.getExtenProfiles(dn.iddn);
-    if (
-      !currentProfiles.some((fwdprofile: Fwdprofile) => {
-        return fwdprofile.idfwdprofile === extension.currentprofile;
-      })
-    )
-      throw FWPROFILE_NOT_FOUND;
-    return currentProfiles.filter((fwdprofile: Fwdprofile) => {
-      return fwdprofile.idfwdprofile === extension.currentprofile;
-    })[0];
-  }
+        const currentProf = await this.pbxForward.getExtenCurrentProfile(extension.currentprofile);
 
-  private async isExtenStatusAvailable(extension: Extension): Promise<boolean> {
-    const currentProf = await this.pbxForward.getExtenCurrentProfile(extension.currentprofile);
-    return currentProf.profilename == ForwardType.available;
-  }
+        return currentProf.profilename == ForwardType.available;
 
-  private async change(service: ServicesType, data: ChangeTypes): Promise<void> {
-    try {
-      await this.additionalModelService.create({ ...data, service });
-      if (service === ServicesType.queue) {
-        await this.selenoid.action(ServicesTypeToActionTypeMap[service], data);
-      } else if (UtilsService.isDateNow(data.dateFrom)) {
-        await this.selenoid.action(ServicesTypeToActionTypeMap[service], data);
-      }
-    } catch (e) {
-      this.logger.error(e, this.serviceContext);
-      throw e;
     }
-  }
+
+    private async change(service: ServicesType, data: ChangeTypes): Promise<void> {
+        try {
+
+            await this.additionalModelService.create({ ...data, service });
+
+            if (service === ServicesType.queue) {
+
+                await this.selenoid.action(ServicesTypeToActionTypeMap[service], data);
+
+            } else if (UtilsService.isDateNow(data.dateFrom)) {
+
+                await this.selenoid.action(ServicesTypeToActionTypeMap[service], data);
+
+            }
+
+        } catch (e) {
+
+            this.logger.error(e, this.serviceContext);
+
+            throw e;
+
+        }
+    }
 }

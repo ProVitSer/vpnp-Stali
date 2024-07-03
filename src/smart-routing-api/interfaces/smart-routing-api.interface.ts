@@ -7,9 +7,9 @@ import { SmartRoutingActionType } from './smart-routing-api.enum';
 export type CallInfo = OffHoursDto | DialExtensionDto | GroupCallDto | ExtensionCallDto;
 
 export type SmartRoutingApiProviders = {
-  [key in SmartRoutingActionType]: SmartRoutingApiProviderInterface;
+    [key in SmartRoutingActionType]: SmartRoutingApiProviderInterface;
 };
 
 export interface SmartRoutingApiProviderInterface {
-  sendAggregateCallInfo(data: CallInfo): Promise<void>;
+    sendAggregateCallInfo(data: CallInfo): Promise<void>;
 }

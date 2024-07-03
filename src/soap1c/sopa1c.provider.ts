@@ -12,75 +12,90 @@ import { LoggerService } from '@app/logger/logger.service';
 
 @Injectable()
 export class Soap1cProvider {
-  private serviceContext: string;
-  constructor(
-    private readonly xml: XmlService,
-    private readonly getRouteNumber: GetRouteNumber,
-    private readonly setID: SetID,
-    private readonly setNumber: SetNumber,
-    private readonly httpService: HttpService,
-    private readonly soap1cConfig: Soap1CConfigService,
-    private readonly logger: LoggerService,
-  ) {
-    this.serviceContext = Soap1cProvider.name;
-  }
-
-  private get providers(): Soap1cProviders {
-    return {
-      [Soap1cActionTypes.getRouteNumber]: this.getRouteNumber,
-      [Soap1cActionTypes.setID]: this.setID,
-      [Soap1cActionTypes.setNumber]: this.setNumber,
-    };
-  }
-
-  public async request<T>(request: Soap1cApiRequestInterface): Promise<T> {
-    const { action, data, envelop } = request;
-    const provider = this.getProvider(action);
-    try {
-      const requestData = await provider.getRequestData(data);
-      const xmlRequest = await this.makeXmlRequest(requestData, envelop || Soap1cEnvelopeTypes.returnNumber, action);
-      this.logger.info(requestData, this.serviceContext);
-      const { url, config } = this.soap1cConfig.get(data);
-
-      const response = await firstValueFrom(
-        this.httpService.post(url, xmlRequest, <any>config).pipe(
-          catchError((error: AxiosError) => {
-            throw error;
-          }),
-        ),
-      );
-      const formatResponse = (await this.xml.createObjectFromXmlAsync(response.data)) as T;
-      this.logger.info(formatResponse, this.serviceContext);
-
-      return formatResponse;
-    } catch (e) {
-      this.logger.error(e, this.serviceContext);
-      throw e;
+    private serviceContext: string;
+    constructor(
+        private readonly xml: XmlService,
+        private readonly getRouteNumber: GetRouteNumber,
+        private readonly setID: SetID,
+        private readonly setNumber: SetNumber,
+        private readonly httpService: HttpService,
+        private readonly soap1cConfig: Soap1CConfigService,
+        private readonly logger: LoggerService,
+    ) {
+        this.serviceContext = Soap1cProvider.name;
     }
-  }
 
-  private getProvider(action: Soap1cActionTypes): Soap1cProviderInterface {
-    return this.providers[action];
-  }
+    private get providers(): Soap1cProviders {
+        return {
+            [Soap1cActionTypes.getRouteNumber]: this.getRouteNumber,
+            [Soap1cActionTypes.setID]: this.setID,
+            [Soap1cActionTypes.setNumber]: this.setNumber,
+        };
+    }
 
-  private makeFullData(data: PlainObject, envelope: Soap1cEnvelopeTypes, action: Soap1cActionTypes): PlainObject {
-    return {
-      'soap:Envelope': {
-        '@xmlns:soap': 'http://www.w3.org/2003/05/soap-envelope',
-        [`@xmlns:${NAMESPACE}`]: `${envelope}`,
-        'soap:Header': {},
-        'soap:Body': {
-          [`${NAMESPACE}:${action}`]: this.xml.addNameSpace(data, NAMESPACE),
-        },
-      },
-    };
-  }
+    public async request<T>(request: Soap1cApiRequestInterface): Promise<T> {
 
-  private async makeXmlRequest(data: PlainObject, envelope: Soap1cEnvelopeTypes, action: Soap1cActionTypes): Promise<string> {
-    return await this.createXml(this.makeFullData(data, envelope, action));
-  }
+        const { action, data, envelop } = request;
 
-  private async createXml(data: PlainObject): Promise<string> {
-    return this.xml.createXmlFromObjectAsync(data, { separateArrayItems: false });
-  }
+        const provider = this.getProvider(action);
+
+        try {
+
+            const requestData = await provider.getRequestData(data);
+
+            const xmlRequest = await this.makeXmlRequest(requestData, envelop || Soap1cEnvelopeTypes.returnNumber, action);
+
+            this.logger.info(requestData, this.serviceContext);
+
+            const { url, config } = this.soap1cConfig.get(data);
+
+            const response = await firstValueFrom(
+                this.httpService.post(url, xmlRequest, <any>config).pipe(
+                    catchError((error: AxiosError) => {
+                        throw error;
+                    }),
+                ),
+            );
+
+            const formatResponse = (await this.xml.createObjectFromXmlAsync(response.data)) as T;
+
+            this.logger.info(formatResponse, this.serviceContext);
+
+            return formatResponse;
+
+        } catch (e) {
+
+            this.logger.error(e, this.serviceContext);
+
+            throw e;
+
+        }
+    }
+
+    private getProvider(action: Soap1cActionTypes): Soap1cProviderInterface {
+        return this.providers[action];
+    }
+
+    private makeFullData(data: PlainObject, envelope: Soap1cEnvelopeTypes, action: Soap1cActionTypes): PlainObject {
+
+        return {
+            'soap:Envelope': {
+                '@xmlns:soap': 'http://www.w3.org/2003/05/soap-envelope',
+                [`@xmlns:${NAMESPACE}`]: `${envelope}`,
+                'soap:Header': {},
+                'soap:Body': {
+                    [`${NAMESPACE}:${action}`]: this.xml.addNameSpace(data, NAMESPACE),
+                },
+            },
+        };
+        
+    }
+
+    private async makeXmlRequest(data: PlainObject, envelope: Soap1cEnvelopeTypes, action: Soap1cActionTypes): Promise<string> {
+        return await this.createXml(this.makeFullData(data, envelope, action));
+    }
+
+    private async createXml(data: PlainObject): Promise<string> {
+        return this.xml.createXmlFromObjectAsync(data, { separateArrayItems: false });
+    }
 }

@@ -9,12 +9,12 @@ import { GroupCall, NotWorkTime, ExtensionCall, DialExtension } from './provider
 import { Pbx3cxModule } from '@app/pbx3cx/pbx3cx.module';
 
 @Module({
-  imports: [ConfigModule, LoggerModule, Soap1cModule, Pbx3cxModule],
-  controllers: [SmartRoutingApiController],
-  providers: [SmartRoutingApiProvider, GroupCall, NotWorkTime, ExtensionCall, DialExtension],
+    imports: [ConfigModule, LoggerModule, Soap1cModule, Pbx3cxModule],
+    controllers: [SmartRoutingApiController],
+    providers: [SmartRoutingApiProvider, GroupCall, NotWorkTime, ExtensionCall, DialExtension],
 })
 export class SmartRoutingApiModule {
-  configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(LoggerMiddleware).forRoutes(SmartRoutingApiController);
-  }
+    configure(consumer: MiddlewareConsumer): void {
+        consumer.apply(LoggerMiddleware).forRoutes(SmartRoutingApiController);
+    }
 }

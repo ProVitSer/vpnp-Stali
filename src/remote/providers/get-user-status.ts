@@ -7,34 +7,34 @@ import { RemoteActionDataCompleted, RemoteActualUserStatusDtoWithId, RemoteProvi
 
 @Injectable()
 export class GetUserStatusRemote implements RemoteProviderInterface {
-  private serviceContext: string;
-  constructor(
-    private readonly adService: ActiveDirectoryService,
-    private readonly selenoidProvider: SelenoidProvider,
-    private readonly logger: LoggerService,
-  ) {
-    this.serviceContext = GetUserStatusRemote.name;
-  }
-
-  async remoteAction(data: RemoteActualUserStatusDtoWithId): Promise<RemoteActionDataCompleted> {
-    try {
-      return await this.getUserStatus(data);
-    } catch (e) {
-      throw e;
+    private serviceContext: string;
+    constructor(
+        private readonly adService: ActiveDirectoryService,
+        private readonly selenoidProvider: SelenoidProvider,
+        private readonly logger: LoggerService,
+    ) {
+        this.serviceContext = GetUserStatusRemote.name;
     }
-  }
 
-  private async getUserStatus(data: RemoteActualUserStatusDtoWithId) {
-    try {
-      const adUsers = await this.adService.getAdUsers();
-      const isRemoteEsetActive = await this.selenoidProvider.action(ActionType.esetCheckRemoteAccess, { userName: data.user });
-      return {
-        remoteId: data.remoteId,
-        remoteData: { remoteStatus: { isRemoteAdActive: adUsers.data.some((adUser) => adUser === data.user), isRemoteEsetActive } },
-      };
-    } catch (e) {
-      this.logger.error(e, this.serviceContext);
-      throw e;
+    async remoteAction(data: RemoteActualUserStatusDtoWithId): Promise<RemoteActionDataCompleted> {
+        try {
+            return await this.getUserStatus(data);
+        } catch (e) {
+            throw e;
+        }
     }
-  }
+
+    private async getUserStatus(data: RemoteActualUserStatusDtoWithId) {
+        try {
+            const adUsers = await this.adService.getAdUsers();
+            const isRemoteEsetActive = await this.selenoidProvider.action(ActionType.esetCheckRemoteAccess, { userName: data.user });
+            return {
+                remoteId: data.remoteId,
+                remoteData: { remoteStatus: { isRemoteAdActive: adUsers.data.some((adUser) => adUser === data.user), isRemoteEsetActive } },
+            };
+        } catch (e) {
+            this.logger.error(e, this.serviceContext);
+            throw e;
+        }
+    }
 }

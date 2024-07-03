@@ -26,42 +26,35 @@ export enum AsterismContext {
     mangoSaratov = 'mango-saratov-in',
     mangoTumen = 'mango-tumen-in',
     mangoUlanovsk = 'mango-ul-in',
-    mangoUlanovskNew = 'mango-ul-new-in'
-
+    mangoUlanovskNew = 'mango-ul-new-in',
 }
-
-
-
 
 export enum IdTrunk3CX {
-  krasnodarIn = '10028',
-  krasnodarDirect = '10004',
-  nizhniyIn = '10026',
-  nizhniyYandex = '10003',
-  mangoSamara = '10030',
-  mangoSpb = '10027',
-  mangoVoronezh = '10025',
-  mangoVoronezhDirect = '10005',
-  westcallIn = '10007',
-  mangoMoscowYandex = '10029',
-  pyatigorskIn = '10006',
-  chelyabinskIn = '10024',
-  beronet = '10021',
-  kolchuginoIn = '10008',
-  mangoVladimir = '10033',
-  mangoVolgograd = '10034',
-  mangoGrozniy = '10035',
-  mangoEkt = '10036',
-  mangoKazan = '10020',
-  mangoNabaregChelni = '10031',
-  mangoPenza = '10037',
-  mangoPerm = '10022',
-  mangoRostov = '10038',
-  mangoSaratov = '10039',
-  mangoTumen = '10023',
-  mangoUlanovsk = '10032',
-  mangoUlanovskNew = '10040'
+    krasnodarIn = '10028',
+    krasnodarDirect = '10004',
+    nizhniyIn = '10026',
+    nizhniyYandex = '10003',
+    mangoSamara = '10030',
+    mangoSpb = '10027',
+    mangoVoronezh = '10025',
+    mangoVoronezhDirect = '10005',
+    westcallIn = '10007',
+    mangoMoscowYandex = '10029',
+    pyatigorskIn = '10006',
+    chelyabinskIn = '10024',
+    beronet = '10021',
+    kolchuginoIn = '10008',
+    mangoVladimir = '10033',
+    mangoVolgograd = '10034',
+    mangoGrozniy = '10035',
+    mangoEkt = '10036',
+    mangoKazan = '10020',
+    mangoNabaregChelni = '10031',
+    mangoPenza = '10037',
+    mangoPerm = '10022',
+    mangoRostov = '10038',
+    mangoSaratov = '10039',
+    mangoTumen = '10023',
+    mangoUlanovsk = '10032',
+    mangoUlanovskNew = '10040',
 }
-
-
-
