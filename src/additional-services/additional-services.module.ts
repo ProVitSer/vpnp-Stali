@@ -15,9 +15,9 @@ import { join } from 'path';
 
 @Module({
     imports: [
-        // LoggerModule,
-        // SelenoidModule,
-        // ScheduleModule.forRoot(),
+        LoggerModule,
+        SelenoidModule,
+        ScheduleModule.forRoot(),
         TypegooseModule.forFeature([
             {
                 typegooseClass: AdditionalServicesModel,
@@ -26,7 +26,7 @@ import { join } from 'path';
                 },
             },
         ]),
-        // Pbx3cxModule,
+        Pbx3cxModule,
         ClientsModule.register([
             {
               name: 'EXTENSION',
@@ -40,17 +40,13 @@ import { join } from 'path';
             },
           ]),
     ],
-    // providers: [AdditionalServicesService, AdditionalModelService, ChangeForwardScheduleService, ExtensionForwardService],
-    providers: [AdditionalServicesService, AdditionalModelService],
+    providers: [AdditionalServicesService, AdditionalModelService, ChangeForwardScheduleService, ExtensionForwardService],
 
     controllers: [AdditionalServicesController],
 })
-// export class AdditionalServicesModule {
-//     configure(consumer: MiddlewareConsumer): void {
-//         consumer.apply(LoggerMiddleware).forRoutes(AdditionalServicesController);
-//     }
-// }
-
 export class AdditionalServicesModule {
+    configure(consumer: MiddlewareConsumer): void {
+        consumer.apply(LoggerMiddleware).forRoutes(AdditionalServicesController);
+    }
 }
 

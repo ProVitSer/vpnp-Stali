@@ -27,20 +27,20 @@ export class AdditionalServicesController {
         }
     }
 
-    // @Post('forward/mail')
-    // async changeMailForward(@Query() params: MailForwardDto, @Res() res: Response) {
-    //     try {
+    @Post('forward/mail')
+    async changeMailForward(@Query() params: MailForwardDto, @Res() res: Response) {
+        try {
 
-    //         await this.additionalServices.changeMailForward(params);
+            await this.additionalServices.changeMailForward(params);
 
-    //         return res.status(HttpStatus.OK).json({ result: true });
+            return res.status(HttpStatus.OK).json({ result: true });
 
-    //     } catch (e) {
+        } catch (e) {
 
-    //         throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
 
-    //     }
-    // }
+        }
+    }
 
     @Post('forward/extension')
     async changeExtensionForward(@Query() params: ExtensionForwardDto, @Res() res: Response) {
@@ -57,33 +57,33 @@ export class AdditionalServicesController {
         }
     }
 
-    // @Get('forward/extension/status')
-    // async getExtensionStatus(@Query('exten') exten: string, @Res() res: Response) {
-    //     try {
+    @Get('forward/extension/status')
+    async getExtensionStatus(@Query('exten') exten: string, @Res() res: Response) {
+        try {
 
-    //         // const result = await this.additionalServices.getExtenForwardStatus(exten);
-    //         const result = {};
-    //         return res.status(HttpStatus.OK).json(result);
+            // const result = await this.additionalServices.getExtenForwardStatus(exten);
+            const result = {};
+            return res.status(HttpStatus.OK).json(result);
 
-    //     } catch (e) {
+        } catch (e) {
 
-    //         throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
 
-    //     }
-    // }
+        }
+    }
 
-    // @Get('forward/mail/status')
-    // async getMailStatus(@Query('mail') mail: string, @Res() res: Response) {
-    //     try {
+    @Get('forward/mail/status')
+    async getMailStatus(@Query('mail') mail: string, @Res() res: Response) {
+        try {
 
-    //         const result = await this.additionalServices.getCurrentMailForward(mail);
+            const result = await this.additionalServices.getCurrentMailForward(mail);
 
-    //         return res.status(HttpStatus.OK).json(result);
+            return res.status(HttpStatus.OK).json(result);
 
-    //     } catch (e) {
+        } catch (e) {
 
-    //         throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
             
-    //     }
-    // }
+        }
+    }
 }

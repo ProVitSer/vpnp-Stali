@@ -4,8 +4,8 @@ import { ExtensionForwardDto } from './dto/extension-forward.dto';
 import { MailForwardDto } from './dto/mail-forward.dto';
 import { QueueStatusDto } from './dto/queue-status.dto';
 import { LoggerService } from '@app/logger/logger.service';
-import { ChangeTypes, ExtensionForwardData, ExtensionForwardStatus, ExtensionsPbx, ServicesTypeToActionTypeMap } from './interfaces/additional-services.interface';
-import { ForwardStatus, FwType, QueueStatus, ServicesType } from './interfaces/additional-services.enum';
+import { ExtensionForwardData, ExtensionForwardStatus, ExtensionsPbx, ServicesTypeToActionTypeMap } from './interfaces/additional-services.interface';
+import { ForwardStatus, QueueStatus, ServicesType } from './interfaces/additional-services.enum';
 import { UtilsService } from '@app/utils/utils.service';
 import { Pbx3cxForwardStatusService } from '@app/pbx3cx/pbx3cx-forward-status.service';
 import { EXTENSION_NOT_FOUND, FORWARD_TYPE_RULE_TO_FW_TYPE, FWPROFILE_NOT_FOUND } from './additional-services.constants';
@@ -25,10 +25,10 @@ export class AdditionalServicesService implements OnModuleInit {
 
     constructor(
         private readonly additionalModelService: AdditionalModelService,
-        // private readonly selenoid: SelenoidProvider,
-        // private readonly logger: LoggerService,
-        // private readonly pbxForward: Pbx3cxForwardStatusService,
-        // private readonly extensionForward: ExtensionForwardService,
+        private readonly selenoid: SelenoidProvider,
+        private readonly logger: LoggerService,
+        private readonly pbxForward: Pbx3cxForwardStatusService,
+        private readonly extensionForward: ExtensionForwardService,
         @Inject('EXTENSION') private client: ClientGrpc
     ) {
         this.serviceContext = AdditionalServicesService.name;
@@ -106,89 +106,89 @@ export class AdditionalServicesService implements OnModuleInit {
     } 
 
 
-    // public async changeMailForward(data: MailForwardDto): Promise<void> {
-    //     try {
+    public async changeMailForward(data: MailForwardDto): Promise<void> {
+        try {
 
-    //         await this.additionalModelService.create({ ...data, service: ServicesType.mail });
+            await this.additionalModelService.create({ ...data, service: ServicesType.mail });
 
         
-    //         if (UtilsService.isDateNow(data.dateFrom)){
+            if (UtilsService.isDateNow(data.dateFrom)){
     
-    //             await this.selenoid.action(ServicesTypeToActionTypeMap[ServicesType.mail], data);
+                await this.selenoid.action(ServicesTypeToActionTypeMap[ServicesType.mail], data);
     
-    //         }
+            }
 
-    //     }catch(e){
+        }catch(e){
 
-    //         this.logger.error(e, this.serviceContext);
+            this.logger.error(e, this.serviceContext);
 
-    //         throw e;
-    //     }
+            throw e;
+        }
        
-    // }
+    }
 
-    // public async getExtenForwardStatus(exten: string): Promise<ExtensionForwardStatus> {
-    //     try {
+    public async getExtenForwardStatus(exten: string): Promise<ExtensionForwardStatus> {
+        try {
 
-    //         const dn = await this.pbxForward.getExtenId(exten);
+            const dn = await this.pbxForward.getExtenId(exten);
 
-    //         if (dn == null) throw EXTENSION_NOT_FOUND;
+            if (dn == null) throw EXTENSION_NOT_FOUND;
 
-    //         const extension = await this.pbxForward.getExtensionInfo(dn.iddn);
+            const extension = await this.pbxForward.getExtensionInfo(dn.iddn);
 
-    //         const mobile = (await this.pbxForward.getCurrentExtenMobile(dn.iddn)).value;
+            const mobile = (await this.pbxForward.getCurrentExtenMobile(dn.iddn)).value;
 
-    //         if (await this.isExtenStatusAvailable(extension)) return { isForwardEnable: false };
+            if (await this.isExtenStatusAvailable(extension)) return { isForwardEnable: false };
 
-    //         return await this.getCurrentForwardInfo(await this.getForwardInfo(dn, extension), mobile);
+            return await this.getCurrentForwardInfo(await this.getForwardInfo(dn, extension), mobile);
 
-    //     } catch (e) {
+        } catch (e) {
 
-    //         throw e;
+            throw e;
 
-    //     }
-    // }
+        }
+    }
 
-    // public async getCurrentMailForward(email: string): Promise<MailCheckForwardResult> {
-    //     try {
+    public async getCurrentMailForward(email: string): Promise<MailCheckForwardResult> {
+        try {
 
-    //         return (await this.selenoid.action(ActionType.mailCheckForward, { email })) as MailCheckForwardResult;
+            return (await this.selenoid.action(ActionType.mailCheckForward, { email })) as MailCheckForwardResult;
 
-    //     } catch (e) {
+        } catch (e) {
 
-    //         throw e;
+            throw e;
 
-    //     }
-    // }
+        }
+    }
 
-    // private async getCurrentForwardInfo(currentForwardInfo: Fwdprofile, mobile: string): Promise<ExtensionForwardStatus> {
-    //     return {
-    //         isForwardEnable: true,
-    //         ...(await this.extensionForward.getLocalExtensionForward(currentForwardInfo, mobile)),
-    //     };
-    // }
+    private async getCurrentForwardInfo(currentForwardInfo: Fwdprofile, mobile: string): Promise<ExtensionForwardStatus> {
+        return {
+            isForwardEnable: true,
+            ...(await this.extensionForward.getLocalExtensionForward(currentForwardInfo, mobile)),
+        };
+    }
 
-    // private async getForwardInfo(dn: Dn, extension: Extension): Promise<Fwdprofile> {
+    private async getForwardInfo(dn: Dn, extension: Extension): Promise<Fwdprofile> {
 
-    //     const currentProfiles = await this.pbxForward.getExtenProfiles(dn.iddn);
+        const currentProfiles = await this.pbxForward.getExtenProfiles(dn.iddn);
 
-    //     if (!currentProfiles.some((fwdprofile: Fwdprofile) => {
-    //             return fwdprofile.idfwdprofile === extension.currentprofile;
-    //         })
-    //     ) throw FWPROFILE_NOT_FOUND;
+        if (!currentProfiles.some((fwdprofile: Fwdprofile) => {
+                return fwdprofile.idfwdprofile === extension.currentprofile;
+            })
+        ) throw FWPROFILE_NOT_FOUND;
 
-    //     return currentProfiles.filter((fwdprofile: Fwdprofile) => {
-    //         return fwdprofile.idfwdprofile === extension.currentprofile;
-    //     })[0];
+        return currentProfiles.filter((fwdprofile: Fwdprofile) => {
+            return fwdprofile.idfwdprofile === extension.currentprofile;
+        })[0];
 
-    // }
+    }
 
-    // private async isExtenStatusAvailable(extension: Extension): Promise<boolean> {
+    private async isExtenStatusAvailable(extension: Extension): Promise<boolean> {
 
-    //     const currentProf = await this.pbxForward.getExtenCurrentProfile(extension.currentprofile);
+        const currentProf = await this.pbxForward.getExtenCurrentProfile(extension.currentprofile);
 
-    //     return currentProf.profilename == ForwardType.available;
+        return currentProf.profilename == ForwardType.available;
 
-    // }
+    }
 
 }

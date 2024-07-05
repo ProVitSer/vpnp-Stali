@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '@app/config/config.provides';
 import { LoggerModule } from './logger/logger.module';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AsteriskModule } from './asterisk/asterisk.module';
 import { Soap1cModule } from './soap1c/soap1c.module';
 import { XmlModule } from './xml/xml.module';
@@ -27,18 +26,19 @@ import { SmartRoutingApiModule } from './smart-routing-api/smart-routing-api.mod
             inject: [ConfigService],
             useFactory: getMongoConfig,
         }),
-        // LoggerModule,
-        //AsteriskModule,
-        //Soap1cModule,
-        //XmlModule,
-        //DockerModule,
-        //ActiveDirectoryModule,
+        LoggerModule,
+        AsteriskModule,
+        Soap1cModule,
+        XmlModule,
+        DockerModule,
+        ActiveDirectoryModule,
         //HealthModule,
-        // MailModule,
-        // RemoteModule,
+        MailModule,
+        RemoteModule,
         AdditionalServicesModule,
-        // Pbx3cxModule,
-        // SmartRoutingApiModule,
+        Pbx3cxModule,
+        SmartRoutingApiModule,
+        SelenoidModule
         
     ],
     controllers: [AppController],
