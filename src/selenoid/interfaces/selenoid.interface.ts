@@ -1,6 +1,5 @@
 import { EsetGetRemoteAccessStatusData, EsetSetRemoteAccessData } from '../providers/eset/eset.interfaces';
 import { MailCheckForwardData, MailCheckForwardResult, MailForwardData } from '../providers/mail/mail.interfaces';
-import { ExtensionStatusData, QueueStatusData } from '../providers/pbx3cx/pbx3cx.interfaces';
 import { ActionType } from './selenoid.enum';
 
 export interface Capabilities {
@@ -11,9 +10,7 @@ export interface Capabilities {
 }
 
 export type SelenoidDataTypes =
-    | QueueStatusData
-    | ExtensionStatusData
-    | MailForwardData
+    MailForwardData
     | EsetSetRemoteAccessData
     | EsetGetRemoteAccessStatusData
     | MailCheckForwardData;

@@ -25,7 +25,7 @@ export class ExtensionForwardService {
         if (this.isEndCall(data)) {
 
             return {
-                forwardType: ExtensionForwardRuleType.endCall,
+                forwardType: "endCall" as ExtensionForwardRuleType,
             };
 
         }
@@ -33,7 +33,7 @@ export class ExtensionForwardService {
         if (this.checkIsVoiceMail(data)) {
 
             return {
-                forwardType: ExtensionForwardRuleType.extensionVoiceMail,
+                forwardType: "extensionVoiceMail" as ExtensionForwardRuleType,
             };
 
         }

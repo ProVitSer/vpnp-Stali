@@ -19,28 +19,29 @@ import { Pbx3cxModule } from './pbx3cx/pbx3cx.module';
 import { SmartRoutingApiModule } from './smart-routing-api/smart-routing-api.module';
 
 @Module({
-  controllers: [AppController],
-  providers: [AppService],
-  imports: [
-    ConfigModule.forRoot({ load: [configuration] }),
-    TypegooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: getMongoConfig,
-    }),
-    LoggerModule,
-    AsteriskModule,
-    Soap1cModule,
-    SelenoidModule,
-    XmlModule,
-    DockerModule,
-    ActiveDirectoryModule,
-    //HealthModule,
-    MailModule,
-    RemoteModule,
-    AdditionalServicesModule,
-    Pbx3cxModule,
-    SmartRoutingApiModule,
-  ],
+
+    imports: [
+        ConfigModule.forRoot({ load: [configuration] }),
+        TypegooseModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: getMongoConfig,
+        }),
+        // LoggerModule,
+        //AsteriskModule,
+        //Soap1cModule,
+        //XmlModule,
+        //DockerModule,
+        //ActiveDirectoryModule,
+        //HealthModule,
+        // MailModule,
+        // RemoteModule,
+        AdditionalServicesModule,
+        // Pbx3cxModule,
+        // SmartRoutingApiModule,
+        
+    ],
+    controllers: [AppController],
+    providers: [],
 })
 export class AppModule {}

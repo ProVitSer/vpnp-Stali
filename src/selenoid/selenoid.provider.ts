@@ -2,9 +2,7 @@ import { LoggerService } from '@app/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import {
     EsetSetRemoteAccess,
-    ExtensionForward,
     MailForward,
-    QueueStatus,
     EsetGetRemoteAccessStatus,
     MailCheckForward,
 } from './providers/index';
@@ -16,8 +14,6 @@ export class SelenoidProvider {
     private serviceContext: string;
     constructor(
         private readonly logger: LoggerService,
-        private readonly queueStatus: QueueStatus,
-        private readonly extensionForward: ExtensionForward,
         private readonly mailForward: MailForward,
         private readonly esetSetRemoteAccess: EsetSetRemoteAccess,
         private readonly esetGetRemoteAccessStatus: EsetGetRemoteAccessStatus,
@@ -29,8 +25,6 @@ export class SelenoidProvider {
     private get providers(): SelenoidProviders {
         return {
             [ActionType.mailForward]: this.mailForward,
-            [ActionType.extensionForward]: this.extensionForward,
-            [ActionType.queueStatus]: this.queueStatus,
             [ActionType.esetSetRemoteAccess]: this.esetSetRemoteAccess,
             [ActionType.esetCheckRemoteAccess]: this.esetGetRemoteAccessStatus,
             [ActionType.mailCheckForward]: this.mailCheckForward,
