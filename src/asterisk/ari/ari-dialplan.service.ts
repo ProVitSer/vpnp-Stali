@@ -140,6 +140,8 @@ export class DialplanApplicationService implements OnApplicationBootstrap {
 
     private getDialExtension(event: StasisStart): string {
 
+        this.logger.error(`context ${event.channel.dialplan.context}`, this.serviceContext);
+
         if (event.channel.dialplan.context == E1_GATEWAY) {
 
             return event.args[0];
