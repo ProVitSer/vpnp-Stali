@@ -1,4 +1,4 @@
 export enum AdActionTypes {
-  addRemoteAccess = 'add',
-  deleteRemoteAccess = 'delete',
+    addRemoteAccess = 'add',
+    deleteRemoteAccess = 'delete',
 }

@@ -8,11 +8,11 @@ import { ReturnHealthFormatType } from './types/type';
 @UseFilters(HttpExceptionFilter)
 @Controller()
 export class HealthController {
-  constructor(private readonly healthService: HealthService) {}
+    constructor(private readonly healthService: HealthService) {}
 
-  @Get('health')
-  @HealthCheck()
-  async healthCheck() {
-    return await this.healthService.check<HealthCheckResult>(ReturnHealthFormatType.http);
-  }
+    @Get('health')
+    @HealthCheck()
+    async healthCheck() {
+        return await this.healthService.check<HealthCheckResult>(ReturnHealthFormatType.http);
+    }
 }

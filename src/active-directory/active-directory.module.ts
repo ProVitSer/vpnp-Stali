@@ -5,19 +5,19 @@ import { ActiveDirectoryService } from './active-directory.service';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [
-    ConfigModule,
-    LoggerModule,
-    HttpModule.registerAsync({
-      useFactory: () => ({
-        timeout: 5000,
-        maxRedirects: 5,
-        validateStatus: () => true,
-      }),
-    }),
-  ],
-  controllers: [],
-  providers: [ActiveDirectoryService],
-  exports: [ActiveDirectoryService],
+    imports: [
+        ConfigModule,
+        LoggerModule,
+        HttpModule.registerAsync({
+            useFactory: () => ({
+                timeout: 5000,
+                maxRedirects: 5,
+                validateStatus: () => true,
+            }),
+        }),
+    ],
+    controllers: [],
+    providers: [ActiveDirectoryService],
+    exports: [ActiveDirectoryService],
 })
 export class ActiveDirectoryModule {}

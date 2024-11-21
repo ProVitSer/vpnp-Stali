@@ -1,15 +1,15 @@
 import { AdActionTypes } from './active-directory.enum';
 
 export interface AdRemoteDataRequest {
-  user: string;
-  action: AdActionTypes;
+    user: string;
+    action: AdActionTypes;
 }
 
 export interface AdRemoteStatusResponse {
-  result: boolean;
+    result: boolean;
 }
 
 export interface AdRGetUsersResponse {
-  result: boolean;
-  data: Array<string>;
+    result: boolean;
+    data: Array<string>;
 }

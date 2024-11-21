@@ -10,22 +10,26 @@ import { ContextNumberToFull } from '@app/config/config';
 
 @Injectable()
 export class NotWorkTime implements SmartRoutingApiProviderInterface {
-  constructor(private readonly soap1c: Soap1cProvider) {}
+    constructor(private readonly soap1c: Soap1cProvider) {}
 
-  async sendAggregateCallInfo(data: OffHoursDto): Promise<void> {
-    try {
-      return await this.soap1c.request({
-        action: Soap1cActionTypes.getRouteNumber,
-        envelop: Soap1cEnvelopeTypes.returnNumber,
-        data: {
-          incomingNumber: SmartRoutingApiUtilsService.formatIncomingNumber(data.incomingNumber),
-          dialedNumber: ContextNumberToFull[data.dialExtension],
-          channelId: '',
-          callDateTime: moment().format(CALL_DATE_TIME_FORMAT),
-        },
-      });
-    } catch (e) {
-      throw e;
+    async sendAggregateCallInfo(data: OffHoursDto): Promise<void> {
+        try {
+
+            return await this.soap1c.request({
+                action: Soap1cActionTypes.getRouteNumber,
+                envelop: Soap1cEnvelopeTypes.returnNumber,
+                data: {
+                    incomingNumber: SmartRoutingApiUtilsService.formatIncomingNumber(data.incomingNumber),
+                    dialedNumber: ContextNumberToFull[data.dialExtension],
+                    channelId: '',
+                    callDateTime: moment().format(CALL_DATE_TIME_FORMAT),
+                },
+            });
+
+        } catch (e) {
+
+            throw e;
+            
+        }
     }
-  }
 }

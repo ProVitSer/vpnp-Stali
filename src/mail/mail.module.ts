@@ -7,34 +7,34 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from '@app/logger/logger.module';
 
 @Module({
-  imports: [
-    ConfigModule,
-    LoggerModule,
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        transport: {
-          debug: true,
-          host: configService.get('mail.host'),
-          port: configService.get('mail.port'),
-          secure: configService.get('mail.secure'),
-          auth: {
-            user: configService.get('mail.auth.user'),
-            pass: configService.get('mail.auth.pass'),
-          },
-        },
-        template: {
-          dir: join(__dirname, 'templates'),
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
-          },
-        },
-      }),
-      inject: [ConfigService],
-    }),
-  ],
-  providers: [MailService],
-  exports: [MailService],
+    imports: [
+        ConfigModule,
+        LoggerModule,
+        MailerModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: (configService: ConfigService) => ({
+                transport: {
+                    debug: true,
+                    host: configService.get('mail.host'),
+                    port: configService.get('mail.port'),
+                    secure: configService.get('mail.secure'),
+                    auth: {
+                        user: configService.get('mail.auth.user'),
+                        pass: configService.get('mail.auth.pass'),
+                    },
+                },
+                template: {
+                    dir: join(__dirname, 'templates'),
+                    adapter: new HandlebarsAdapter(),
+                    options: {
+                        strict: true,
+                    },
+                },
+            }),
+            inject: [ConfigService],
+        }),
+    ],
+    providers: [MailService],
+    exports: [MailService],
 })
 export class MailModule {}

@@ -10,27 +10,43 @@ import { AdditionalServicesModel } from './additional-services.model';
 import { ChangeForwardScheduleService } from './schedule/change-forward.schedule';
 import { Pbx3cxModule } from '@app/pbx3cx/pbx3cx.module';
 import { AdditionalModelService, ExtensionForwardService } from './services';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { join } from 'path';
 
 @Module({
-  imports: [
-    LoggerModule,
-    SelenoidModule,
-    ScheduleModule.forRoot(),
-    TypegooseModule.forFeature([
-      {
-        typegooseClass: AdditionalServicesModel,
-        schemaOptions: {
-          collection: 'additionalServices',
-        },
-      },
-    ]),
-    Pbx3cxModule,
-  ],
-  providers: [AdditionalServicesService, AdditionalModelService, ChangeForwardScheduleService, ExtensionForwardService],
-  controllers: [AdditionalServicesController],
+    imports: [
+        LoggerModule,
+        SelenoidModule,
+        ScheduleModule.forRoot(),
+        TypegooseModule.forFeature([
+            {
+                typegooseClass: AdditionalServicesModel,
+                schemaOptions: {
+                    collection: 'additionalServices',
+                },
+            },
+        ]),
+        Pbx3cxModule,
+        ClientsModule.register([
+            {
+              name: 'EXTENSION',
+              transport: Transport.GRPC,
+              options: {
+                url: '127.0.0.1:2838',
+                package: 'extension',
+                protoPath: join(__dirname, '../../proto/extension.proto'),
+
+              },
+            },
+          ]),
+    ],
+    providers: [AdditionalServicesService, AdditionalModelService, ChangeForwardScheduleService, ExtensionForwardService],
+
+    controllers: [AdditionalServicesController],
 })
 export class AdditionalServicesModule {
-  configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(LoggerMiddleware).forRoutes(AdditionalServicesController);
-  }
+    configure(consumer: MiddlewareConsumer): void {
+        consumer.apply(LoggerMiddleware).forRoutes(AdditionalServicesController);
+    }
 }
+

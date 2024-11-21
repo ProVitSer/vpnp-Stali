@@ -6,23 +6,23 @@ import * as ARI from 'ari-client';
 import { DialplanApplicationService } from './ari/ari-dialplan.service';
 
 @Module({
-  imports: [ConfigModule, LoggerModule, Soap1cModule],
-  providers: [
-    {
-      provide: 'ARI',
-      useFactory: async (configService: ConfigService) => {
-        return {
-          ariClient: await ARI.connect(
-            configService.get('asterisk.ari.url'),
-            configService.get('asterisk.ari.user'),
-            configService.get('asterisk.ari.password'),
-          ),
-        };
-      },
-      inject: [ConfigService],
-    },
-    DialplanApplicationService,
-  ],
-  exports: ['ARI', DialplanApplicationService],
+    imports: [ConfigModule, LoggerModule, Soap1cModule],
+    providers: [
+        {
+            provide: 'ARI',
+            useFactory: async (configService: ConfigService) => {
+                return {
+                    ariClient: await ARI.connect(
+                        configService.get('asterisk.ari.url'),
+                        configService.get('asterisk.ari.user'),
+                        configService.get('asterisk.ari.password'),
+                    ),
+                };
+            },
+            inject: [ConfigService],
+        },
+        DialplanApplicationService,
+    ],
+    exports: ['ARI', DialplanApplicationService],
 })
 export class AsteriskModule {}

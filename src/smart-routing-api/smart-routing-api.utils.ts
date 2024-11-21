@@ -3,15 +3,15 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class SmartRoutingApiUtilsService {
-  static formatIncomingNumber(incomingNumber: string): string {
-    return incomingNumber.length == 10 ? `8${incomingNumber}` : incomingNumber;
-  }
+    static formatIncomingNumber(incomingNumber: string): string {
+        return incomingNumber.length == 10 ? `8${incomingNumber}` : incomingNumber;
+    }
 
-  static formatDialExtensionByContext(context: string): string {
-    return context.length > 7 ? DialExtensionByContext[context] : `8495${context}`;
-  }
+    static formatDialExtensionByContext(context: string): string {
+        return context.length > 7 ? DialExtensionByContext[context] : `8495${context}`;
+    }
 
-  static formatDialExtension(dialExtension: string): string {
-    return dialExtension.length > 8 ? dialExtension : `8495${dialExtension}`;
-  }
+    static formatDialExtension(dialExtension: string): string {
+        return dialExtension.length > 8 ? dialExtension : `8495${dialExtension}`;
+    }
 }

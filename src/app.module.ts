@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '@app/config/config.provides';
 import { LoggerModule } from './logger/logger.module';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AsteriskModule } from './asterisk/asterisk.module';
 import { Soap1cModule } from './soap1c/soap1c.module';
 import { XmlModule } from './xml/xml.module';
@@ -19,28 +18,30 @@ import { Pbx3cxModule } from './pbx3cx/pbx3cx.module';
 import { SmartRoutingApiModule } from './smart-routing-api/smart-routing-api.module';
 
 @Module({
-  controllers: [AppController],
-  providers: [AppService],
-  imports: [
-    ConfigModule.forRoot({ load: [configuration] }),
-    TypegooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: getMongoConfig,
-    }),
-    LoggerModule,
-    AsteriskModule,
-    Soap1cModule,
-    SelenoidModule,
-    XmlModule,
-    DockerModule,
-    ActiveDirectoryModule,
-    //HealthModule,
-    MailModule,
-    RemoteModule,
-    AdditionalServicesModule,
-    Pbx3cxModule,
-    SmartRoutingApiModule,
-  ],
+
+    imports: [
+        ConfigModule.forRoot({ load: [configuration] }),
+        TypegooseModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: getMongoConfig,
+        }),
+        LoggerModule,
+        AsteriskModule,
+        Soap1cModule,
+        XmlModule,
+        DockerModule,
+        ActiveDirectoryModule,
+        //HealthModule,
+        MailModule,
+        RemoteModule,
+        AdditionalServicesModule,
+        Pbx3cxModule,
+        SmartRoutingApiModule,
+        SelenoidModule
+        
+    ],
+    controllers: [AppController],
+    providers: [],
 })
 export class AppModule {}

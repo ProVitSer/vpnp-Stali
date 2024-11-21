@@ -9,22 +9,26 @@ import { SmartRoutingApiUtilsService } from '../smart-routing-api.utils';
 
 @Injectable()
 export class DialExtension implements SmartRoutingApiProviderInterface {
-  constructor(private readonly soap1c: Soap1cProvider) {}
+    constructor(private readonly soap1c: Soap1cProvider) {}
 
-  public async sendAggregateCallInfo(data: DialExtensionDto): Promise<void> {
-    try {
-      return await this.soap1c.request({
-        action: Soap1cActionTypes.setNumber,
-        data: {
-          channelId: data.unicueid,
-          incomingNumber: SmartRoutingApiUtilsService.formatIncomingNumber(data.incomingNumber),
-          dialedNumber: SmartRoutingApiUtilsService.formatDialExtensionByContext(data.context),
-          localExtension: data.extension,
-          callDateTime: moment().format(CALL_DATE_TIME_FORMAT),
-        },
-      });
-    } catch (e) {
-      throw e;
+    public async sendAggregateCallInfo(data: DialExtensionDto): Promise<void> {
+        try {
+
+            return await this.soap1c.request({
+                action: Soap1cActionTypes.setNumber,
+                data: {
+                    channelId: data.unicueid,
+                    incomingNumber: SmartRoutingApiUtilsService.formatIncomingNumber(data.incomingNumber),
+                    dialedNumber: SmartRoutingApiUtilsService.formatDialExtensionByContext(data.context),
+                    localExtension: data.extension,
+                    callDateTime: moment().format(CALL_DATE_TIME_FORMAT),
+                },
+            });
+
+        } catch (e) {
+
+            throw e;
+
+        }
     }
-  }
 }

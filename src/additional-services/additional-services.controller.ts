@@ -10,55 +10,80 @@ import { MailForwardDto } from './dto/mail-forward.dto';
 @UseFilters(HttpExceptionFilter)
 @Controller('additional-services')
 export class AdditionalServicesController {
-  constructor(private readonly additionalServices: AdditionalServicesService) {}
+    constructor(private readonly additionalServices: AdditionalServicesService) {}
 
-  @Post('forward/queue')
-  async changeQueueStatus(@Query() params: QueueStatusDto, @Res() res: Response) {
-    try {
-      await this.additionalServices.changeQueueStatus(params);
-      return res.status(HttpStatus.OK).json({ result: true });
-    } catch (e) {
-      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+    @Post('forward/queue')
+    async changeQueueStatus(@Query() params: QueueStatusDto, @Res() res: Response) {
+        try {
 
-  @Post('forward/mail')
-  async changeMailForward(@Query() params: MailForwardDto, @Res() res: Response) {
-    try {
-      await this.additionalServices.changeMailForward(params);
-      return res.status(HttpStatus.OK).json({ result: true });
-    } catch (e) {
-      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+            await this.additionalServices.changeQueueStatus(params);
 
-  @Post('forward/extension')
-  async changeExtensionForward(@Query() params: ExtensionForwardDto, @Res() res: Response) {
-    try {
-      await this.additionalServices.changeExtensionForward(params);
-      return res.status(HttpStatus.OK).json({ result: true });
-    } catch (e) {
-      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+            return res.status(HttpStatus.OK).json({ result: true });
 
-  @Get('forward/extension/status')
-  async getExtensionStatus(@Query('exten') exten: string, @Res() res: Response) {
-    try {
-      const result = await this.additionalServices.getExtenForwardStatus(exten);
-      return res.status(HttpStatus.OK).json(result);
-    } catch (e) {
-      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+        } catch (e) {
 
-  @Get('forward/mail/status')
-  async getMailStatus(@Query('mail') mail: string, @Res() res: Response) {
-    try {
-      const result = await this.additionalServices.getCurrentMailForward(mail);
-      return res.status(HttpStatus.OK).json(result);
-    } catch (e) {
-      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
     }
-  }
+
+    @Post('forward/mail')
+    async changeMailForward(@Query() params: MailForwardDto, @Res() res: Response) {
+        try {
+
+            await this.additionalServices.changeMailForward(params);
+
+            return res.status(HttpStatus.OK).json({ result: true });
+
+        } catch (e) {
+
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+    }
+
+    @Post('forward/extension')
+    async changeExtensionForward(@Query() params: ExtensionForwardDto, @Res() res: Response) {
+        try {
+
+            await this.additionalServices.changeExtensionForward(params);
+
+            return res.status(HttpStatus.OK).json({ result: true });
+
+        } catch (e) {
+
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+    }
+
+    @Get('forward/extension/status')
+    async getExtensionStatus(@Query('exten') exten: string, @Res() res: Response) {
+        try {
+
+            // const result = await this.additionalServices.getExtenForwardStatus(exten);
+            const result = {};
+            return res.status(HttpStatus.OK).json(result);
+
+        } catch (e) {
+
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+    }
+
+    @Get('forward/mail/status')
+    async getMailStatus(@Query('mail') mail: string, @Res() res: Response) {
+        try {
+
+            const result = await this.additionalServices.getCurrentMailForward(mail);
+
+            return res.status(HttpStatus.OK).json(result);
+
+        } catch (e) {
+
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+            
+        }
+    }
 }
